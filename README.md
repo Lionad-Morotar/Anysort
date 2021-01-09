@@ -4,15 +4,6 @@
  
  你可以以一个或多个属性、长度比较、数值比较、字符串比较等方法进行排序。更加惊奇的是，这些方法可以任意组合。
 
- WIP Warning
-
- ## TODO
-
- * fix plugins
- * anysort(arrays, options)
- * perf compare
- * full api doc
-
 ## 安装 Install
 
 ```sh
@@ -88,7 +79,7 @@ var anysort = require('../src');
 var posts = [
   { tag: ['blog'], status: '', date: '2013-05-06', delete: 0 },
   { tag: ['blog'], status: 'todo', date: '2012-01-02', delete: 0 },
-  { tag: ['mp3'], status: 'todo', date: '2014-01-02', delete: 0 },
+  { tag: ['blog'], status: 'todo', date: '2014-01-02', delete: 0 },
   { tag: ['mp3'], status: '', date: '2015-01-02', delete: 0 },
   { tag: ['mp3'], status: '', date: '2015-01-02', delete: 1 } ,
   { tag: ['mp4'], status: '', date: '2014-06-01', delete: 0 },
@@ -96,37 +87,41 @@ var posts = [
 ];
 
 
-// 选择还没写完且没有被删除的博客，并按时间排序展示
+// 优先选择还没写完且没有被删除的博客，按时间倒序展示
 console.log(
   posts.sort(
     anysort(
       'status-is(todo)',
-      'delete-not(0)',
+      'delete-not()',
       'tag-has(blog)',
-      'date'
+      'date-dec()'
     )
   )
 )
 
 // Results in:
 // [
-//   { name: 'aaa', tag: ['5'], status: 'todo', date: '2012-01-02' },
-//   { name: 'ccc', tag: [], status: 'todo', date: '2014-01-02' },
-//   { name: 'bbb', tag: ['5'], status: '', date: '2013-05-06' },
-//   { name: 'bbb', tag: [], status: '', date: '2014-06-01' },
-//   { name: 'ccc', tag: [], status: '', date: '2015-01-02' },
-//   { name: 'aaa', tag: [], status: '', date: '2015-01-02' },
-//   { name: 'aaa', tag: ['5'], status: 'deleted', date: '2014-02-02' }
+//   { tag: ['blog'], status: 'todo', date: '2014-01-02', delete: 0 },
+//   { tag: ['blog'], status: 'todo', date: '2012-01-02', delete: 0 },
+//   { tag: ['blog'], status: '', date: '2013-05-06', delete: 0 },
+//   { tag: ['mp3'], status: '', date: '2015-01-02', delete: 0 },
+//   { tag: ['mp4'], status: '', date: '2014-06-01', delete: 0 },
+//   { tag: ['blog'], status: '', date: '2014-02-02', delete: 1 },
+//   { tag: ['mp3'], status: '', date: '2015-01-02', delete: 1 }
 // ]
 ```
-
-不过，灵活的代价是缓慢。Anysort 对比 array-sort 的运行速度要慢了一倍以上。好消息是，在大部分项目中，你并不会在意从 array-sort 的 50ms 到 any-sort 的 100ms 之间的性能差距。
 
 ## 测试 Test
 
 ```sh
 $ npm run test
 ```
+
+ ## TODO
+
+ * anysort(arrays, options)
+ * benchmark
+ * full api doc
 
 ## 作者 Author
 
