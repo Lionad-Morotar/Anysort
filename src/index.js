@@ -1,10 +1,13 @@
 const isVoid = x => x == undefined
-const isFn = x => typeof x === 'function'
+const getType = x => Object.prototype.toString.call(x).slice(8, -1).toLowerCase()
+const isFn = x => getType(x) === 'function'
 
 const typeEnum = {
+  date: x => +x,
   string: String,
   number: Number,
-  boolean: val => -Boolean(val)
+  // The priority of true is greater than false
+  boolean: x => !x
 }
 
 // 比较值的大小的方法
@@ -13,8 +16,8 @@ const by = {
     const isVoidA = isVoid(a)
     const isVoidB = isVoid(b)
     if (!isVoidA && !isVoidB) {
-      const type = typeof a
-      const canSort = typeEnum[type] && type === typeof b
+      const type = getType(a)
+      const canSort = typeEnum[type] && type === getType(b)
       !canSort && console.warn(`[TIP] 不能排序对 ${a} 和 ${b} 排序，忽略此次比较。你可以传入自定义排序函数对对象进行排序。`)
       return canSort
         ? by.type(type)(a, b)
@@ -73,6 +76,7 @@ Sort.prototype.seal = function () {
 
 // 初始插件
 const plugins = {
+  by: (sort, args) => sort.sortby(args),
   asc: sort => sort.plugin(pass),
   dec: sort => sort.plugin(fn => (...args) => -fn(...args)),
   rand: sort => sort.plugin(() => () => Math.random() < .5 ? -1 : 1),
@@ -80,6 +84,9 @@ const plugins = {
   all: (sort, args = '') => sort.map(x => x.every(y => y === args)).sortby('boolean'),
   has: (sort, args) => sort.map(x => x.includes(args)).sortby('boolean'),
   not: (sort, args = '') => sort.map(x => args ? (x !== args) : !x).sortby('boolean'),
+  len: (sort, args = null) => isVoid(args)
+    ? sort.map(x => x.length).sortby('number')
+    : sort.map(x => x.length === args).sortby('boolean'),
 
   // 用于处理对象的属性，如比较对象的 'a.b.c' 的值
   default: name => {
@@ -107,7 +114,7 @@ function generate(s) {
       const plugin = argsWithQuote
         ? plugins[name]
         : plugins.default(name)
-      plugin(sort, args)
+      plugin(sort, args || undefined)
     })
   return sort.seal()
 }
