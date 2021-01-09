@@ -3,23 +3,9 @@
 require('mocha');
 require('should');
 var get = require('get-value');
-var arraySort = require('../src');
+var anysort = require('../src');
 
-describe('errors', function() {
-  it('should throw an error when invalid args are passed:', function() {
-    (function() {
-      arraySort({});
-    }).should.throw('array-sort expects an array.');
-  });
-});
-
-describe('empty array', function() {
-  it('should return an empty array when null or undefined is passed', function() {
-    arraySort().should.eql([]);
-    arraySort(undefined).should.eql([]);
-    arraySort(null).should.eql([]);
-  })
-});
+const arraySort = (arr, ...arg) => arr.sort(anysort(...arg))
 
 describe('basic sort', function() {
   it('should sort an array of primitives', function() {
@@ -28,7 +14,7 @@ describe('basic sort', function() {
   })
 });
 
-describe('arraySort', function() {
+describe('array sort', function() {
   var posts = [
     { path: 'a.md', locals: { date: '2014-01-09' } },
     { path: 'f.md', locals: { date: '2014-01-02' } },
@@ -61,20 +47,20 @@ describe('arraySort', function() {
   });
 
   it('should sort by a property with null values:', function() {
-    var arr = [{key: null}, {key: 'z'}, {key: 'x'}];
+    var arr = [{ key: 'z' }, { key: null }, {key: 'x'}];
     arraySort(arr, 'key').should.eql([
       {key: 'x'},
       {key: 'z'},
-      {key: null}
+      {key: null},
     ]);
   });
 
   it('should sort by a property with undefined values:', function() {
-    var arr = [{}, {key: 'z'}, {key: 'x'}];
+    var arr = [{ key: 'z' }, {}, {key: 'x'}];
     arraySort(arr, 'key').should.eql([
       {key: 'x'},
       {key: 'z'},
-      {}
+      {},
     ]);
   });
 
@@ -84,7 +70,7 @@ describe('arraySort', function() {
       {key: 'x'},
       {key: 'z'},
       {key: null},
-      {}
+      {},
     ]);
   });
 
@@ -102,7 +88,7 @@ describe('arraySort', function() {
     ]);
   });
 
-  it('should do nothing when the specified property is not a string:', function() {
+  it('should do nothing when the specified property is not supported:', function() {
     var arr = [
       {a: {b: {c: 'c'}}},
       {a: {b: {z: 'z'}}},
@@ -166,7 +152,7 @@ describe('arraySort', function() {
       { foo: 'ccc', locals: { date: '2014-01-02' } },
       { foo: 'ddd', locals: { date: '2014-01-09' } },
       { foo: null, locals: { date: '2015-01-02' } },
-      { foo: null, locals: { date: '2015-04-12' } }
+      { foo: null, locals: { date: '2015-04-12' } },
     ]);
   });
 
@@ -192,7 +178,7 @@ describe('arraySort', function() {
       { foo: 'ccc', locals: { date: '2014-01-02' } },
       { foo: 'ddd', locals: { date: '2014-01-09' } },
       { locals: { date: '2015-01-02' } },
-      { locals: { date: '2015-04-12' } }
+      { locals: { date: '2015-04-12' } },
     ]);
   });
 
@@ -216,9 +202,9 @@ describe('arraySort', function() {
       { foo: 'bbb', locals: { date: '2013-05-06' } },
       { foo: 'ccc', locals: { date: '2014-01-02' } },
       { foo: 'ddd', locals: { date: '2014-01-09' } },
-      { foo: null, locals: {} },
       { locals: { date: '2015-01-02' } },
-      { locals: { date: '2015-04-12' } }
+      { locals: { date: '2015-04-12' } },
+      { foo: null, locals: {} },
     ]);
   });
 
@@ -314,7 +300,7 @@ describe('arraySort', function() {
       return function(a, b, fn) {
         var valA = get(a, prop);
         var valB = get(b, prop);
-        return fn(valA, valB);
+        return valA === valB ? 0 : (valA < valB ? -1 : 1);
       };
     };
 
@@ -336,52 +322,6 @@ describe('arraySort', function() {
       { path: 'f.md', locals: { date: '2014-06-01', foo: 'rrr', bar: 10 } },
       { path: 'e.md', locals: { date: '2015-01-02', foo: 'aaa', bar: 8 } },
       { path: 'c.md', locals: { date: '2015-04-12', foo: 'ttt', bar: 11 } }
-    ]);
-  });
-
-  it('should support reverse sorting with any combination of functions and properties:', function() {
-    var posts = [
-      { path: 'a.md', locals: { date: '2014-01-01', foo: 'zzz', bar: 1 } },
-      { path: 'f.md', locals: { date: '2014-01-01', foo: 'mmm', bar: 2 } },
-      { path: 'd.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 3 } },
-      { path: 'i.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 5 } },
-      { path: 'k.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 1 } },
-      { path: 'j.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 4 } },
-      { path: 'h.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 6 } },
-      { path: 'l.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 7 } },
-      { path: 'e.md', locals: { date: '2015-01-02', foo: 'aaa', bar: 8 } },
-      { path: 'b.md', locals: { date: '2012-01-02', foo: 'ccc', bar: 9 } },
-      { path: 'f.md', locals: { date: '2014-06-01', foo: 'rrr', bar: 10 } },
-      { path: 'c.md', locals: { date: '2015-04-12', foo: 'ttt', bar: 11 } },
-      { path: 'g.md', locals: { date: '2014-02-02', foo: 'yyy', bar: 12 } },
-    ];
-
-    var compare = function(prop) {
-      return function(a, b, fn) {
-        var valA = get(a, prop);
-        var valB = get(b, prop);
-        return fn(valA, valB);
-      };
-    };
-
-    var actual = arraySort(posts, 'locals.date', 'doesnt.exist', compare('locals.foo'), [
-      compare('locals.bar')
-    ], { reverse: true });
-
-    actual.should.eql([
-      { path: 'c.md', locals: { date: '2015-04-12', foo: 'ttt', bar: 11 } },
-      { path: 'e.md', locals: { date: '2015-01-02', foo: 'aaa', bar: 8 } },
-      { path: 'f.md', locals: { date: '2014-06-01', foo: 'rrr', bar: 10 } },
-      { path: 'g.md', locals: { date: '2014-02-02', foo: 'yyy', bar: 12 } },
-      { path: 'a.md', locals: { date: '2014-01-01', foo: 'zzz', bar: 1 } },
-      { path: 'l.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 7 } },
-      { path: 'h.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 6 } },
-      { path: 'i.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 5 } },
-      { path: 'j.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 4 } },
-      { path: 'd.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 3 } },
-      { path: 'k.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 1 } },
-      { path: 'f.md', locals: { date: '2014-01-01', foo: 'mmm', bar: 2 } },
-      { path: 'b.md', locals: { date: '2012-01-02', foo: 'ccc', bar: 9 } }
     ]);
   });
 });

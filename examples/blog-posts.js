@@ -1,4 +1,4 @@
-var arraySort = require('..');
+var anysort = require('../src');
 
 var posts = [
   { path: 'c.md', locals: { date: '2014-01-09' } },
@@ -7,8 +7,11 @@ var posts = [
 ];
 
 // by `locals.date`
-console.log(arraySort(posts, 'locals.date'));
+console.log(posts.sort(anysort('locals.date')));
 
-// by `path`
-console.log(arraySort(posts, 'path'));
-
+// Results in:
+// [
+//   { path: 'b.md', locals: { date: '2013-05-06' } },
+//   { path: 'a.md', locals: { date: '2014-01-02' } },
+//   { path: 'c.md', locals: { date: '2014-01-09' } }
+// ]

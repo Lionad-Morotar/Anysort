@@ -1,4 +1,4 @@
-var arraySort = require('..');
+var anysort = require('../src');
 
 var arr = [
   {foo: 'w', bar: 'y', baz: 'w'},
@@ -13,10 +13,12 @@ function compare(prop) {
   };
 }
 
-console.log(arraySort(arr, compare('foo'), compare('bar'), compare('baz')));
+console.log(arr.sort(anysort(compare('foo'), compare('bar'), compare('baz'))));
 
 // Results in:
-// [ { foo: 'w', bar: 'y', baz: 'w' },
+// [
+//   { foo: 'w', bar: 'y', baz: 'w' },
 //   { foo: 'x', bar: 'x', baz: 'w' },
 //   { foo: 'x', bar: 'y', baz: 'w' },
-//   { foo: 'x', bar: 'y', baz: 'z' } ]
+//   { foo: 'x', bar: 'y', baz: 'z' }
+// ]
