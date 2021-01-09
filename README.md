@@ -71,7 +71,7 @@ console.log(arr.sort(anysort(compare('foo'), compare('bar'), compare('baz'))));
 
 ## 高级用法 Powerful API
 
-any-sort 的强大体现在他拥有语义化的排序简写方法。
+Anysort 的强大体现在他拥有语义化的排序简写方法。
 
 ```js
 var anysort = require('../src');
@@ -110,6 +110,10 @@ console.log(
 //   { tag: ['mp3'], status: '', date: '2015-01-02', delete: 1 }
 // ]
 ```
+
+Anysort 能使不会写代码的人也能看懂排序的过程。
+
+我猜你也许会好奇这个排序方法的结果会是什么：`date-dec()-dec()`。总之，下载下来试一试吧~
 
 ## 测试 Test
 

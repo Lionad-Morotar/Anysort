@@ -75,7 +75,9 @@ Sort.prototype.seal = function () {
 const plugins = {
   asc: sort => sort.plugin(pass),
   dec: sort => sort.plugin(fn => (...args) => -fn(...args)),
+  rand: sort => sort.plugin(() => () => Math.random() < .5 ? -1 : 1),
   is: (sort, args = '') => sort.map(x => x === args).sortby('boolean'),
+  all: (sort, args = '') => sort.map(x => x.every(y => y === args)).sortby('boolean'),
   has: (sort, args) => sort.map(x => x.includes(args)).sortby('boolean'),
   not: (sort, args = '') => sort.map(x => args ? (x !== args) : !x).sortby('boolean'),
 
