@@ -1,8 +1,17 @@
-# any-sort
+# Anysort
 
 **Anysort：灵活、优雅、无依赖的排序方法。**
  
  你可以以一个或多个属性、长度比较、数值比较、字符串比较等方法进行排序。更加惊奇的是，这些方法可以任意组合。
+
+ WIP Warning
+
+ ## TODO
+
+ * fix plugins
+ * anysort(arrays, options)
+ * perf compare
+ * full api doc
 
 ## 安装 Install
 
