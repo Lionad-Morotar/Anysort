@@ -13,28 +13,38 @@ npm install --save https://github.com/Lionad-Morotar/any-sort
 根据属性进行排序：
 
 ```js
-var anysort = require('../src');
-
 var posts = [
-  { locals: { foo: 'bbb', date: '2013-05-06' }},
-  { locals: { foo: 'aaa', date: '2012-01-02' }},
-  { locals: { foo: 'ccc', date: '2014-01-02' }},
-  { locals: { foo: 'ccc', date: '2015-01-02' }},
-  { locals: { foo: 'bbb', date: '2014-06-01' }},
-  { locals: { foo: 'aaa', date: '2014-02-02' }},
+  { tag: ['blog'], status: '', date: '2013-05-06', deleted: 0 },
+  { tag: ['blog'], status: 'todo', date: '2012-01-02', deleted: 0 },
+  { tag: ['blog'], status: 'todo', date: '2014-01-02', deleted: 0 },
+  { tag: ['mp3'], status: '', date: '2015-01-02', deleted: 0 },
+  { tag: ['mp3'], status: '', date: '2015-01-02', deleted: 1 } ,
+  { tag: ['mp4'], status: '', date: '2014-06-01', deleted: 0 },
+  { tag: ['blog'], status: '', date: '2014-02-02', deleted: 1 },
 ];
 
-// sort by `locals.foo`, then `locals.date`
-posts.sort(anysort('locals.foo', 'locals.date'));
+
+// 优先选择还没写完且没有被删除的博客，按时间倒序展示
+console.log(
+  posts.sort(
+    anysort(
+      'status-is(todo)',
+      'deleted-not()',
+      'tag-has(blog)',
+      'date-dec()'
+    )
+  )
+)
 
 // Results in:
 // [
-//   { locals: { foo: 'aaa', date: '2012-01-02' } },
-//   { locals: { foo: 'aaa', date: '2014-02-02' } },
-//   { locals: { foo: 'bbb', date: '2013-05-06' } },
-//   { locals: { foo: 'bbb', date: '2014-06-01' } },
-//   { locals: { foo: 'ccc', date: '2014-01-02' } },
-//   { locals: { foo: 'ccc', date: '2015-01-02' } }
+//   { tag: ['blog'], status: 'todo', date: '2014-01-02', deleted: 0 },
+//   { tag: ['blog'], status: 'todo', date: '2012-01-02', deleted: 0 },
+//   { tag: ['blog'], status: '', date: '2013-05-06', deleted: 0 },
+//   { tag: ['mp3'], status: '', date: '2015-01-02', deleted: 0 },
+//   { tag: ['mp4'], status: '', date: '2014-06-01', deleted: 0 },
+//   { tag: ['blog'], status: '', date: '2014-02-02', deleted: 1 },
+//   { tag: ['mp3'], status: '', date: '2015-01-02', deleted: 1 }
 // ]
 ```
 

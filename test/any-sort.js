@@ -1,13 +1,13 @@
 var anysort = require('../src');
 
 var posts = [
-  { tag: ['blog'], status: '', date: '2013-05-06', delete: 0 },
-  { tag: ['blog'], status: 'todo', date: '2012-01-02', delete: 0 },
-  { tag: ['blog'], status: 'todo', date: '2014-01-02', delete: 0 },
-  { tag: ['mp3'], status: '', date: '2015-01-02', delete: 0 },
-  { tag: ['mp3'], status: '', date: '2015-01-02', delete: 1 } ,
-  { tag: ['mp4'], status: '', date: '2014-06-01', delete: 0 },
-  { tag: ['blog'], status: '', date: '2014-02-02', delete: 1 },
+  { tag: ['blog'], status: '', date: '2013-05-06', deleted: 0 },
+  { tag: ['blog'], status: 'todo', date: '2012-01-02', deleted: 0 },
+  { tag: ['blog'], status: 'todo', date: '2014-01-02', deleted: 0 },
+  { tag: ['mp3'], status: '', date: '2015-01-02', deleted: 0 },
+  { tag: ['mp3'], status: '', date: '2015-01-02', deleted: 1 } ,
+  { tag: ['mp4'], status: '', date: '2014-06-01', deleted: 0 },
+  { tag: ['blog'], status: '', date: '2014-02-02', deleted: 1 },
 ];
 
 
@@ -16,7 +16,7 @@ console.log(
   posts.sort(
     anysort(
       'status-is(todo)',
-      'delete-not()',
+      'deleted-not()',
       'tag-has(blog)',
       'date-dec()'
     )
@@ -25,11 +25,11 @@ console.log(
 
 // Results in:
 // [
-//   { tag: ['blog'], status: 'todo', date: '2014-01-02', delete: 0 },
-//   { tag: ['blog'], status: 'todo', date: '2012-01-02', delete: 0 },
-//   { tag: ['blog'], status: '', date: '2013-05-06', delete: 0 },
-//   { tag: ['mp3'], status: '', date: '2015-01-02', delete: 0 },
-//   { tag: ['mp4'], status: '', date: '2014-06-01', delete: 0 },
-//   { tag: ['blog'], status: '', date: '2014-02-02', delete: 1 },
-//   { tag: ['mp3'], status: '', date: '2015-01-02', delete: 1 }
+//   { tag: ['blog'], status: 'todo', date: '2014-01-02', deleted: 0 },
+//   { tag: ['blog'], status: 'todo', date: '2012-01-02', deleted: 0 },
+//   { tag: ['blog'], status: '', date: '2013-05-06', deleted: 0 },
+//   { tag: ['mp3'], status: '', date: '2015-01-02', deleted: 0 },
+//   { tag: ['mp4'], status: '', date: '2014-06-01', deleted: 0 },
+//   { tag: ['blog'], status: '', date: '2014-02-02', deleted: 1 },
+//   { tag: ['mp3'], status: '', date: '2015-01-02', deleted: 1 }
 // ]
