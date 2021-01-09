@@ -1,9 +1,9 @@
 'use strict';
 
 require('mocha');
-var should = require('should');
+require('should');
 var get = require('get-value');
-var arraySort = require('./');
+var arraySort = require('../src');
 
 describe('errors', function() {
   it('should throw an error when invalid args are passed:', function() {
