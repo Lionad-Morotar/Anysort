@@ -13,7 +13,15 @@ function compare(prop) {
   };
 }
 
-console.log(arr.sort(anysort(compare('foo'), compare('bar'), compare('baz'))));
+console.log(
+  arr.sort(
+    anysort(
+      compare('foo'),
+      compare('bar'),
+      compare('baz')
+    )
+  )
+);
 
 // Results in:
 // [
