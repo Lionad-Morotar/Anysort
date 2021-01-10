@@ -1,8 +1,8 @@
 const isVoid = x => x == undefined
-const getType = x => Object.prototype.toString.call(x).slice(8, -1).toLowerCase()
+const getType = x => isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase()
 const isFn = x => getType(x) === 'function'
 
-const typeEnum = {
+const constructor = {
   date: x => +x,
   string: String,
   number: Number,
@@ -13,23 +13,28 @@ const typeEnum = {
 // 比较值的大小的方法
 const by = {
   default: (a, b) => {
-    const isVoidA = isVoid(a)
-    const isVoidB = isVoid(b)
-    if (!isVoidA && !isVoidB) {
-      const type = getType(a)
-      const canSort = typeEnum[type] && type === getType(b)
+    const typeA = getType(a)
+    const typeB = getType(b)
+    if (typeA === 'void' || typeB === 'void') {
+      return by.void(a, b, typeA, typeB)
+    } else {
+      const canSort = constructor[typeA] && typeA === typeB
       !canSort && console.warn(`[TIP] 不能排序对 ${a} 和 ${b} 排序，忽略此次比较。你可以传入自定义排序函数对对象进行排序。`)
       return canSort
-        ? by.type(type)(a, b)
+        ? by.type(typeA)(a, b)
         : undefined
     }
-    return (isVoidA && isVoidB) ? 0 : (isVoidA ? 1 : -1)
   },
   type: type => (a, b) => {
-    const Type = isFn(type) ? type : typeEnum[type]
+    const Type = isFn(type) ? type : constructor[type]
     if (!Type) throw new Error(`Error occured when compare value ${a} with value ${b}`)
     const va = Type(a), vb = Type(b)
     return va === vb ? 0 : (va < vb ? -1 : 1)
+  },
+  void: (a, b, ta, tb) => {
+    if (ta === tb) return 0
+    if (a) return -1
+    if (b) return 1
   }
 }
 
