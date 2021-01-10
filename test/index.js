@@ -8,11 +8,16 @@ var anysort = require('../src');
 const arraySort = (arr, ...arg) => arr.sort(anysort(...arg))
 
 describe('basic sort', function() {
-  it('should sort an array of primitives', function() {
+  it('should sort an array of primitives', function () {
     var arr = ['d', 3, 'b', 'a', 'd', 1, 0, 'z'];
-    arraySort(arr).should.eql([ 0, 1, 3, 'a', 'b', 'd', 'd', 'z' ]);
+    arraySort(arr).should.eql([0, 1, 3, 'a', 'b', 'd', 'd', 'z']);
   })
-});
+  it('should support Symbols when defined sort type', function () {
+    const symbols = [Symbol('a'), Symbol('b'), Symbol('c'), Symbol('d'), Symbol('z')]
+    var arr = [symbols[3], symbols[1], symbols[0], symbols[2], symbols[4]];
+    arraySort(arr, 'by(symbol)').should.eql(symbols);
+  })
+})
 
 describe('array sort', function() {
   var posts = [

@@ -7,7 +7,8 @@ const constructor = {
   string: String,
   number: Number,
   // The priority of true is greater than false
-  boolean: x => !x
+  boolean: x => !x,
+  symbol: x => x.toString()
 }
 
 // 比较值的大小的方法
@@ -61,7 +62,7 @@ Sort.prototype.plugin = function (_value) {
 }
 // 设定排序方法，用来处理排序的值的顺序
 Sort.prototype.sortby = function (fn) {
-  this.compare = isFn(fn) ? fn : by.type(fn)
+  this.compare = isFn(fn) ? fn : by.type(fn.toLowerCase())
 }
 // 空过程函数（接受一个函数，返回一个接受参数并返回该函数处理参数的结果的函数）
 const pass = piped => (...args) => piped(...args)
