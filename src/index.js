@@ -65,18 +65,18 @@ Sort.prototype.sortby = function (fn) {
   this.compare = isFn(fn) ? fn : by.type(fn.toLowerCase())
 }
 // 空过程函数（接受一个函数，返回一个接受参数并返回该函数处理参数的结果的函数）
-const pass = piped => (...args) => piped(...args)
+const pass = sortFn => (...args) => sortFn(...args)
 // 将管道合并为函数
 Sort.prototype.seal = function () {
   this.compare = this.compare || by.default
 
-  const plugin = plug => piped => (...args) => plug(piped(...args))
-  const mapping = map => piped => (...args) => piped(...args.map(x => map(x)))
+  const plugin = plug => sortFn => (...args) => plug(sortFn(...args))
+  const mapping = map => sortFn => (...args) => sortFn(...args.map(x => map(x)))
 
-  return this.pipeline.reduce((last, piped) => {
-    const { _type, _value } = piped
-    if (_type === 'map') return mapping(last(_value))
-    if (_type === 'plugin') return plugin(_value)(last)
+  return this.pipeline.reduce((lastSortFn, current) => {
+    const { _type, _value } = current
+    if (_type === 'map') return mapping(lastSortFn(_value))
+    if (_type === 'plugin') return plugin(_value)(lastSortFn)
   }, pass)(this.compare)
 }
 
@@ -94,7 +94,7 @@ const plugins = {
     ? sort.map(x => x.length).sortby('number')
     : sort.map(x => x.length === args).sortby('boolean'),
 
-  // 用于处理对象的属性，如比较对象的 'a.b.c' 的值
+  // 默认使用解构插件，处理对象的属性如 'a.b.c' 的值
   default: name => {
     const pathsStore = name.split('.')
     const getVal = x => {

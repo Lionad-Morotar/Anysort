@@ -1,10 +1,11 @@
 const anysort = require('../src')
 var get = require('get-value');
 
-var posts = [Symbol('d'), Symbol('b'), Symbol('a'), Symbol('c'), Symbol('z')]
-
-posts.sort(
-  anysort('by(symbol)')
-)
+const posts = [
+  { name: 'shanghai' },
+  { name: 'beijing' },
+  { name: 'home' }
+]
+posts.sort(anysort('name-is(home)'))
 
 console.log(posts)
