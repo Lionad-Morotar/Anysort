@@ -7,6 +7,17 @@ var anysort = require('../src');
 
 const arraySort = (arr, ...arg) => arr.sort(anysort(...arg))
 
+describe('custom plugin works', function () {
+  it('自定义插件工作正常 ', function () {
+    const arr = ['a', 'b', 'c', 'D']
+    anysort.extends({
+      _justi: (sort, args = '') => sort.map(x => (x || '').toLowerCase())
+    })
+    arraySort(arr).should.eql(['D', 'a', 'b', 'c'])
+    arraySort(arr, '_justi()').should.eql(['a', 'b', 'c', 'D'])
+  })
+})
+
 describe('plugin works', function () {
   it('插件：忽略大小写 ', function () {
     const arr = ['a', 'b', 'c', 'D']

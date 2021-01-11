@@ -147,4 +147,14 @@ function factory(...cmd) {
   return flat(sortFns)
 }
 
+/**
+ * 自定义插件
+ * @todo 自定义排序逻辑
+ */
+factory.extends = function extendPlugin(exts = {}) {
+  Object.entries(exts).map(([k, v]) => {
+    plugins[k] = v
+  })
+}
+
 module.exports = factory
