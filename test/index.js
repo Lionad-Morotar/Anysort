@@ -7,6 +7,14 @@ var anysort = require('../src');
 
 const arraySort = (arr, ...arg) => arr.sort(anysort(...arg))
 
+describe('plugin works', function () {
+  it('插件：忽略大小写 ', function () {
+    const arr = ['a', 'b', 'c', 'D']
+    arraySort(arr).should.eql(['D', 'a', 'b', 'c'])
+    arraySort(arr, 'i()').should.eql(['a', 'b', 'c', 'D'])
+  })
+})
+
 describe('basic sort', function() {
   it('should sort an array of primitives', function () {
     var arr = ['d', 3, 'b', 'a', 'd', 1, 0, 'z'];

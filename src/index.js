@@ -82,6 +82,7 @@ Sort.prototype.seal = function () {
 
 // 初始插件
 const plugins = {
+  i: (sort, args = '') => sort.map(x => (x || '').toLowerCase()),
   by: (sort, args) => sort.sortby(args),
   asc: sort => sort.plugin(pass),
   dec: sort => sort.plugin(fn => (...args) => -fn(...args)),
