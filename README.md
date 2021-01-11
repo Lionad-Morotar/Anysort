@@ -124,6 +124,10 @@ $ npm run test
  * benchmark
  * full api doc
 
+## 源码 How this work
+
+[《一文学废排序》](https://juejin.cn/post/6916229848126111751)
+
 ## 作者 Author
 
 **Lionad**
