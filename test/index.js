@@ -7,35 +7,46 @@ var anysort = require('../src');
 
 const arraySort = (arr, ...arg) => arr.sort(anysort(...arg))
 
-describe('custom plugin works', function () {
-  it('自定义插件工作正常 ', function () {
-    const arr = ['a', 'b', 'c', 'D']
-    anysort.extends({
-      _justi: (sort, args = '') => sort.map(x => (x || '').toLowerCase())
-    })
-    arraySort(arr).should.eql(['D', 'a', 'b', 'c'])
-    arraySort(arr, '_justi()').should.eql(['a', 'b', 'c', 'D'])
+describe('排序插件正常工作', function () {
+  const getBasic = _ => [1, 4, 8, '2', '5', '10']
+  it('插件：类型排序', function () {
+    const symbols = [Symbol('a'), Symbol('b'), Symbol('c'), Symbol('d'), Symbol('z')]
+    const symbolArr = [symbols[3], symbols[1], symbols[0], symbols[2], symbols[4]]
+    arraySort(symbolArr, 'by(symbol)').should.eql(symbols)
+    const arr = getBasic()
+    arraySort(arr).should.eql([1, '10', '2', 4, '5', 8])
+    arraySort(arr, 'by(number)').should.eql([1, '2', 4, '5', 8, '10'])
   })
-})
-
-describe('plugin works', function () {
-  it('插件：忽略大小写 ', function () {
+  it('插件：忽略大小写', function () {
     const arr = ['a', 'b', 'c', 'D']
     arraySort(arr).should.eql(['D', 'a', 'b', 'c'])
     arraySort(arr, 'i()').should.eql(['a', 'b', 'c', 'D'])
   })
-})
-
-describe('basic sort', function() {
-  it('should sort an array of primitives', function () {
-    var arr = ['d', 3, 'b', 'a', 'd', 1, 0, 'z'];
-    arraySort(arr).should.eql([0, 1, 3, 'a', 'b', 'd', 'd', 'z']);
+  it('插件：正序', function () {
+    const arr = ['a', 'b', 'D', 'c']
+    arraySort(arr, 'asc()').should.eql(['D', 'a', 'b', 'c'])
   })
-  it('should support Symbols when defined sort type', function () {
-    const symbols = [Symbol('a'), Symbol('b'), Symbol('c'), Symbol('d'), Symbol('z')]
-    var arr = [symbols[3], symbols[1], symbols[0], symbols[2], symbols[4]];
-    arraySort(arr, 'by(symbol)').should.eql(symbols);
+  it('插件：倒序', function () {
+    const arr = ['a', 'b', 'D', 'c']
+    arraySort(arr, 'dec()').should.eql(['c', 'b', 'a', 'D'])
   })
+  it('插件：选取和比较', function () {
+    const testIs = getBasic()
+    arraySort(testIs, 'is(10)').should.eql(['10', 1, 4, 8, '2', '5'])
+    const testAll = [[1,2,3],[2,2,2],[3,2,1]]
+    arraySort(testAll, 'all(2)').should.eql([[2,2,2],[1,2,3],[3,2,1]])
+    const testHas = testAll
+    arraySort(testHas, 'has(1)').should.eql([[1,2,3],[3,2,1],[2,2,2]])
+  })
+  it('插件：自定义插件', function () {
+    const arr = ['a', 'b', 'c', 'D']
+    anysort.extends({
+      lowercase: sort => sort.map(x => (x || '').toLowerCase())
+    })
+    arraySort(arr).should.eql(['D', 'a', 'b', 'c'])
+    arraySort(arr, 'lowercase()').should.eql(['a', 'b', 'c', 'D'])
+  })
+  // TODO 随机插件怎么写测试？
 })
 
 describe('array sort', function() {
@@ -49,6 +60,11 @@ describe('array sort', function() {
     { path: 'c.md', locals: { date: '2015-04-12' } },
     { path: 'g.md', locals: { date: '2014-02-02' } },
   ];
+
+  it('should sort an array of primitives', function () {
+    var arr = ['d', 3, 'b', 'a', 'd', 1, 0, 'z'];
+    arraySort(arr).should.eql([0, 1, 3, 'a', 'b', 'd', 'd', 'z']);
+  })
 
   it('should sort by a property:', function() {
     var arr = [{key: 'y'}, {key: 'z'}, {key: 'x'}];

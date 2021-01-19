@@ -82,14 +82,14 @@ Sort.prototype.seal = function () {
 
 // 初始插件
 const plugins = {
-  i: (sort, args = '') => sort.map(x => (x || '').toLowerCase()),
   by: (sort, args) => sort.sortby(args),
+  i: sort => sort.map(x => (x || '').toLowerCase()),
   asc: sort => sort.plugin(pass),
   dec: sort => sort.plugin(fn => (...args) => -fn(...args)),
   rand: sort => sort.plugin(() => () => Math.random() < .5 ? -1 : 1),
   is: (sort, args = '') => sort.map(x => x === args).sortby('boolean'),
-  all: (sort, args = '') => sort.map(x => x.every(y => y === args)).sortby('boolean'),
-  has: (sort, args) => sort.map(x => x.includes(args)).sortby('boolean'),
+  all: (sort, args = '') => sort.map(x => x.every ? x.every(y => String(y) === args) : x === args).sortby('boolean'),
+  has: (sort, args) => sort.map(x => x.some(y => String(y) === args)).sortby('boolean'),
   not: (sort, args = '') => sort.map(x => args ? (x !== args) : !x).sortby('boolean'),
   len: (sort, args = null) => isVoid(args)
     ? sort.map(x => x.length).sortby('number')
