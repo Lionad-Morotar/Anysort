@@ -1,21 +1,22 @@
 const path = require('path')
 
-const input = path.join(__dirname, './src/index.js')
-const inputFileDir = path.join(__dirname, './src')
-const ouput = path.join(__dirname, './build/index.js')
+const input = path.join(__dirname, './src/index.ts')
+const ouput = path.join(__dirname, './build/index')
 
-console.log('inputFileDir: ', inputFileDir + '\\**\\*.js')
+const isDev = process.env.NODE === 'DEV'
 
 export default {
   input,
   plugins: [
     require('rollup-plugin-commonjs')(),
     require('rollup-plugin-node-resolve')(),
+    require('rollup-plugin-typescript')(),
+    // !isDev && require('rollup-plugin-uglify')()
   ],
   external: [/node_modules/],
   output: {
     name: 'module',
-    file: ouput,
+    file: ouput + (isDev ? '.js' : '.min.js'),
     format: 'umd',
     sourcemap: true,
   }
