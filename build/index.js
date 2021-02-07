@@ -28,47 +28,44 @@
     }
 
     var isVoid = function (x) { return x == undefined; };
+    var isVoidType = function (x) { return x === 'void'; };
     var getType = function (x) { return isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase(); };
     var isFn = function (x) { return getType(x) === 'function'; };
-    var constructor = {
-        date: function (x) { return +x; },
+    // TODO refactor to function: x => comparableValue
+    /* get comparable value from specific value */
+    var getCompareValue = {
         string: String,
         number: Number,
+        date: function (x) { return +x; },
+        symbol: function (x) { return x.toString(); },
         // The priority of true is greater than false
         boolean: function (x) { return !x; },
-        symbol: function (x) { return x.toString(); }
     };
-    // 比较值的大小的方法
+    /* compare two value by some methods */
     var by = {
         default: function (a, b) {
             var typeA = getType(a);
             var typeB = getType(b);
-            if (typeA === 'void' || typeB === 'void') {
-                return by.void(a, b, typeA, typeB);
+            var onceEmpty = isVoidType(typeA) || isVoidType(typeB);
+            if (onceEmpty) {
+                if (typeA === typeB)
+                    return 0;
+                return a ? -1 : 1;
             }
-            else {
-                var canSort = constructor[typeA] && typeA === typeB;
-                !canSort && console.warn("[TIP] \u4E0D\u80FD\u6392\u5E8F\u5BF9 " + a + " \u548C " + b + " \u6392\u5E8F\uFF0C\u5FFD\u7565\u6B64\u6B21\u6BD4\u8F83\u3002\u4F60\u53EF\u4EE5\u4F20\u5165\u81EA\u5B9A\u4E49\u6392\u5E8F\u51FD\u6570\u5BF9\u5BF9\u8C61\u8FDB\u884C\u6392\u5E8F\u3002");
-                return canSort
-                    ? by.type(typeA)(a, b)
-                    : undefined;
+            var canSort = getCompareValue[typeA] && typeA === typeB;
+            if (!canSort) {
+                console.warn("[TIP] cannot sort " + a + " with " + b + "\uFF0Cskip by default");
+                return undefined;
             }
+            return by.type(typeA)(a, b);
         },
         type: function (type) { return function (a, b) {
-            var Type = isFn(type) ? type : constructor[type];
+            var Type = isFn(type) ? type : getCompareValue[type];
             if (!Type)
                 throw new Error("Error occured when compare value " + a + " with value " + b);
             var va = Type(a), vb = Type(b);
             return va === vb ? 0 : (va < vb ? -1 : 1);
-        }; },
-        void: function (a, b, ta, tb) {
-            if (ta === tb)
-                return 0;
-            if (a)
-                return -1;
-            if (b)
-                return 1;
-        }
+        }; }
     };
     // 排序实例，用来维护排序管道和排序方法
     function Sort() {
@@ -225,7 +222,6 @@
         });
     };
     module.exports = factory;
-    //# sourceMappingURL=index.js.map
 
 }));
 //# sourceMappingURL=index.js.map

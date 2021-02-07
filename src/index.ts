@@ -1,41 +1,56 @@
-const isVoid = x => x == undefined
-const getType = x => isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase()
-const isFn = x => getType(x) === 'function'
+type SortableTypeEnum = 'void' | 'string' | 'number' | 'date' | 'symbol' | 'boolean' | 'function'
 
-const constructor = {
-  date: x => +x,
+const isVoid = (x: any): boolean => x == undefined
+const isVoidType = (x: SortableTypeEnum): boolean => x === 'void'
+const getType = (x: any): SortableTypeEnum => isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase()
+const isFn = (x: any): boolean => getType(x) === 'function'
+
+// return void to skip sort, by example,
+// [3,2,3].sort((a, b) => null) result in [3,2,3]
+type SkipCompareValue = void
+type ComparableValue = string | number | boolean | SkipCompareValue
+type GetCompareValue = (x: any) => ComparableValue
+
+// TODO refactor to function: x => comparableValue
+/* get comparable value from specific value */
+const getCompareValue: ({ [key: string]: GetCompareValue }) = {
   string: String,
   number: Number,
+  date: (x: Date): number => +x,
+  symbol: (x: Symbol): string => x.toString(),
   // The priority of true is greater than false
-  boolean: x => !x,
-  symbol: x => x.toString()
+  boolean: (x: any): boolean => !x,
 }
 
-// 比较值的大小的方法
-const by = {
-  default: (a, b) => {
+type Sort = SkipCompareValue | 1 | 0 | -1
+type SortFn = (a: any, b: any) => Sort
+type CondSortFn = (type: string) => SortFn
+
+/* compare two value by some methods */
+const by: ({ [key: string]: SortFn | CondSortFn }) = {
+  default: (a: any, b: any) => {
     const typeA = getType(a)
     const typeB = getType(b)
-    if (typeA === 'void' || typeB === 'void') {
-      return by.void(a, b, typeA, typeB)
-    } else {
-      const canSort = constructor[typeA] && typeA === typeB
-      !canSort && console.warn(`[TIP] 不能排序对 ${a} 和 ${b} 排序，忽略此次比较。你可以传入自定义排序函数对对象进行排序。`)
-      return canSort
-        ? by.type(typeA)(a, b)
-        : undefined
+
+    const onceEmpty = isVoidType(typeA) || isVoidType(typeB)
+    if (onceEmpty) {
+      if (typeA === typeB) return 0
+      return a ? -1 : 1
     }
+
+    const canSort = getCompareValue[typeA] && typeA === typeB
+    if (!canSort) {
+      console.warn(`[TIP] cannot sort ${a} with ${b}，skip by default`)
+      return undefined
+    }
+
+    return by.type(typeA)(a, b)
   },
   type: type => (a, b) => {
-    const Type = isFn(type) ? type : constructor[type]
+    const Type = isFn(type) ? type : getCompareValue[type]
     if (!Type) throw new Error(`Error occured when compare value ${a} with value ${b}`)
     const va = Type(a), vb = Type(b)
     return va === vb ? 0 : (va < vb ? -1 : 1)
-  },
-  void: (a, b, ta, tb) => {
-    if (ta === tb) return 0
-    if (a) return -1
-    if (b) return 1
   }
 }
 
