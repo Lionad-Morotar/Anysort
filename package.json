@@ -4,14 +4,16 @@
   "version": "1.4.1",
   "homepage": "https://github.com/Lionad-Morotar/any-sort",
   "license": "MIT",
-  "main": "src/index.js",
+  "main": "build/index.js",
   "scripts": {
+    "start": "rollup -c -w",
     "test": "mocha ./test/index"
   },
-  "dependencies": {},
   "devDependencies": {
     "get-value": "^3.0.1",
     "mocha": "^2.5.3",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
     "should": "^8.4.0"
   },
   "keywords": [
