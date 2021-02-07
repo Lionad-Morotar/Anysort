@@ -100,7 +100,7 @@ const plugins = {
     const pathsStore = name.split('.')
     const getVal = x => {
       const paths = [...pathsStore]
-      let val = x
+      let val = x, next = null
       while (val && paths.length) {
         next = paths.shift()
         val = val[next]

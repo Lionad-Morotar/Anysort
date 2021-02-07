@@ -9,12 +9,22 @@
     "start": "cross-env NODE=DEV rollup -c -w",
     "dev": "npm start",
     "build": "cross-env NODE=PRODUCTION rollup -c",
-    "test": "mocha ./test/index"
+    "test": "mocha ./test/index",
+    "watch:test": "npm-watch test"
+  },
+  "watch": {
+    "test": {
+      "patterns": ["build","test"],
+      "runOnChangeOnly": true,
+      "extensions": "js",
+      "quiet": true
+    }
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
     "get-value": "^3.0.1",
     "mocha": "^2.5.3",
+    "npm-watch": "^0.7.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-typescript": "^1.0.1",

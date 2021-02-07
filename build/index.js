@@ -165,7 +165,7 @@
             var pathsStore = name.split('.');
             var getVal = function (x) {
                 var paths = __spreadArrays(pathsStore);
-                var val = x;
+                var val = x, next = null;
                 while (val && paths.length) {
                     next = paths.shift();
                     val = val[next];
@@ -225,6 +225,7 @@
         });
     };
     module.exports = factory;
+    //# sourceMappingURL=index.js.map
 
 }));
 //# sourceMappingURL=index.js.map

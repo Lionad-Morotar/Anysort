@@ -1,9 +1,10 @@
-'use strict';
+const isDev = process.env.NODE === 'DEV'
 
 require('mocha');
 require('should');
 var get = require('get-value');
-var anysort = require('../src');
+
+var anysort = require('../build');
 
 const arraySort = (arr, ...arg) => arr.sort(anysort(...arg))
 
