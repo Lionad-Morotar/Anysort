@@ -3,17 +3,17 @@ type SortableTypeEnum = 'void' | 'string' | 'number' | 'date' | 'symbol' | 'bool
 const isVoid = (x: any): boolean => x == undefined
 const isVoidType = (x: SortableTypeEnum): boolean => x === 'void'
 const getType = (x: any): SortableTypeEnum => isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase()
-const isFn = (x: any): boolean => getType(x) === 'function'
+const isFnType = (x: any): boolean => getType(x) === 'function'
 
 // return void to skip sort, by example,
 // [3,2,3].sort((a, b) => null) result in [3,2,3]
 type SkipCompareValue = void
 type ComparableValue = string | number | boolean | SkipCompareValue
-type GetCompareValue = (x: any) => ComparableValue
+type GetCompareValFn = (x: any) => ComparableValue
 
 // TODO refactor to function: x => comparableValue
 /* get comparable value from specific value */
-const getCompareValue: ({ [key: string]: GetCompareValue }) = {
+const getCompareValue: ({ [key: string]: GetCompareValFn }) = {
   string: String,
   number: Number,
   date: (x: Date): number => +x,
@@ -24,11 +24,11 @@ const getCompareValue: ({ [key: string]: GetCompareValue }) = {
 
 type Sort = SkipCompareValue | 1 | 0 | -1
 type SortFn = (a: any, b: any) => Sort
-type CondSortFn = (type: string) => SortFn
+type CondSortFn = (type: SortableTypeEnum) => SortFn
 
 /* compare two value by some methods */
 const by: ({ [key: string]: SortFn | CondSortFn }) = {
-  default: (a: any, b: any) => {
+  default (a: any, b: any) {
     const typeA = getType(a)
     const typeB = getType(b)
 
@@ -44,17 +44,18 @@ const by: ({ [key: string]: SortFn | CondSortFn }) = {
       return undefined
     }
 
+    // @ts-ignore
     return by.type(typeA)(a, b)
   },
-  type: type => (a, b) => {
-    const Type = isFn(type) ? type : getCompareValue[type]
-    if (!Type) throw new Error(`Error occured when compare value ${a} with value ${b}`)
-    const va = Type(a), vb = Type(b)
+  type: (type: SortableTypeEnum): SortFn => (a: any, b: any): Sort => {
+    const getValFn = getCompareValue[type]
+    if (!getValFn) throw new Error(`[ERR] error occured when compare value ${a} with value ${b}`)
+    const va = getValFn(a), vb = getValFn(b)
     return va === vb ? 0 : (va < vb ? -1 : 1)
   }
 }
 
-// 排序实例，用来维护排序管道和排序方法
+// Sort Factory
 function Sort() {
   this.compare = null
   this.pipeline = []
@@ -77,7 +78,7 @@ Sort.prototype.plugin = function (_value) {
 }
 // 设定排序方法，用来处理排序的值的顺序
 Sort.prototype.sortby = function (fn) {
-  this.compare = isFn(fn) ? fn : by.type(fn.toLowerCase())
+  this.compare = isFnType(fn) ? fn : by.type(fn.toLowerCase())
 }
 // 空过程函数（接受一个函数，返回一个接受参数并返回该函数处理参数的结果的函数）
 const pass = sortFn => (...args) => sortFn(...args)
@@ -114,7 +115,7 @@ const plugins = {
   default: name => {
     const pathsStore = name.split('.')
     const getVal = x => {
-      const paths = [...pathsStore]
+      const paths = [].concat(pathsStore)
       let val = x, next = null
       while (val && paths.length) {
         next = paths.shift()
@@ -141,18 +142,17 @@ function generate(s) {
   return sort.seal()
 }
 
-/**
- * 初始化函数，根据传入的指令（或函数），获得对应的排序方法
- * @returns {function} sortFn 排序方法，可用于 Array.prototype.sort 参数
- * @todo 根据参数可选是否覆盖 Array.prototype.sort
- */
-function factory(...cmd) {
+/* Main Functions */
+
+type SortCMD = string | SortFn
+
+function factory(...cmd: SortCMD[]): SortFn {
   cmd = cmd.reduce((h, c) => (h.concat(c)), [])
   if (cmd.length < 1) return undefined
 
   const sortFns = cmd.map((x, i) => {
     try {
-      return isFn(x) ? x : generate(x)
+      return isFnType(x) ? x : generate(x)
     } catch (error) {
       throw new Error(`Error on generate sort function, Index ${i + 1}th: ${x}.`)
     }
@@ -162,10 +162,7 @@ function factory(...cmd) {
   return flat(sortFns)
 }
 
-/**
- * 自定义插件
- * @todo 自定义排序逻辑
- */
+
 factory.extends = function extendPlugin(exts = {}) {
   Object.entries(exts).map(([k, v]) => {
     plugins[k] = v

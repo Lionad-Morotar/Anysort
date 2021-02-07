@@ -62,5 +62,6 @@
     "sort",
     "sorted",
     "sorting"
-  ]
+  ],
+  "dependencies": {}
 }

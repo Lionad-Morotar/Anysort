@@ -140,3 +140,7 @@ $ npm run test
 
 Copyright © 2021, [Lionad-Morotar](https://github.com/Lionad-Morotar).
 Released under the MIT License.
+
+## TODO
+
+* 根据参数可选是否覆盖 Array.prototype.sort
