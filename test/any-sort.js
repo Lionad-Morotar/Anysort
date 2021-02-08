@@ -1,4 +1,4 @@
-var anysort = require('../src');
+var anysort = require('../build');
 
 var posts = [
   { tag: ['mp3'], status: '', date: new Date('2015-01-02'), comments: { length: 5 } },

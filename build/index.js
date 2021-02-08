@@ -1,12 +1,12 @@
 (function (factory) {
   typeof define === 'function' && define.amd ? define(factory) :
   factory();
-}((function () { 'use strict';
+}(function () { 'use strict';
 
   var isVoid = function (x) { return x == undefined; };
   var isVoidType = function (x) { return x === 'void'; };
   var getType = function (x) { return isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase(); };
-  var isFnType = function (x) { return getType(x) === 'function'; };
+  var isFn = function (x) { return getType(x) === 'function'; };
   // TODO refactor to function: x => comparableValue
   /* get comparable value from specific value */
   var getCompareValue = {
@@ -30,7 +30,9 @@
           }
           var canSort = getCompareValue[typeA] && typeA === typeB;
           if (!canSort) {
-              console.warn("[TIP] cannot sort " + a + " with " + b + "\uFF0Cskip by default");
+              console &&
+                  console.warn &&
+                  console.warn("[TIP] Cannot sort " + a + " with " + b + "\uFF0Cskip by default");
               return undefined;
           }
           // @ts-ignore
@@ -39,35 +41,10 @@
       type: function (type) { return function (a, b) {
           var getValFn = getCompareValue[type];
           if (!getValFn)
-              throw new Error("[ERR] error occured when compare value " + a + " with value " + b);
+              throw new Error("[ERR] Error occured when compare value " + a + " with value " + b);
           var va = getValFn(a), vb = getValFn(b);
           return va === vb ? 0 : (va < vb ? -1 : 1);
       }; }
-  };
-  // Sort Factory
-  function Sort() {
-      this.compare = null;
-      this.pipeline = [];
-  }
-  // 给管道添加解构方法，用于解构对象并处理值
-  // @example
-  // sort.map(x => String(x.a))
-  // 从 x 中取得 a 属性并转换为字符串，再继续比较
-  Sort.prototype.map = function (_value) {
-      this.pipeline.push({ _value: _value, _type: 'map' });
-      return this;
-  };
-  // 给管道添加插件，用于调整排序动作
-  // @example
-  // sort.plugin(fn => (a, b) => -fn(a, b))
-  // 将上一个排序结果反转
-  Sort.prototype.plugin = function (_value) {
-      this.pipeline.push({ _value: _value, _type: 'plugin' });
-      return this;
-  };
-  // 设定排序方法，用来处理排序的值的顺序
-  Sort.prototype.sortby = function (fn) {
-      this.compare = isFnType(fn) ? fn : by.type(fn.toLowerCase());
   };
   // 空过程函数（接受一个函数，返回一个接受参数并返回该函数处理参数的结果的函数）
   var pass = function (sortFn) { return function () {
@@ -77,32 +54,59 @@
       }
       return sortFn.apply(void 0, args);
   }; };
-  // 将管道合并为函数
-  Sort.prototype.seal = function () {
-      this.compare = this.compare || by.default;
-      var plugin = function (plug) { return function (sortFn) { return function () {
-          var args = [];
-          for (var _i = 0; _i < arguments.length; _i++) {
-              args[_i] = arguments[_i];
-          }
-          return plug(sortFn.apply(void 0, args));
-      }; }; };
-      var mapping = function (map) { return function (sortFn) { return function () {
-          var args = [];
-          for (var _i = 0; _i < arguments.length; _i++) {
-              args[_i] = arguments[_i];
-          }
-          return sortFn.apply(void 0, args.map(function (x) { return map(x); }));
-      }; }; };
-      return this.pipeline.reduce(function (lastSortFn, current) {
-          var _type = current._type, _value = current._value;
-          if (_type === 'map')
-              return mapping(lastSortFn(_value));
-          if (_type === 'plugin')
-              return plugin(_value)(lastSortFn);
-      }, pass)(this.compare);
-  };
-  // 初始插件
+  var Sort = /** @class */ (function () {
+      function Sort() {
+          // 设定排序方法，用来处理排序的值的顺序
+          this.sortby = function (fn) {
+              this.compare = isFn(fn) ? fn : by.type(fn.toLowerCase());
+          };
+          // 将管道合并为函数
+          this.seal = function () {
+              this.compare = this.compare || by.default;
+              var plugin = function (plug) { return function (sortFn) { return function () {
+                  var args = [];
+                  for (var _i = 0; _i < arguments.length; _i++) {
+                      args[_i] = arguments[_i];
+                  }
+                  return plug(sortFn.apply(void 0, args));
+              }; }; };
+              var mapping = function (map) { return function (sortFn) { return function () {
+                  var args = [];
+                  for (var _i = 0; _i < arguments.length; _i++) {
+                      args[_i] = arguments[_i];
+                  }
+                  return sortFn.apply(void 0, args.map(function (x) { return map(x); }));
+              }; }; };
+              return this.pipeline.reduce(function (lastSortFn, current) {
+                  var _type = current._type, _value = current._value;
+                  if (_type === 'map')
+                      return mapping(lastSortFn(_value));
+                  if (_type === 'plugin')
+                      return plugin(_value)(lastSortFn);
+              }, pass)(this.compare);
+          };
+          this.compare = null;
+          this.pipeline = [];
+      }
+      // 给管道添加解构方法，用于解构对象并处理值
+      // @example
+      // sort.map(x => String(x.a))
+      // 从 x 中取得 a 属性并转换为字符串，再继续比较
+      Sort.prototype.map = function (_value) {
+          this.pipeline.push({ _value: _value, _type: 'map' });
+          return this;
+      };
+      // 给管道添加插件，用于调整排序动作
+      // @example
+      // sort.plugin(fn => (a, b) => -fn(a, b))
+      // 将上一个排序结果反转
+      Sort.prototype.plugin = function (_value) {
+          this.pipeline.push({ _value: _value, _type: 'plugin' });
+          return this;
+      };
+      return Sort;
+  }());
+  // default sort plugins
   var plugins = {
       by: function (sort, args) { return sort.sortby(args); },
       i: function (sort) { return sort.map(function (x) { return (x || '').toLowerCase(); }); },
@@ -150,12 +154,12 @@
       }
   };
   // 从字符串指令中得到排序函数
-  function generate(s) {
+  function generateSortFnFromStr(s) {
       var sort = new Sort();
       var actions = s.split('-').slice(0);
       actions = actions.filter(function (x) { return x; })
           .map(function (action) {
-          var _a = action.match(/([^(]+)(\(([^)]*)\))?/); _a[0]; var name = _a[1], argsWithQuote = _a[2], args = _a[3];
+          var _a = action.match(/([^(]+)(\(([^)]*)\))?/), all = _a[0], name = _a[1], argsWithQuote = _a[2], args = _a[3];
           var plugin = argsWithQuote
               ? plugins[name]
               : plugins.default(name);
@@ -169,27 +173,29 @@
           cmd[_i] = arguments[_i];
       }
       cmd = cmd.reduce(function (h, c) { return (h.concat(c)); }, []);
+      // emptry arguments means to sort by default (Array.prototype.sort)
       if (cmd.length < 1)
           return undefined;
       var sortFns = cmd.map(function (x, i) {
           try {
-              return isFnType(x) ? x : generate(x);
+              return isFn(x) ? x : generateSortFnFromStr(x);
           }
           catch (error) {
-              throw new Error("Error on generate sort function, Index " + (i + 1) + "th: " + x + ".");
+              throw new Error("[ERR] Error on generate sort function, Index " + (i + 1) + "th: " + x + ".");
           }
       });
-      var flat = function (fns) { return function (a, b) { return fns.reduce(function (sortResult, fn) { return sortResult || fn(a, b); }, 0); }; };
+      var flat = (function (fns) { return function (a, b) { return fns.reduce(function (sortResult, fn) { return sortResult || fn(a, b); }, 0); }; });
       return flat(sortFns);
   }
-  factory.extends = function extendPlugin(exts) {
-      if (exts === void 0) { exts = {}; }
-      Object.entries(exts).map(function (_a) {
-          var k = _a[0], v = _a[1];
-          plugins[k] = v;
-      });
-  };
+  /* Extensible */
+  var extendPlugins = (function (exts) { return Object.entries(exts).map(function (_a) {
+      var k = _a[0], v = _a[1];
+      return plugins[k] = v;
+  }); });
+  factory.extends = extendPlugins;
+  // factory.extends('asdf')
+  /* Module Exports */
   module.exports = factory;
 
-})));
+}));
 //# sourceMappingURL=index.js.map
