@@ -1,4 +1,4 @@
-type SortableTypeEnum = 'void' | 'string' | 'number' | 'date' | 'symbol' | 'boolean' | 'function'
+type SortableTypeEnum = 'string' | 'number' | 'boolean' | 'symbol' | 'function' | 'void' | 'date'
 
 const isVoid = (x: any): boolean => x == undefined
 const isVoidType = (x: SortableTypeEnum): boolean => x === 'void'
@@ -24,20 +24,25 @@ const getCompareValue: ({ [key: string]: GetCompareValFn }) = {
 
 type SortVal = SkipCompareValue | 1 | 0 | -1
 type SortFn = (a: any, b: any) => SortVal
-type CondSortFn = (type: SortableTypeEnum) => SortFn
+type ConditionSortFn = (type: SortableTypeEnum) => SortFn
 
-/* compare two value by some methods */
-const by: ({ [key: string]: SortFn | CondSortFn }) = {
-  default (a: any, b: any) {
+const sortByType: ConditionSortFn =
+  (type: SortableTypeEnum): SortFn => (a, b): SortVal => {
+    const getValFn = getCompareValue[type]
+    if (!getValFn) throw new Error(`[ERR] Error occured when compare value ${a} with value ${b}`)
+    const va = getValFn(a), vb = getValFn(b)
+    return va === vb ? 0 : (va < vb ? -1 : 1)
+  }
+
+const sortByDefault: SortFn =
+  (a: any, b: any) => {
     const typeA = getType(a)
     const typeB = getType(b)
-
     const onceEmpty = isVoidType(typeA) || isVoidType(typeB)
     if (onceEmpty) {
       if (typeA === typeB) return 0
       return a ? -1 : 1
     }
-
     const canSort = getCompareValue[typeA] && typeA === typeB
     if (!canSort) {
       console &&
@@ -45,25 +50,32 @@ const by: ({ [key: string]: SortFn | CondSortFn }) = {
       console.warn(`[TIP] Cannot sort ${a} with ${b}，skip by default`)
       return undefined
     }
-
     // @ts-ignore
-    return by.type(typeA)(a, b)
-  },
-  type: (type: SortableTypeEnum): SortFn => (a: any, b: any): SortVal => {
-    const getValFn = getCompareValue[type]
-    if (!getValFn) throw new Error(`[ERR] Error occured when compare value ${a} with value ${b}`)
-    const va = getValFn(a), vb = getValFn(b)
-    return va === vb ? 0 : (va < vb ? -1 : 1)
+    return sortByType(typeA)(a, b)
   }
-}
 
-// 空过程函数（接受一个函数，返回一个接受参数并返回该函数处理参数的结果的函数）
-const pass = sortFn => (...args) => sortFn(...args)
+type PluginTypeEnum = 'maping' | 'plugin'
+type PipeLine = {
+  _type: PluginTypeEnum
+  _value: any // ?
+}
+type MapingFn = Function // TODO type
+type PluginFn = Function // TODO type
+
+const pass:
+  (fn: SortFn) => SortFn =
+  (fn => (a, b) => fn(a, b))
+const plugin:
+  (plug: PluginFn) => (fn: SortFn) => SortFn =
+  (plug => fn => (a, b) => plug(fn(a, b)))
+const maping:
+  (map: MapingFn) => (fn: SortFn) => SortFn =
+  (map => fn => (a, b) => fn(map(a), map(b)))
 
 class Sort {
-  compare: null
-  pipeline: []
-  constructor() {
+  compare: SortFn
+  pipeline: PipeLine[]
+  constructor () {
     this.compare = null
     this.pipeline = []
   }
@@ -71,40 +83,38 @@ class Sort {
   // @example
   // sort.map(x => String(x.a))
   // 从 x 中取得 a 属性并转换为字符串，再继续比较
-  map (_value) {
-    this.pipeline.push({ _value, _type: 'map' })
+  map (_value: MapingFn): Sort {
+    this.pipeline.push({ _value, _type: 'maping' })
     return this
   }
   // 给管道添加插件，用于调整排序动作
   // @example
   // sort.plugin(fn => (a, b) => -fn(a, b))
   // 将上一个排序结果反转
-  plugin (_value) {
+  plugin (_value: PluginFn): Sort {
     this.pipeline.push({ _value, _type: 'plugin' })
     return this
   }
   // 设定排序方法，用来处理排序的值的顺序
-  sortby = function (fn) {
-    this.compare = isFn(fn) ? fn : by.type(fn.toLowerCase())
+  sortby (s: SortableTypeEnum): void {
+    if (typeof s === 'number') {
+      console.log('asdf')
+    }
+    this.compare = sortByType(s.toLowerCase())
   }
   // 将管道合并为函数
-  seal = function () {
-    this.compare = this.compare || by.default
-
-    const plugin = plug => sortFn => (...args) => plug(sortFn(...args))
-    const mapping = map => sortFn => (...args) => sortFn(...args.map(x => map(x)))
+  seal () {
+    this.compare = this.compare || sortByDefault
 
     return this.pipeline.reduce((lastSortFn, current) => {
       const { _type, _value } = current
-      if (_type === 'map') return mapping(lastSortFn(_value))
+      if (_type === 'maping') return maping(lastSortFn(_value))
       if (_type === 'plugin') return plugin(_value)(lastSortFn)
     }, pass)(this.compare)
   }
 }
 
-// TODO refactor type
-type SortInstance = any
-type SortPlugin = (sort: SortInstance, args?: any) => void
+type SortPlugin = (sort: Sort, args?: any) => void
 
 // default sort plugins
 const plugins = {
@@ -138,11 +148,10 @@ const plugins = {
 }
 
 // 从字符串指令中得到排序函数
-function generateSortFnFromStr(s: string): SortFn {
+function generateSortFnFromStr(ss: string): SortFn {
   const sort = new Sort()
-
-  let [...actions] = s.split('-')
-  actions = actions.filter(x => x)
+  ss.split('-')
+    .filter(x => x)
     .map(action => {
       const [all, name, argsWithQuote, args] = action.match(/([^(]+)(\(([^)]*)\))?/)
       const plugin = argsWithQuote
@@ -171,7 +180,7 @@ function factory(...cmd: SortCMD[]): SortFn {
   })
 
   const flat:
-    (fns: SortFn[]) => (anyValA: any, antValB: any) => SortVal =
+    (fns: SortFn[]) => SortFn =
     (fns => (a, b) => fns.reduce((sortResult: SortVal, fn: SortFn) => sortResult || fn(a, b), 0))
 
   return flat(sortFns)
@@ -179,11 +188,12 @@ function factory(...cmd: SortCMD[]): SortFn {
 
 /* Extensible */
 
-let extendPlugins:
+const extendPlugins:
   (exts: {[key: string]: SortPlugin}) => void =
   (exts => Object.entries(exts).map(([k, v]) => plugins[k] = v))
 factory.extends = extendPlugins
 
+// TODO test type
 // factory.extends('asdf')
 
 /* Module Exports */

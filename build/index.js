@@ -17,74 +17,37 @@
       // The priority of true is greater than false
       boolean: function (x) { return !x; },
   };
-  /* compare two value by some methods */
-  var by = {
-      default: function (a, b) {
-          var typeA = getType(a);
-          var typeB = getType(b);
-          var onceEmpty = isVoidType(typeA) || isVoidType(typeB);
-          if (onceEmpty) {
-              if (typeA === typeB)
-                  return 0;
-              return a ? -1 : 1;
-          }
-          var canSort = getCompareValue[typeA] && typeA === typeB;
-          if (!canSort) {
-              console &&
-                  console.warn &&
-                  console.warn("[TIP] Cannot sort " + a + " with " + b + "\uFF0Cskip by default");
-              return undefined;
-          }
-          // @ts-ignore
-          return by.type(typeA)(a, b);
-      },
-      type: function (type) { return function (a, b) {
-          var getValFn = getCompareValue[type];
-          if (!getValFn)
-              throw new Error("[ERR] Error occured when compare value " + a + " with value " + b);
-          var va = getValFn(a), vb = getValFn(b);
-          return va === vb ? 0 : (va < vb ? -1 : 1);
-      }; }
-  };
-  // 空过程函数（接受一个函数，返回一个接受参数并返回该函数处理参数的结果的函数）
-  var pass = function (sortFn) { return function () {
-      var args = [];
-      for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
-      }
-      return sortFn.apply(void 0, args);
+  var sortByType = function (type) { return function (a, b) {
+      var getValFn = getCompareValue[type];
+      if (!getValFn)
+          throw new Error("[ERR] Error occured when compare value " + a + " with value " + b);
+      var va = getValFn(a), vb = getValFn(b);
+      return va === vb ? 0 : (va < vb ? -1 : 1);
   }; };
+  var sortByDefault = function (a, b) {
+      var typeA = getType(a);
+      var typeB = getType(b);
+      var onceEmpty = isVoidType(typeA) || isVoidType(typeB);
+      if (onceEmpty) {
+          if (typeA === typeB)
+              return 0;
+          return a ? -1 : 1;
+      }
+      var canSort = getCompareValue[typeA] && typeA === typeB;
+      if (!canSort) {
+          console &&
+              console.warn &&
+              console.warn("[TIP] Cannot sort " + a + " with " + b + "\uFF0Cskip by default");
+          return undefined;
+      }
+      // @ts-ignore
+      return sortByType(typeA)(a, b);
+  };
+  var pass = (function (fn) { return function (a, b) { return fn(a, b); }; });
+  var plugin = (function (plug) { return function (fn) { return function (a, b) { return plug(fn(a, b)); }; }; });
+  var maping = (function (map) { return function (fn) { return function (a, b) { return fn(map(a), map(b)); }; }; });
   var Sort = /** @class */ (function () {
       function Sort() {
-          // 设定排序方法，用来处理排序的值的顺序
-          this.sortby = function (fn) {
-              this.compare = isFn(fn) ? fn : by.type(fn.toLowerCase());
-          };
-          // 将管道合并为函数
-          this.seal = function () {
-              this.compare = this.compare || by.default;
-              var plugin = function (plug) { return function (sortFn) { return function () {
-                  var args = [];
-                  for (var _i = 0; _i < arguments.length; _i++) {
-                      args[_i] = arguments[_i];
-                  }
-                  return plug(sortFn.apply(void 0, args));
-              }; }; };
-              var mapping = function (map) { return function (sortFn) { return function () {
-                  var args = [];
-                  for (var _i = 0; _i < arguments.length; _i++) {
-                      args[_i] = arguments[_i];
-                  }
-                  return sortFn.apply(void 0, args.map(function (x) { return map(x); }));
-              }; }; };
-              return this.pipeline.reduce(function (lastSortFn, current) {
-                  var _type = current._type, _value = current._value;
-                  if (_type === 'map')
-                      return mapping(lastSortFn(_value));
-                  if (_type === 'plugin')
-                      return plugin(_value)(lastSortFn);
-              }, pass)(this.compare);
-          };
           this.compare = null;
           this.pipeline = [];
       }
@@ -93,7 +56,7 @@
       // sort.map(x => String(x.a))
       // 从 x 中取得 a 属性并转换为字符串，再继续比较
       Sort.prototype.map = function (_value) {
-          this.pipeline.push({ _value: _value, _type: 'map' });
+          this.pipeline.push({ _value: _value, _type: 'maping' });
           return this;
       };
       // 给管道添加插件，用于调整排序动作
@@ -103,6 +66,24 @@
       Sort.prototype.plugin = function (_value) {
           this.pipeline.push({ _value: _value, _type: 'plugin' });
           return this;
+      };
+      // 设定排序方法，用来处理排序的值的顺序
+      Sort.prototype.sortby = function (s) {
+          if (typeof s === 'number') {
+              console.log('asdf');
+          }
+          this.compare = sortByType(s.toLowerCase());
+      };
+      // 将管道合并为函数
+      Sort.prototype.seal = function () {
+          this.compare = this.compare || sortByDefault;
+          return this.pipeline.reduce(function (lastSortFn, current) {
+              var _type = current._type, _value = current._value;
+              if (_type === 'maping')
+                  return maping(lastSortFn(_value));
+              if (_type === 'plugin')
+                  return plugin(_value)(lastSortFn);
+          }, pass)(this.compare);
       };
       return Sort;
   }());
@@ -154,10 +135,10 @@
       }
   };
   // 从字符串指令中得到排序函数
-  function generateSortFnFromStr(s) {
+  function generateSortFnFromStr(ss) {
       var sort = new Sort();
-      var actions = s.split('-').slice(0);
-      actions = actions.filter(function (x) { return x; })
+      ss.split('-')
+          .filter(function (x) { return x; })
           .map(function (action) {
           var _a = action.match(/([^(]+)(\(([^)]*)\))?/), all = _a[0], name = _a[1], argsWithQuote = _a[2], args = _a[3];
           var plugin = argsWithQuote
@@ -193,6 +174,7 @@
       return plugins[k] = v;
   }); });
   factory.extends = extendPlugins;
+  // TODO test type
   // factory.extends('asdf')
   /* Module Exports */
   module.exports = factory;
