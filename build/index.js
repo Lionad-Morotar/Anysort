@@ -40,15 +40,15 @@
               console.warn("[TIP] Cannot sort " + a + " with " + b + "\uFF0Cskip by default");
           return undefined;
       }
-      // @ts-ignore
       return sortByType(typeA)(a, b);
   };
-  var pass = (function (fn) { return function (a, b) { return fn(a, b); }; });
-  var plugin = (function (plug) { return function (fn) { return function (a, b) { return plug(fn(a, b)); }; }; });
-  var maping = (function (map) { return function (fn) { return function (a, b) { return fn(map(a), map(b)); }; }; });
+  // maping(last(_value))
+  var pass = function (fn) { return function (a, b) { return fn(a, b); }; };
+  var maping = function (map) { return function (fn) { return function (a, b) { return fn(map(a), map(b)); }; }; };
+  var plugin = function (plug) { return function (fn) { return function (a, b) { return plug(fn(a, b)); }; }; };
   var Sort = /** @class */ (function () {
       function Sort() {
-          this.compare = null;
+          this.compare = sortByDefault;
           this.pipeline = [];
       }
       // 给管道添加解构方法，用于解构对象并处理值
@@ -69,21 +69,19 @@
       };
       // 设定排序方法，用来处理排序的值的顺序
       Sort.prototype.sortby = function (s) {
-          if (typeof s === 'number') {
-              console.log('asdf');
-          }
-          this.compare = sortByType(s.toLowerCase());
+          var validMethod = s.toLowerCase();
+          this.compare = sortByType(validMethod);
       };
       // 将管道合并为函数
       Sort.prototype.seal = function () {
-          this.compare = this.compare || sortByDefault;
-          return this.pipeline.reduce(function (lastSortFn, current) {
+          var compose = function (last, current) {
               var _type = current._type, _value = current._value;
               if (_type === 'maping')
-                  return maping(lastSortFn(_value));
+                  return maping(last(_value));
               if (_type === 'plugin')
-                  return plugin(_value)(lastSortFn);
-          }, pass)(this.compare);
+                  return plugin(_value)(last);
+          };
+          return this.pipeline.reduce(compose, pass)(this.compare);
       };
       return Sort;
   }());
