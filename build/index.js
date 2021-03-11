@@ -7,6 +7,8 @@
   var isVoidType = function (x) { return x === 'void'; };
   var getType = function (x) { return isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase(); };
   var isFn = function (x) { return getType(x) === 'function'; };
+  //# sourceMappingURL=utils.js.map
+
   // TODO refactor to function: x => comparableValue
   /* get comparable value from specific value */
   var getCompareValue = {
@@ -42,7 +44,6 @@
       }
       return sortByType(typeA)(a, b);
   };
-  // maping(last(_value))
   var pass = function (fn) { return function (a, b) { return fn(a, b); }; };
   var maping = function (map) { return function (fn) { return function (a, b) { return fn(map(a), map(b)); }; }; };
   var plugin = function (plug) { return function (fn) { return function (a, b) { return plug(fn(a, b)); }; }; };
@@ -85,6 +86,8 @@
       };
       return Sort;
   }());
+  //# sourceMappingURL=Sort.js.map
+
   // default sort plugins
   var plugins = {
       by: function (sort, args) { return sort.sortby(args); },
@@ -146,6 +149,7 @@
       });
       return sort.seal();
   }
+  /* Main Functions */
   function factory() {
       var cmd = [];
       for (var _i = 0; _i < arguments.length; _i++) {
@@ -172,8 +176,6 @@
       return plugins[k] = v;
   }); });
   factory.extends = extendPlugins;
-  // TODO test type
-  // factory.extends('asdf')
   /* Module Exports */
   module.exports = factory;
 

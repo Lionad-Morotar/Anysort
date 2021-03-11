@@ -1,5 +1,7 @@
 const isDev = process.env.NODE === 'DEV'
 
+// TODO test extends
+
 require('mocha');
 require('should');
 var get = require('get-value');
