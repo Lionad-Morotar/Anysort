@@ -3,10 +3,14 @@
   factory();
 }(function () { 'use strict';
 
+  /**
+   * Utils
+   */
   var isVoid = function (x) { return x == undefined; };
   var isVoidType = function (x) { return x === 'void'; };
   var getType = function (x) { return isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase(); };
   var isFn = function (x) { return getType(x) === 'function'; };
+  var notNull = function (x) { return !!x; };
   //# sourceMappingURL=utils.js.map
 
   // TODO refactor to function: x => comparableValue
@@ -88,39 +92,20 @@
   }());
   //# sourceMappingURL=Sort.js.map
 
-  // default sort plugins
+  /* Default Plugins */
   var plugins = {
-      by: function (sort, args) { return sort.sortby(args); },
-      i: function (sort) { return sort.map(function (x) { return (x || '').toLowerCase(); }); },
-      asc: function (sort) { return sort.plugin(pass); },
-      dec: function (sort) { return sort.plugin(function (fn) { return function () {
-          var args = [];
-          for (var _i = 0; _i < arguments.length; _i++) {
-              args[_i] = arguments[_i];
-          }
-          return -fn.apply(void 0, args);
-      }; }); },
-      rand: function (sort) { return sort.plugin(function () { return function () { return Math.random() < .5 ? -1 : 1; }; }); },
-      is: function (sort, args) {
-          if (args === void 0) { args = ''; }
-          return sort.map(function (x) { return x === args; }).sortby('boolean');
-      },
-      all: function (sort, args) {
-          if (args === void 0) { args = ''; }
-          return sort.map(function (x) { return x.every ? x.every(function (y) { return String(y) === args; }) : x === args; }).sortby('boolean');
-      },
-      has: function (sort, args) { return sort.map(function (x) { return x.some(function (y) { return String(y) === args; }); }).sortby('boolean'); },
-      not: function (sort, args) {
-          if (args === void 0) { args = ''; }
-          return sort.map(function (x) { return args ? (x !== args) : !x; }).sortby('boolean');
-      },
-      len: function (sort, args) {
-          if (args === void 0) { args = null; }
-          return isVoid(args)
-              ? sort.map(function (x) { return x.length; }).sortby('number')
-              : sort.map(function (x) { return x.length === args; }).sortby('boolean');
-      },
-      // 默认使用解构插件，处理对象的属性如 'a.b.c' 的值
+      // by: (sort, args) => sort.sortby(args),
+      // i: sort => sort.map(x => (x || '').toLowerCase()),
+      // asc: sort => sort.plugin(pass),
+      // dec: sort => sort.plugin(fn => (...args) => -fn(...args)),
+      // rand: sort => sort.plugin(() => () => Math.random() < .5 ? -1 : 1),
+      // is: (sort, args = '') => sort.map(x => x === args).sortby('boolean'),
+      // all: (sort, args = '') => sort.map(x => x.every ? x.every(y => String(y) === args) : x === args).sortby('boolean'),
+      // has: (sort, args) => sort.map(x => x.some(y => String(y) === args)).sortby('boolean'),
+      // not: (sort, args = '') => sort.map(x => args ? (x !== args) : !x).sortby('boolean'),
+      // len: (sort, args = null) => isVoid(args)
+      //   ? sort.map(x => x.length).sortby('number')
+      //   : sort.map(x => x.length === args).sortby('boolean'),
       default: function (name) {
           var pathsStore = name.split('.');
           var getVal = function (x) {
@@ -135,13 +120,15 @@
           return function (sort) { return sort.map(getVal); };
       }
   };
-  // 从字符串指令中得到排序函数
+  /**
+   * generate SortFn from strings
+   */
   function generateSortFnFromStr(ss) {
       var sort = new Sort();
       ss.split('-')
-          .filter(function (x) { return x; })
+          .filter(notNull)
           .map(function (action) {
-          var _a = action.match(/([^(]+)(\(([^)]*)\))?/), all = _a[0], name = _a[1], argsWithQuote = _a[2], args = _a[3];
+          var _a = action.match(/([^(]+)(\(([^)]*)\))?/), name = _a[1], argsWithQuote = _a[2], args = _a[3];
           var plugin = argsWithQuote
               ? plugins[name]
               : plugins.default(name);
@@ -149,14 +136,17 @@
       });
       return sort.seal();
   }
-  /* Main Functions */
+  /**
+   * main
+   */
   function factory() {
       var cmd = [];
       for (var _i = 0; _i < arguments.length; _i++) {
           cmd[_i] = arguments[_i];
       }
+      // flatten
       cmd = cmd.reduce(function (h, c) { return (h.concat(c)); }, []);
-      // emptry arguments means to sort by default (Array.prototype.sort)
+      // sort by default if no arguments
       if (cmd.length < 1)
           return undefined;
       var sortFns = cmd.map(function (x, i) {
@@ -170,7 +160,9 @@
       var flat = (function (fns) { return function (a, b) { return fns.reduce(function (sortResult, fn) { return sortResult || fn(a, b); }, 0); }; });
       return flat(sortFns);
   }
-  /* Extensible */
+  /**
+   * install plugins for SortCMD strings
+   */
   var extendPlugins = (function (exts) { return Object.entries(exts).map(function (_a) {
       var k = _a[0], v = _a[1];
       return plugins[k] = v;

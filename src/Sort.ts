@@ -6,7 +6,8 @@ import {
   ConditionSortFn,
   GetCompareValFn,
 } from './type'
-import { isFn, isVoidType, getType } from './utils'
+
+import { isVoidType, getType } from './utils'
 
 // TODO refactor to function: x => comparableValue
 /* get comparable value from specific value */
