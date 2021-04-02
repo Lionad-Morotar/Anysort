@@ -75,6 +75,8 @@ console.log(
 
 Anysort 的强大体现在他拥有语义化的排序简写方法。
 
+WIP: Proxy
+
 ```js
 var posts = [
   { tag: ['mp3'], status: '', date: new Date('2015-01-02'), comments: { length: 5 } },
