@@ -9,8 +9,10 @@ import {
 
 import { isVoidType, getType } from './utils'
 
-// TODO refactor to function: x => comparableValue
-/* get comparable value from specific value */
+/**
+ * get comparable value from specific value
+ * @todo refactor x => comparableValue
+ */
 const getCompareValue: ({ [key: string]: GetCompareValFn }) = {
   string: String,
   number: Number,
@@ -49,10 +51,13 @@ const sortByDefault: SortFn =
 
 type PluginTypeEnum = 'maping' | 'plugin'
 type PassFn = Function
+type MapingFn = Function
+// type PluginFn = Function
 // type PassFn = (fn: AnysortPlugin) => SortFn
-type MapingFn = (map: PassFn) => (fn: SortFn) => (a: SortableValue, b: SortableValue) => AnysortPlugin
+// type MapingFn = (map: PassFn) => (fn: SortFn) => (a: SortableValue, b: SortableValue) => AnysortPlugin
 type PluginFn = (plug: PassFn) => (fn: SortFn) => (a: SortableValue, b: SortableValue) => AnysortPlugin
 type AnysortPlugin = MapingFn | PluginFn
+
 type PipeLine = {
   _type: PluginTypeEnum
   _value: AnysortPlugin
@@ -70,17 +75,11 @@ export default class Sort {
     this.pipeline = []
   }
   // 给管道添加解构方法，用于解构对象并处理值
-  // @example
-  // sort.map(x => String(x.a))
-  // 从 x 中取得 a 属性并转换为字符串，再继续比较
   map (_value: MapingFn): Sort {
     this.pipeline.push({ _value, _type: 'maping' })
     return this
   }
   // 给管道添加插件，用于调整排序动作
-  // @example
-  // sort.plugin(fn => (a, b) => -fn(a, b))
-  // 将上一个排序结果反转
   plugin (_value: PluginFn): Sort {
     this.pipeline.push({ _value, _type: 'plugin' })
     return this
@@ -90,7 +89,7 @@ export default class Sort {
     const validMethod = s.toLowerCase()
     this.compare = sortByType(validMethod as SortableTypeEnum)
   }
-  // 将管道合并为函数
+  // 将管道内容合并为排序函数
   seal (): SortFn {
     const compose:
       (last: PassFn, current: PipeLine) => any =

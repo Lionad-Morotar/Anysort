@@ -106,7 +106,7 @@
       // len: (sort, args = null) => isVoid(args)
       //   ? sort.map(x => x.length).sortby('number')
       //   : sort.map(x => x.length === args).sortby('boolean'),
-      default: function (name) {
+      getValue: function (name) {
           var pathsStore = name.split('.');
           var getVal = function (x) {
               var paths = [].concat(pathsStore);
@@ -131,7 +131,7 @@
           var _a = action.match(/([^(]+)(\(([^)]*)\))?/), name = _a[1], argsWithQuote = _a[2], args = _a[3];
           var plugin = argsWithQuote
               ? plugins[name]
-              : plugins.default(name);
+              : plugins.getValue(name);
           plugin(sort, args || undefined);
       });
       return sort.seal();

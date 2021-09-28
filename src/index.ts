@@ -25,9 +25,9 @@ const plugins = {
   //   ? sort.map(x => x.length).sortby('number')
   //   : sort.map(x => x.length === args).sortby('boolean'),
 
-  default: (name: string) => {
+  getValue: (name: string) => {
     const pathsStore = name.split('.')
-    const getVal = (x: object) => {
+    const getVal = (x: any) => {
       const paths = [].concat(pathsStore)
       let val = x, next = null
       while (val && paths.length) {
@@ -36,7 +36,7 @@ const plugins = {
       }
       return val
     }
-    return sort => sort.map(getVal)
+    return (sort: Sort) => sort.map(getVal)
   }
 }
 
@@ -51,7 +51,7 @@ function generateSortFnFromStr(ss: string): SortFn {
       const [, name, argsWithQuote, args] = action.match(/([^(]+)(\(([^)]*)\))?/)
       const plugin = argsWithQuote
         ? plugins[name]
-        : plugins.default(name)
+        : plugins.getValue(name)
       plugin(sort, args || undefined)
     })
   return sort.seal()
