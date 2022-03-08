@@ -1,5 +1,3 @@
-const isDev = process.env.NODE === 'DEV'
-
 // TODO test extends
 
 require('mocha');
@@ -52,7 +50,7 @@ const arraySort = (arr, ...arg) => arr.sort(anysort(...arg))
 //   // TODO 随机插件怎么写测试？
 // })
 
-describe('array sort', function() {
+describe('basic sort', function() {
   var posts = [
     { path: 'a.md', locals: { date: '2014-01-09' } },
     { path: 'f.md', locals: { date: '2014-01-02' } },
@@ -64,7 +62,7 @@ describe('array sort', function() {
     { path: 'g.md', locals: { date: '2014-02-02' } },
   ];
 
-  it('should sort an array of primitives', function () {
+  it('should sort arrays of primitives', function () {
     var arr = ['d', 3, 'b', 'a', 'd', 1, 0, 'z'];
     arraySort(arr).should.eql([0, 1, 3, 'a', 'b', 'd', 'd', 'z']);
   })
@@ -75,19 +73,17 @@ describe('array sort', function() {
       {key: 'x'},
       {key: 'y'},
       {key: 'z'}
-    ]);
+    ])
+  })
 
-    arraySort(posts, 'path').should.eql([
-      { path: 'a.md', locals: { date: '2014-01-09' } },
-      { path: 'b.md', locals: { date: '2012-01-02' } },
-      { path: 'c.md', locals: { date: '2015-04-12' } },
-      { path: 'd.md', locals: { date: '2013-05-06' } },
-      { path: 'e.md', locals: { date: '2015-01-02' } },
-      { path: 'f.md', locals: { date: '2014-01-02' } },
-      { path: 'f.md', locals: { date: '2014-06-01' } },
-      { path: 'g.md', locals: { date: '2014-02-02' } }
-    ]);
-  });
+  it('should do nothing when sort by a wrong property:', function () {
+    var arr = [{ key: 'y' }, { key: 'z' }, { key: 'x' }];
+    arraySort(arr, 'wrong-key').should.eql([
+      { key: 'y' },
+      { key: 'z' },
+      { key: 'x' }
+    ])
+  })
 
   it('should sort by a property with null values:', function() {
     var arr = [{ key: 'z' }, { key: null }, {key: 'x'}];

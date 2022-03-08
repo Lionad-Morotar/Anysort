@@ -1,11 +1,12 @@
-const anysort = require('../src')
-var get = require('get-value');
+const anysort = require('../build/index.js')
 
 const posts = [
-  { name: 'shanghai' },
-  { name: 'beijing' },
-  { name: 'home' }
+  { a: { name: 'shanghai' } },
+  { a: { name: 'beijing' } },
+  { a: { name: 'zoo' } },
+  { a: { name: 'alpha' } },
+  { a: { name: 'home' } },
 ]
-posts.sort(anysort('name-is(home)'))
+posts.sort(anysort('a.name'))
 
 console.log(posts)

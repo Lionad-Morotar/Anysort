@@ -7,10 +7,11 @@ import {
 
 import Sort from './Sort'
 import { pass } from './Sort'
-import { isVoid, isFn, notNull } from './utils'
+import { isVoid, isFn, getValueFromPath, notNull } from './utils'
 
-/* Default Plugins */
-
+/**
+ * default plugins
+ */
 const plugins = {
   // by: (sort, args) => sort.sortby(args),
   // i: sort => sort.map(x => (x || '').toLowerCase()),
@@ -25,33 +26,21 @@ const plugins = {
   //   ? sort.map(x => x.length).sortby('number')
   //   : sort.map(x => x.length === args).sortby('boolean'),
 
-  getValue: (name: string) => {
-    const pathsStore = name.split('.')
-    const getVal = (x: any) => {
-      const paths = [].concat(pathsStore)
-      let val = x, next = null
-      while (val && paths.length) {
-        next = paths.shift()
-        val = val[next]
-      }
-      return val
-    }
-    return (sort: Sort) => sort.map(getVal)
-  }
+  getValue: (name: string) => (sort: Sort) => sort.map(getValueFromPath(name.split('.')))
 }
 
 /**
- * generate SortFn from strings
+ * generate SortFn from string
  */
 function generateSortFnFromStr(ss: string): SortFn {
   const sort = new Sort()
   ss.split('-')
     .filter(notNull)
     .map(action => {
-      const [, name, argsWithQuote, args] = action.match(/([^(]+)(\(([^)]*)\))?/)
-      const plugin = argsWithQuote
-        ? plugins[name]
-        : plugins.getValue(name)
+      const [, fnName, argsWithParen, args] = action.match(/([^(]+)(\(([^)]*)\))?/)
+      const plugin = argsWithParen
+        ? plugins[fnName]
+        : plugins.getValue(fnName)
       plugin(sort, args || undefined)
     })
   return sort.seal()
@@ -60,20 +49,23 @@ function generateSortFnFromStr(ss: string): SortFn {
 
 /**
  * main
+ * @todo anysort(Array)
  */
 function factory(...cmd: SortCMD[]): SortFn {
   // flatten
+  // TODO perf count
   cmd = cmd.reduce((h, c) => (h.concat(c)), [])
   // sort by default if no arguments
-  if (cmd.length < 1) return undefined
+  if (cmd.length === 0) return undefined
 
   const sortFns = cmd.map((x, i) => {
     try {
       return isFn(x) ? <SortFn>x : generateSortFnFromStr(<string>x)
-    } catch (error) {
-      throw new Error(`[ERR] Error on generate sort function, Index ${i + 1}th: ${x}.`)
+    } catch (err) {
+      throw new Error(`[ERR] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`)
     }
   })
+
   const flat:
     (fns: SortFn[]) => SortFn =
     (fns => (a, b) => fns.reduce((sortResult: SortVal, fn: SortFn) => sortResult || fn(a, b), 0))
