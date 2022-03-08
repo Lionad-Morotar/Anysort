@@ -5,7 +5,7 @@
 ## 安装 Install
 
 ```sh
-npm install --save https://github.com/Lionad-Morotar/any-sort
+npm install --save https://github.com/Lionad-Morotar/anysort
 ```
 
 ## 基本使用 Basic usage
