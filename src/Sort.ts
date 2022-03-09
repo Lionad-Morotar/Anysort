@@ -11,6 +11,7 @@ import { isVoidType, getType, warn } from './utils'
  * @todo refactor x => comparableValue
  */
 const getCompareValue: ({ [key: string]: GetCompareValFn }) = {
+  void: _ => null,
   string: String,
   number: Number,
   date: (x: Date): number => +x,
@@ -31,31 +32,37 @@ const sortBySameType:
     return va === vb ? 0 : (va < vb ? -1 : 1)
   }
 
+const sortByDiffType:
+  (typeA: string, typeB: string) => SortFn =
+  (typeA, typeB) => (a, b) => {
+    const idx = {
+      number: 1,
+      string: 2,
+      object: 3,
+      void: 4,
+    }
+    if (idx[typeA] && idx[typeB]) {
+      const minus = idx[typeA] - idx[typeB]
+      return minus > 0 ? 1 : -1
+    } else {
+      warn(`cant sort ${a} and ${b}，skip by default`)
+      return 0
+    }
+  }
+
 const sortByDefault: SortFn =
   (a: SortableValue, b: SortableValue) => {
     const typeA = getType(a)
     const typeB = getType(b)
-    // ignore null or undefined
-    if (isVoidType(typeA) || isVoidType(typeB)) {
-      if (typeA === typeB) return 0
-      return a ? -1 : 1
+    const isSameType = typeA === typeB
+    const isComparable = getCompareValue[typeA] && getCompareValue[typeB]
+    if (isSameType && isComparable) {
+      return sortBySameType(typeA)(a, b)
+    } else if (isComparable) {
+      return sortByDiffType(typeA, typeB)(a, b)
+    } else {
+      warn(`cant sort ${a} and ${b}，skip by default`)
     }
-    const canSort = getCompareValue[typeA] && typeA === typeB
-    if (!canSort) {
-      const defaultIdx = {
-        number: 1,
-        string: 2,
-        object: 3
-      }
-      if (defaultIdx[typeA] && defaultIdx[typeB]) {
-        const minus = defaultIdx[typeA] - defaultIdx[typeB]
-        return minus > 0 ? 1 : -1
-      } else {
-        warn(`cant sort ${a} and ${b}，skip by default`)
-        return 0
-      }
-    }
-    return sortBySameType(typeA)(a, b)
   }
 
 type MapingPlugin = (arg: any) => any
@@ -65,8 +72,12 @@ type PipeLine = {
   _value: MapingPlugin
 }
 
-export const maping = map => fn => (a, b) => fn(map(a), map(b))
-export const result = change => fn => (a, b) => change(fn(a, b))
+export const maping:
+  (map: (x: any) => any) => (fn: SortFn) => (a: any, b: any) => SortableValue =
+  (map => fn => (a, b) => fn(map(a), map(b)))
+export const result:
+  (change: (x: SortableValue) => SortableValue) => (fn: SortFn) => (a: any, b: any) => SortableValue =
+  (change => fn => (a, b) => change(fn(a, b)))
 
 export default class Sort {
   pipeline: PipeLine[]

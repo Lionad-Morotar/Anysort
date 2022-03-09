@@ -1,8 +1,8 @@
 const anysort = require('../build/index.js')
 
-const posts = ['b', 'a', 'E', 'c', 'D']
+const posts = [null, 'd']
 
 
-posts.sort(anysort('is(c)', 'i()-reverse()'))
+posts.sort(anysort())
 
 console.log(posts)

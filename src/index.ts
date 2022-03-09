@@ -1,5 +1,4 @@
 import {
-  SortableValue,
   SortVal,
   SortFn,
   SortPlugin,
@@ -7,7 +6,7 @@ import {
 } from './type'
 
 import Sort from './Sort'
-import { isVoid, isFn, getValueFromPath, notNull } from './utils'
+import { isFn, getValueFromPath, notNull } from './utils'
 
 /**
  * build-in plugins
