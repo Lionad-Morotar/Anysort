@@ -60,16 +60,16 @@ function factory(...cmd: SortCMD[]): SortFn {
   // flatten
   // TODO perf count
   cmd = cmd.reduce((h, c) => (h.concat(c)), [])
-  // sort by default if no arguments
-  if (cmd.length === 0) return undefined
 
-  const sortFns = cmd.map((x, i) => {
-    try {
-      return isFn(x) ? <SortFn>x : generateSortFnFromStr(<string>x)
-    } catch (err) {
-      throw new Error(`[ERR] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`)
-    }
-  })
+  const sortFns = cmd.length === 0
+    ? [new Sort().seal()]
+    : cmd.map((x, i) => {
+        try {
+          return isFn(x) ? <SortFn>x : generateSortFnFromStr(<string>x)
+        } catch (err) {
+          throw new Error(`[ERR] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`)
+        }
+      })
 
   const flat:
     (fns: SortFn[]) => SortFn =

@@ -36,7 +36,7 @@
       // The priority of true is greater than false
       boolean: function (x) { return !x; },
   };
-  var sortByType = function (type) { return function (a, b) {
+  var sortBySameType = function (type) { return function (a, b) {
       var getValFn = getCompareValue[type];
       if (!getValFn) {
           return undefined;
@@ -55,9 +55,13 @@
       }
       var canSort = getCompareValue[typeA] && typeA === typeB;
       if (!canSort) {
+          if (typeA === 'number' && typeB === 'string')
+              return -1;
+          if (typeA === 'string' && typeB === 'number')
+              return 1;
           return undefined;
       }
-      return sortByType(typeA)(a, b);
+      return sortBySameType(typeA)(a, b);
   };
   var maping = function (map) { return function (fn) { return function (a, b) { return fn(map(a), map(b)); }; }; };
   var result = function (change) { return function (fn) { return function (a, b) { return change(fn(a, b)); }; }; };
@@ -140,17 +144,16 @@
       // flatten
       // TODO perf count
       cmd = cmd.reduce(function (h, c) { return (h.concat(c)); }, []);
-      // sort by default if no arguments
-      if (cmd.length === 0)
-          return undefined;
-      var sortFns = cmd.map(function (x, i) {
-          try {
-              return isFn(x) ? x : generateSortFnFromStr(x);
-          }
-          catch (err) {
-              throw new Error("[ERR] Error on generate sort function, Index ".concat(i + 1, "th: ").concat(x, ", error: ").concat(err));
-          }
-      });
+      var sortFns = cmd.length === 0
+          ? [new Sort().seal()]
+          : cmd.map(function (x, i) {
+              try {
+                  return isFn(x) ? x : generateSortFnFromStr(x);
+              }
+              catch (err) {
+                  throw new Error("[ERR] Error on generate sort function, Index ".concat(i + 1, "th: ").concat(x, ", error: ").concat(err));
+              }
+          });
       var flat = (function (fns) { return function (a, b) { return fns.reduce(function (sortResult, fn) { return sortResult || fn(a, b); }, 0); }; });
       return flat(sortFns);
   }

@@ -19,7 +19,7 @@ const getCompareValue: ({ [key: string]: GetCompareValFn }) = {
   boolean: (x: SortableValue): boolean => !x,
 }
 
-const sortByType:
+const sortBySameType:
   (type: string) => SortFn =
   (type) => (a, b) => {
     const getValFn = getCompareValue[type]
@@ -42,10 +42,12 @@ const sortByDefault: SortFn =
     }
     const canSort = getCompareValue[typeA] && typeA === typeB
     if (!canSort) {
+      if (typeA === 'number' && typeB === 'string') return -1
+      if (typeA === 'string' && typeB === 'number') return 1
       warn(`cant sort ${a} and ${b}，skip by default`)
       return undefined
     }
-    return sortByType(typeA)(a, b)
+    return sortBySameType(typeA)(a, b)
   }
 
 type MapingPlugin = (arg: any) => any
