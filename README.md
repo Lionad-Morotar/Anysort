@@ -1,83 +1,45 @@
 # Anysort
 
-**Anysort：灵活、优雅、无依赖的多属性排序方法。**
+**Anysort：灵活、优雅、低心智成本的多属性排序方法。**
 
-WIP：refactoring with TypeScript
-
-## 安装 Install
+## Install
 
 ```sh
 npm install --save https://github.com/Lionad-Morotar/anysort
 ```
 
-## 基本使用 Basic usage
+## Basic usage
 
 根据属性进行排序：
 
 ```js
-var posts = [
-  { locals: { foo: 'bbb', date: '2013-05-06' }},
-  { locals: { foo: 'aaa', date: '2012-01-02' }},
-  { locals: { foo: 'ccc', date: '2014-01-02' }},
-  { locals: { foo: 'ccc', date: '2015-01-02' }},
-  { locals: { foo: 'bbb', date: '2014-06-01' }},
-  { locals: { foo: 'aaa', date: '2014-02-02' }},
+const anysort = require('anysort')
+
+const posts = [
+  { locals: { foo: 'b', date: '2013-05-06' }},
+  { locals: { foo: 'a', date: '2012-01-02' }},
+  { locals: { foo: 'c', date: '2014-01-02' }},
+  { locals: { foo: 'c', date: '2015-01-02' }},
+  { locals: { foo: 'b', date: '2014-06-01' }},
+  { locals: { foo: 'a', date: '2014-02-02' }},
 ];
 
-// sort by `locals.foo`, then `locals.date`
 posts.sort(anysort('locals.foo', 'locals.date'));
 
-// Results in:
+// Then you will get:
 // [
-//   { locals: { foo: 'aaa', date: '2012-01-02' } },
-//   { locals: { foo: 'aaa', date: '2014-02-02' } },
-//   { locals: { foo: 'bbb', date: '2013-05-06' } },
-//   { locals: { foo: 'bbb', date: '2014-06-01' } },
-//   { locals: { foo: 'ccc', date: '2014-01-02' } },
-//   { locals: { foo: 'ccc', date: '2015-01-02' } }
+//   { locals: { foo: 'a', date: '2012-01-02' } },
+//   { locals: { foo: 'a', date: '2014-02-02' } },
+//   { locals: { foo: 'b', date: '2013-05-06' } },
+//   { locals: { foo: 'b', date: '2014-06-01' } },
+//   { locals: { foo: 'c', date: '2014-01-02' } },
+//   { locals: { foo: 'c', date: '2015-01-02' } }
 // ]
 ```
 
-你也可以传入自定义排序方法：
+## Advance Usage
 
-```js
-var arr = [
-  {foo: 'w', bar: 'y', baz: 'w'},
-  {foo: 'x', bar: 'y', baz: 'w'},
-  {foo: 'x', bar: 'y', baz: 'z'},
-  {foo: 'x', bar: 'x', baz: 'w'},
-];
-
-function compare(prop) {
-  return function (a, b) {
-    return a[prop].localeCompare(b[prop]);
-  };
-}
-
-console.log(
-  arr.sort(
-    anysort(
-      compare('foo'), 
-      compare('bar'), 
-      compare('baz')
-    )
-  )
-);
-
-// Results in:
-// [
-//   { foo: 'w', bar: 'y', baz: 'w' },
-//   { foo: 'x', bar: 'x', baz: 'w' },
-//   { foo: 'x', bar: 'y', baz: 'w' },
-//   { foo: 'x', bar: 'y', baz: 'z' }
-// ]
-```
-
-## 高级用法 Powerful API
-
-Anysort 的强大体现在他拥有语义化的排序简写方法。
-
-WIP: Proxy
+选择正在写的博客，根据评论数倒序、时间倒序展示
 
 ```js
 var posts = [
@@ -89,15 +51,14 @@ var posts = [
   { tag: ['blog'], status: 'editing', date: new Date('2012-01-02'), comments: { length: 2 } },
   { tag: ['blog'], status: 'editing', date: new Date('2014-01-02'), comments: { length: 3 } },
   { tag: ['blog'], status: 'done', date: new Date('2014-02-02'), comments: { length: 4 } },
-];
+]
 
-// 选择正在写的博客，根据评论数倒序、时间倒序展示
 posts.sort(
   anysort(
     'tag-has(blog)',
     'status-is(editing)',
-    'comments-len()-dec()',
-    'date-dec()'
+    'comments-len()-reverse()',
+    'date-reverse()'
   )
 ).map(x => console.log(JSON.stringify(x)))
 
@@ -112,33 +73,55 @@ posts.sort(
 //  { "tag": ["mp3"], "status": "", "date": "2015-01-02", "comments": { "length": 5 } },
 ```
 
-Anysort 能使不会写代码的人也能看懂排序的过程。（近期有用 Proxy 把它重写的想法，这样可以在语义上清晰许多。）
+WIP: 近期有用 Proxy 把它重写的想法，这样可以在语义上清晰许多。
 
-我猜你也许会好奇这个排序方法的结果会是什么：`date-dec()-dec()`。总之，下载下来试一试吧~
-
-## 测试 Test
+## Testing
 
 ```sh
 $ npm run test
 ```
 
- ## TODO
+## TODO
 
- * anysort(arrays, options)
- * benchmark
+ * perf benchmark
  * full api doc
 
-## 源码 How this work
+## How this work
 
-[《一文学废排序》](https://juejin.cn/post/6916229848126111751)
+请直接阅读源码吧！这篇说明文的内容也许有些旧了，不再适合学习：<del>[《一文学废排序》](https://juejin.cn/post/6916229848126111751)</del>
 
-## 作者 Author
+## Author
 
 **Lionad**
 
 * [github/Lionad-Morotar](https://github.com/Lionad-Morotar)
 
-## 开源协议 License
+## License
 
 Copyright © 2021, [Lionad-Morotar](https://github.com/Lionad-Morotar).
 Released under the MIT License.
+
+## Changelog
+
+##### 1.4.x（Wed Jan 20 2021 02:46:22 GMT+0800）
+
+* 新增自定义插件功能
+* 新增统计插件 all
+
+##### 1.3.0（Tue Jan 12 2021 01:41:41 GMT+0800）
+
+* 新增忽略大小写插件
+
+##### 1.2.x（Sun Jan 10 2021 01:30:00 GMT+0800）
+
+* 新增长度插件，以统计字符串或数组的长度
+* null 或 undefined 的值在比较时会被移到队尾
+* symbol 在比较时会使用其字符串字面量的字典顺序进行比较
+
+##### 1.1.0（Sun Jan 10 2021 00:33:59 GMT+0800）
+
+* 新增了随机排序插件
+
+##### 1.0.0（Thu Dec 07 2017 03:45:17 GMT+0800）
+
+* Anysort 正式版本发布啦~
