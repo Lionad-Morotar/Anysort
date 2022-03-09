@@ -48,7 +48,8 @@ const sortByDefault: SortFn =
         object: 3
       }
       if (defaultIdx[typeA] && defaultIdx[typeB]) {
-        return defaultIdx[typeA] - defaultIdx[typeB]
+        const minus = defaultIdx[typeA] - defaultIdx[typeB]
+        return minus > 0 ? 1 : -1
       } else {
         warn(`cant sort ${a} and ${b}，skip by default`)
         return 0
