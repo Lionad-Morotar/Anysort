@@ -1,12 +1,7 @@
-import {
-  SortableTypeEnum,
-  SortableValue
-} from './type'
-
-const __DEBUG = false
+import { SortableTypeEnum, SortableValue } from './type'
 
 export const isDev = () => process.env.NODE_ENV === 'development'
-export const warn = (msg: String) => __DEBUG && console.log(`[WARN] ${msg}`)
+export const warn = (msg: String) => isDev && console.log(`[WARN] ${msg}`)
 export const strObj = (obj: Object) => JSON.stringify(obj)
 
 export const isVoid = (x: SortableValue): boolean => x == undefined
@@ -17,10 +12,10 @@ export const notNull = (x: any) => !!x
 
 export const getValueFromPath = (pathsStore: String[]) => (x: any) => {
   const paths = [].concat(pathsStore)
-  let val = x, nextPath = null
+  let val = x; let nextPath = null
   while (val && paths.length) {
     nextPath = paths.shift()
-    if (!val.hasOwnProperty(nextPath)) {
+    if (!Object.prototype.hasOwnProperty.call(val, nextPath)) {
       warn(`cant find path "${pathsStore.join('.')}" in ${strObj(x)}, skip by default`)
     }
     val = val[nextPath]

@@ -3,12 +3,11 @@
 require('mocha')
 require('should')
 
-var anysort = require('../build')
+const anysort = require('../build/index.min.js')
 
 const arraySort = (arr, ...arg) => arr.sort(anysort(...arg))
 
 describe('Test basic sorting functions', function () {
-
   it('arrays of numbers', function () {
     const arr = [3, 5, 0, 2, -9, 6, 1, 4, 7, 8]
     arraySort(arr).should.eql([-9, 0, 1, 2, 3, 4, 5, 6, 7, 8])
@@ -31,7 +30,7 @@ describe('Test basic sorting functions', function () {
   })
 
   it('arrays of mixed-type-elements', function () {
-    const arr = ['d', {a:0}, 3, 'b', '', 'zoo', {1:1}, 'a', 'd', {c:3}, 1, 0, 'z']
+    const arr = ['d', { a: 0 }, 3, 'b', '', 'zoo', { 1: 1 }, 'a', 'd', { c: 3 }, 1, 0, 'z']
     arraySort(arr).should.eql(arr.sort())
   })
 
@@ -41,19 +40,19 @@ describe('Test basic sorting functions', function () {
   })
 
   it('arrays of objects sort by nested property', function () {
-    const arr = [{ key: { key: 'y' } }, { key: { key: 'z' } }, { key:{ key: 'x' } }]
+    const arr = [{ key: { key: 'y' } }, { key: { key: 'z' } }, { key: { key: 'x' } }]
     arraySort(arr, 'key.key').should.eql([{ key: { key: 'x' } }, { key: { key: 'y' } }, { key: { key: 'z' } }])
   })
 
-  it('sort with custom functions', function() {
+  it('sort with custom functions', function () {
     const arr = [
       { a: 'b', b: 'd', c: 'f', d: 'g' },
       { a: 'b', b: 'd', c: 'e', d: 'h' },
       { a: 'b', b: 'c', c: 'f', d: 'h' },
-      { a: 'a', b: 'd', c: 'f', d: 'h' },
+      { a: 'a', b: 'd', c: 'f', d: 'h' }
     ]
-    const compare = function(prop) {
-      return function(a, b) {
+    const compare = function (prop) {
+      return function (a, b) {
         return a[prop].localeCompare(b[prop])
       }
     }
@@ -71,12 +70,10 @@ describe('Test basic sorting functions', function () {
       { a: 'b', b: 'd', c: 'f', d: 'g' }
     ])
   })
-
 })
 
 describe('Test advance use cases', function () {
-
-  it('sort by multiple properties in order', function() {
+  it('sort by multiple properties in order', function () {
     const posts = [
       { foo: 'bbb', locals: { date: '2013-05-06' } },
       { foo: 'aaa', locals: { date: '2012-01-02' } },
@@ -85,7 +82,7 @@ describe('Test advance use cases', function () {
       { foo: 'ccc', locals: { date: '2015-01-02' } },
       { foo: 'ddd', locals: { date: '2014-01-09' } },
       { foo: 'bbb', locals: { date: '2014-06-01' } },
-      { foo: 'aaa', locals: { date: '2014-02-02' } },
+      { foo: 'aaa', locals: { date: '2014-02-02' } }
     ]
     const results = arraySort(posts, ['foo', 'locals.date'])
     results.should.eql([
@@ -99,11 +96,9 @@ describe('Test advance use cases', function () {
       { foo: 'ddd', locals: { date: '2015-04-12' } }
     ])
   })
-
 })
 
 describe('Test edge cases', function () {
-
   it('put null and undefined at the end of array', function () {
     const arr = [null, 'd', 3, 'b', '', 'zoo', undefined, 'a', 'd', 1, 0, 'z']
     arraySort(arr).should.eql([0, 1, 3, '', 'a', 'b', 'd', 'd', 'z', 'zoo', null, undefined])
@@ -119,7 +114,7 @@ describe('Test edge cases', function () {
     arraySort(arr, 'a.b').should.eql(arr)
   })
 
-  it('sort by multiple properties in order with null, undefined and empty property', function() {
+  it('sort by multiple properties in order with null, undefined and empty property', function () {
     const posts = [
       { foo: 'bbb', locals: { date: '2013-05-06' } },
       { foo: 'aaa', locals: { date: null } },
@@ -128,7 +123,7 @@ describe('Test edge cases', function () {
       { locals: { date: '2015-01-02' } },
       { foo: 'ddd', locals: { date: '2014-01-09' } },
       { foo: null, locals: {} },
-      { foo: 'aaa', locals: { date: '2014-02-02' } },
+      { foo: 'aaa', locals: { date: '2014-02-02' } }
     ]
     const actual = arraySort(posts, ['foo', 'locals.date'])
     actual.should.eql([
@@ -139,14 +134,12 @@ describe('Test edge cases', function () {
       { foo: 'ddd', locals: { date: '2014-01-09' } },
       { locals: { date: '2015-01-02' } },
       { locals: { date: '2015-04-12' } },
-      { foo: null, locals: {} },
+      { foo: null, locals: {} }
     ])
   })
-
 })
 
 describe('Test build-in plugins', function () {
-
   it('plugin: ignore case', function () {
     const arr = ['a', 'b', 'c', 'D']
     arraySort(arr).should.eql(['D', 'a', 'b', 'c'])
@@ -180,11 +173,9 @@ describe('Test build-in plugins', function () {
     arraySort(getArrStrings(), 'len()').should.eql(['zoo', 'alpha', 'oowps', 'google'])
     arraySort(getArrStrings(), 'len(3)').should.eql(['zoo', 'alpha', 'google', 'oowps'])
   })
-
 })
 
 describe('Test advance plugin operations', function () {
-
   it('plugin: custom plugin', function () {
     const arr = ['a', 'b', 'c', 'D']
     anysort.extends({
@@ -202,5 +193,4 @@ describe('Test advance plugin operations', function () {
     arraySort(getArr(), 'is(c)-reverse()-reverse()').should.eql(['c', 'b', 'a', 'E', 'D'])
     arraySort(getArr(), 'is(c)', 'i()-reverse()').should.eql(['c', 'E', 'D', 'b', 'a'])
   })
-
 })

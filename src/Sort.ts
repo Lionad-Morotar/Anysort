@@ -1,10 +1,6 @@
-import {
-  SortFn,
-  SortableValue,
-  GetCompareValFn,
-} from './type'
+import { SortFn, SortableValue, GetCompareValFn } from './type'
 
-import { isVoidType, getType, warn } from './utils'
+import { getType, warn } from './utils'
 
 /**
  * get sorting function based on the type of the value
@@ -17,7 +13,7 @@ const getCompareValue: ({ [key: string]: GetCompareValFn }) = {
   date: (x: Date): number => +x,
   symbol: (x: Symbol): string => x.toString(),
   // The priority of true is greater than false
-  boolean: (x: SortableValue): boolean => !x,
+  boolean: (x: SortableValue): boolean => !x
 }
 
 const sortBySameType:
@@ -28,7 +24,7 @@ const sortBySameType:
       warn(`cant sort ${a} and ${b}，skip by default`)
       return undefined
     }
-    const va = getValFn(a), vb = getValFn(b)
+    const va = getValFn(a); const vb = getValFn(b)
     return va === vb ? 0 : (va < vb ? -1 : 1)
   }
 
@@ -39,7 +35,7 @@ const sortByDiffType:
       number: 1,
       string: 2,
       object: 3,
-      void: 4,
+      void: 4
     }
     if (idx[typeA] && idx[typeB]) {
       const minus = idx[typeA] - idx[typeB]
@@ -74,24 +70,27 @@ type PipeLine = {
 
 export const maping:
   (map: (x: any) => any) => (fn: SortFn) => (a: any, b: any) => SortableValue =
-  (map => fn => (a, b) => fn(map(a), map(b)))
+  map => fn => (a, b) => fn(map(a), map(b))
 export const result:
   (change: (x: SortableValue) => SortableValue) => (fn: SortFn) => (a: any, b: any) => SortableValue =
-  (change => fn => (a, b) => change(fn(a, b)))
+  change => fn => (a, b) => change(fn(a, b))
 
 export default class Sort {
   pipeline: PipeLine[]
   constructor () {
     this.pipeline = []
   }
+
   map (_value: MapingPlugin): Sort {
     this.pipeline.push({ _value, _type: 'maping' })
     return this
   }
+
   result (_value: ResultPlugin): Sort {
     this.pipeline.push({ _value, _type: 'result' })
     return this
   }
+
   seal (): SortFn {
     let targetSortFn = sortByDefault
     this.pipeline.reverse().map(current => {

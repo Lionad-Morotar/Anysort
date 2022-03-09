@@ -16,6 +16,7 @@ module.exports = {
     '@typescript-eslint'
   ],
   rules: {
+    eqeqeq: 0,
     'array-callback-return': 0,
     'no-return-assign': 0
   }

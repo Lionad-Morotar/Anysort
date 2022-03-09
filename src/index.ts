@@ -1,9 +1,4 @@
-import {
-  SortVal,
-  SortFn,
-  SortPlugin,
-  SortCMD
-} from './type'
+import { SortVal, SortFn, SortPlugin, SortCMD } from './type'
 
 import Sort from './Sort'
 import { isFn, getValueFromPath, notNull } from './utils'
@@ -14,7 +9,7 @@ import { isFn, getValueFromPath, notNull } from './utils'
 const plugins = {
   i: sort => sort.map(x => (x || '').toLowerCase()),
   reverse: sort => sort.result(res => -res),
-  rand: sort => sort.result(_ => Math.random() < .5 ? -1 : 1),
+  rand: sort => sort.result(_ => Math.random() < 0.5 ? -1 : 1),
   is: (sort, arg) => sort.map(x => x === arg),
   all: (sort, arg) => sort.map(x => x.every
     ? x.every(y => String(y) === arg)
@@ -34,7 +29,7 @@ const plugins = {
 /**
  * generate SortFn from string
  */
-function generateSortFnFromStr(ss: string): SortFn {
+function generateSortFnFromStr (ss: string): SortFn {
   const sort = new Sort()
   ss.split('-')
     .filter(notNull)
@@ -54,7 +49,7 @@ function generateSortFnFromStr(ss: string): SortFn {
  * main
  * @todo anysort(Array)
  */
-function factory(...cmd: SortCMD[]): SortFn {
+function factory (...cmd: SortCMD[]): SortFn {
   // flatten
   // TODO perf count
   cmd = cmd.reduce((h, c) => (h.concat(c)), [])
@@ -62,16 +57,16 @@ function factory(...cmd: SortCMD[]): SortFn {
   const sortFns = cmd.length === 0
     ? [new Sort().seal()]
     : cmd.map((x, i) => {
-        try {
-          return isFn(x) ? <SortFn>x : generateSortFnFromStr(<string>x)
-        } catch (err) {
-          throw new Error(`[ERR] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`)
-        }
-      })
+      try {
+        return isFn(x) ? <SortFn>x : generateSortFnFromStr(<string>x)
+      } catch (err) {
+        throw new Error(`[ERR] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`)
+      }
+    })
 
   const flat:
     (fns: SortFn[]) => SortFn =
-    (fns => (a, b) => fns.reduce((sortResult: SortVal, fn: SortFn) => sortResult || fn(a, b), 0))
+    fns => (a, b) => fns.reduce((sortResult: SortVal, fn: SortFn) => sortResult || fn(a, b), 0)
 
   return flat(sortFns)
 }
@@ -81,7 +76,7 @@ function factory(...cmd: SortCMD[]): SortFn {
  */
 const extendPlugins:
   (exts: {[key: string]: SortPlugin}) => void =
-  (exts => Object.entries(exts).map(([k, v]) => plugins[k] = v))
+  exts => Object.entries(exts).map(([k, v]) => plugins[k] = v)
 factory.extends = extendPlugins
 
 /* Module Exports */
