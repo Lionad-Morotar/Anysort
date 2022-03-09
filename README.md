@@ -1,6 +1,9 @@
 # Anysort
 
-**Anysort：灵活、优雅、低心智成本的多属性排序方法。**
+<center>
+  <img src="./statics/LOGO.jpg" style="width: 70vw; margin: auto;" />
+  <p><strong>Anysort：灵活、优雅、低心智成本的多属性排序方法。</strong></p>
+</center>
 
 ## Install
 
@@ -102,6 +105,12 @@ Copyright © 2021, [Lionad-Morotar](https://github.com/Lionad-Morotar).
 Released under the MIT License.
 
 ## Changelog
+
+##### 2.0.0（Wed Mar 09 2022 15:03:17 GMT+0800）
+
+* 使用 TypeScript 重写了插件逻辑，修复了一些逻辑错误
+* 内置插件只留下了关键的 i、reverse、rand、is、all、has、not、len
+* 完善了测试用例
 
 ##### 1.4.x（Wed Jan 20 2021 02:46:22 GMT+0800）
 
