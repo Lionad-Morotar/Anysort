@@ -10,11 +10,10 @@ import Sort from './Sort'
 import { isVoid, isFn, getValueFromPath, notNull } from './utils'
 
 /**
- * default plugins
+ * build-in plugins
  */
 const plugins = {
   i: sort => sort.map(x => (x || '').toLowerCase()),
-  dec: sort => sort.result(res => -res),
   reverse: sort => sort.result(res => -res),
   rand: sort => sort.result(_ => Math.random() < .5 ? -1 : 1),
   is: (sort, arg) => sort.map(x => x === arg),

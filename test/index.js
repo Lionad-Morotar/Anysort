@@ -1,150 +1,83 @@
 // TODO test extends
 
-require('mocha');
-require('should');
-var get = require('get-value');
+require('mocha')
+require('should')
 
-var anysort = require('../build');
+var anysort = require('../build')
 
 const arraySort = (arr, ...arg) => arr.sort(anysort(...arg))
 
-// describe('排序插件正常工作', function () {
-//   const getBasic = _ => [1, 4, 8, '2', '5', '10']
-//   it('插件：类型排序', function () {
-//     const symbols = [Symbol('a'), Symbol('b'), Symbol('c'), Symbol('d'), Symbol('z')]
-//     const symbolArr = [symbols[3], symbols[1], symbols[0], symbols[2], symbols[4]]
-//     arraySort(symbolArr, 'by(symbol)').should.eql(symbols)
-//     const arr = getBasic()
-//     arraySort(arr).should.eql([1, '10', '2', 4, '5', 8])
-//     arraySort(arr, 'by(number)').should.eql([1, '2', 4, '5', 8, '10'])
-//   })
-//   it('插件：忽略大小写', function () {
-//     const arr = ['a', 'b', 'c', 'D']
-//     arraySort(arr).should.eql(['D', 'a', 'b', 'c'])
-//     arraySort(arr, 'i()').should.eql(['a', 'b', 'c', 'D'])
-//   })
-//   it('插件：正序', function () {
-//     const arr = ['a', 'b', 'D', 'c']
-//     arraySort(arr, 'asc()').should.eql(['D', 'a', 'b', 'c'])
-//   })
-//   it('插件：倒序', function () {
-//     const arr = ['a', 'b', 'D', 'c']
-//     arraySort(arr, 'dec()').should.eql(['c', 'b', 'a', 'D'])
-//   })
-//   it('插件：选取和比较', function () {
-//     const testIs = getBasic()
-//     arraySort(testIs, 'is(10)').should.eql(['10', 1, 4, 8, '2', '5'])
-//     const testAll = [[1,2,3],[2,2,2],[3,2,1]]
-//     arraySort(testAll, 'all(2)').should.eql([[2,2,2],[1,2,3],[3,2,1]])
-//     const testHas = testAll
-//     arraySort(testHas, 'has(1)').should.eql([[1,2,3],[3,2,1],[2,2,2]])
-//   })
-//   it('插件：自定义插件', function () {
-//     const arr = ['a', 'b', 'c', 'D']
-//     anysort.extends({
-//       lowercase: sort => sort.map(x => (x || '').toLowerCase())
-//     })
-//     arraySort(arr).should.eql(['D', 'a', 'b', 'c'])
-//     arraySort(arr, 'lowercase()').should.eql(['a', 'b', 'c', 'D'])
-//   })
-//   // TODO 随机插件怎么写测试？
-// })
+describe('Test basic sorting functions', function () {
 
-describe('basic sort', function() {
-  var posts = [
-    { path: 'a.md', locals: { date: '2014-01-09' } },
-    { path: 'f.md', locals: { date: '2014-01-02' } },
-    { path: 'd.md', locals: { date: '2013-05-06' } },
-    { path: 'e.md', locals: { date: '2015-01-02' } },
-    { path: 'b.md', locals: { date: '2012-01-02' } },
-    { path: 'f.md', locals: { date: '2014-06-01' } },
-    { path: 'c.md', locals: { date: '2015-04-12' } },
-    { path: 'g.md', locals: { date: '2014-02-02' } },
-  ];
-
-  it('should sort arrays of primitives', function () {
-    var arr = ['d', 3, 'b', 'a', 'd', 1, 0, 'z'];
-    arraySort(arr).should.eql([0, 1, 3, 'a', 'b', 'd', 'd', 'z']);
+  it('arrays of numbers', function () {
+    const arr = [3, 5, 0, 2, -9, 6, 1, 4, 7, 8]
+    arraySort(arr).should.eql([-9, 0, 1, 2, 3, 4, 5, 6, 7, 8])
   })
 
-  it('should sort by a property:', function() {
-    var arr = [{key: 'y'}, {key: 'z'}, {key: 'x'}];
-    arraySort(arr, 'key').should.eql([
-      {key: 'x'},
-      {key: 'y'},
-      {key: 'z'}
+  it('arrays of chars', function () {
+    const alphas = 'abcdefghijklmnopqrstuvwxyz'
+    const arr = alphas.split('').sort((a, b) => Math.random() - 0.5)
+    arraySort(arr).should.eql(alphas.split(''))
+  })
+
+  it('arrays of strings', function () {
+    const arr = ['zoo', 'alpha', '', 'google', 'gap']
+    arraySort(arr).should.eql(['', 'alpha', 'gap', 'google', 'zoo'])
+  })
+
+  it('arrays of primitives', function () {
+    const arr = ['d', 3, 'b', '', 'zoo', 'a', 'd', 1, 0, 'z']
+    arraySort(arr).should.eql([0, 1, 3, '', 'a', 'b', 'd', 'd', 'z', 'zoo'])
+  })
+
+  it('arrays of mixed-type-elements', function () {
+    const arr = ['d', {a:0}, 3, 'b', '', 'zoo', {1:1}, 'a', 'd', {c:3}, 1, 0, 'z']
+    arraySort(arr).should.eql(arr.sort())
+  })
+
+  it('arrays of objects sort by shallow property', function () {
+    const arr = [{ key: 'y' }, { key: 'z' }, { key: 'x' }]
+    arraySort(arr, 'key').should.eql([{ key: 'x' }, { key: 'y' }, { key: 'z' }])
+  })
+
+  it('arrays of objects sort by nested property', function () {
+    const arr = [{ key: { key: 'y' } }, { key: { key: 'z' } }, { key:{ key: 'x' } }]
+    arraySort(arr, 'key.key').should.eql([{ key: { key: 'x' } }, { key: { key: 'y' } }, { key: { key: 'z' } }])
+  })
+
+  it('sort with custom functions', function() {
+    const arr = [
+      { a: 'b', b: 'd', c: 'f', d: 'g' },
+      { a: 'b', b: 'd', c: 'e', d: 'h' },
+      { a: 'b', b: 'c', c: 'f', d: 'h' },
+      { a: 'a', b: 'd', c: 'f', d: 'h' },
+    ]
+    const compare = function(prop) {
+      return function(a, b) {
+        return a[prop].localeCompare(b[prop])
+      }
+    }
+    const actual = arraySort(
+      arr,
+      compare('a'),
+      compare('b'),
+      compare('c'),
+      compare('d')
+    )
+    actual.should.eql([
+      { a: 'a', b: 'd', c: 'f', d: 'h' },
+      { a: 'b', b: 'c', c: 'f', d: 'h' },
+      { a: 'b', b: 'd', c: 'e', d: 'h' },
+      { a: 'b', b: 'd', c: 'f', d: 'g' }
     ])
   })
 
-  it('should do nothing when sort by a wrong property:', function () {
-    var arr = [{ key: 'y' }, { key: 'z' }, { key: 'x' }];
-    arraySort(arr, 'wrong-key').should.eql([
-      { key: 'y' },
-      { key: 'z' },
-      { key: 'x' }
-    ])
-  })
+})
 
-  it('should sort by a property with null values:', function() {
-    var arr = [{ key: 'z' }, { key: null }, {key: 'x'}];
-    arraySort(arr, 'key').should.eql([
-      {key: 'x'},
-      {key: 'z'},
-      {key: null},
-    ]);
-  });
+describe('Test advance use cases', function () {
 
-  it('should sort by a property with undefined values:', function() {
-    var arr = [{ key: 'z' }, {}, {key: 'x'}];
-    arraySort(arr, 'key').should.eql([
-      {key: 'x'},
-      {key: 'z'},
-      {},
-    ]);
-  });
-
-  it('should sort by a property with null and undefined values:', function() {
-    var arr = [{key: null}, {key: 'z'}, {}, {key: 'x'}];
-    arraySort(arr, 'key').should.eql([
-      {key: 'x'},
-      {key: 'z'},
-      {key: null},
-      {},
-    ]);
-  });
-
-  it('should sort by a nested property:', function() {
-    var res = arraySort(posts, 'locals.date');
-    res.should.eql([
-      { path: 'b.md', locals: { date: '2012-01-02' } },
-      { path: 'd.md', locals: { date: '2013-05-06' } },
-      { path: 'f.md', locals: { date: '2014-01-02' } },
-      { path: 'a.md', locals: { date: '2014-01-09' } },
-      { path: 'g.md', locals: { date: '2014-02-02' } },
-      { path: 'f.md', locals: { date: '2014-06-01' } },
-      { path: 'e.md', locals: { date: '2015-01-02' } },
-      { path: 'c.md', locals: { date: '2015-04-12' } }
-    ]);
-  });
-
-  it('should do nothing when the specified property is not supported:', function() {
-    var arr = [
-      {a: {b: {c: 'c'}}},
-      {a: {b: {z: 'z'}}},
-      {a: {b: {u: 'u'}}},
-      {a: {b: {y: 'y'}}}
-    ];
-
-    arraySort(arr, 'a.b').should.eql([
-      {a: {b: {c: 'c'}}},
-      {a: {b: {z: 'z'}}},
-      {a: {b: {u: 'u'}}},
-      {a: {b: {y: 'y'}}}
-    ]);
-  });
-
-  it('should sort by multiple properties:', function() {
-    var posts = [
+  it('sort by multiple properties in order', function() {
+    const posts = [
       { foo: 'bbb', locals: { date: '2013-05-06' } },
       { foo: 'aaa', locals: { date: '2012-01-02' } },
       { foo: 'ddd', locals: { date: '2015-04-12' } },
@@ -153,11 +86,9 @@ describe('basic sort', function() {
       { foo: 'ddd', locals: { date: '2014-01-09' } },
       { foo: 'bbb', locals: { date: '2014-06-01' } },
       { foo: 'aaa', locals: { date: '2014-02-02' } },
-    ];
-
-    var actual = arraySort(posts, ['foo', 'locals.date']);
-
-    actual.should.eql([
+    ]
+    const results = arraySort(posts, ['foo', 'locals.date'])
+    results.should.eql([
       { foo: 'aaa', locals: { date: '2012-01-02' } },
       { foo: 'aaa', locals: { date: '2014-02-02' } },
       { foo: 'bbb', locals: { date: '2013-05-06' } },
@@ -166,63 +97,30 @@ describe('basic sort', function() {
       { foo: 'ccc', locals: { date: '2015-01-02' } },
       { foo: 'ddd', locals: { date: '2014-01-09' } },
       { foo: 'ddd', locals: { date: '2015-04-12' } }
-    ]);
-  });
+    ])
+  })
 
-  it('should sort by multiple properties with null values:', function() {
-    var posts = [
-      { foo: 'bbb', locals: { date: '2013-05-06' } },
-      { foo: 'aaa', locals: { date: '2012-01-02' } },
-      { foo: null, locals: { date: '2015-04-12' } },
-      { foo: 'ccc', locals: { date: '2014-01-02' } },
-      { foo: null, locals: { date: '2015-01-02' } },
-      { foo: 'ddd', locals: { date: '2014-01-09' } },
-      { foo: 'bbb', locals: { date: null } },
-      { foo: 'aaa', locals: { date: '2014-02-02' } },
-    ];
+})
 
-    var actual = arraySort(posts, ['foo', 'locals.date']);
+describe('Test edge cases', function () {
 
-    actual.should.eql([
-      { foo: 'aaa', locals: { date: '2012-01-02' } },
-      { foo: 'aaa', locals: { date: '2014-02-02' } },
-      { foo: 'bbb', locals: { date: '2013-05-06' } },
-      { foo: 'bbb', locals: { date: null } },
-      { foo: 'ccc', locals: { date: '2014-01-02' } },
-      { foo: 'ddd', locals: { date: '2014-01-09' } },
-      { foo: null, locals: { date: '2015-01-02' } },
-      { foo: null, locals: { date: '2015-04-12' } },
-    ]);
-  });
+  it('put null and undefined at the end of array', function () {
+    const arr = [null, 'd', 3, 'b', '', 'zoo', undefined, 'a', 'd', 1, 0, 'z']
+    arraySort(arr).should.eql([0, 1, 3, '', 'a', 'b', 'd', 'd', 'z', 'zoo', null, undefined])
+  })
 
-  it('should sort by multiple properties with undefined values:', function() {
-    var posts = [
-      { foo: 'bbb', locals: { date: '2013-05-06' } },
-      { foo: 'aaa', locals: { date: '2012-01-02' } },
-      { locals: { date: '2015-04-12' } },
-      { foo: 'ccc', locals: { date: '2014-01-02' } },
-      { locals: { date: '2015-01-02' } },
-      { foo: 'ddd', locals: { date: '2014-01-09' } },
-      { foo: 'bbb', locals: {} },
-      { foo: 'aaa', locals: { date: '2014-02-02' } },
-    ];
+  it('skip when get wrong properties', function () {
+    const arr = [{ key: 'y' }, { key: 'z' }, { key: 'x' }]
+    arraySort(arr, 'wrong-key').should.eql([{ key: 'y' }, { key: 'z' }, { key: 'x' }])
+  })
 
-    var actual = arraySort(posts, ['foo', 'locals.date']);
+  it('skip when cant sort', function () {
+    const arr = [{ 1: 1 }, { 3: 1 }, { 2: 1 }, { 4: 1 }]
+    arraySort(arr, 'a.b').should.eql(arr)
+  })
 
-    actual.should.eql([
-      { foo: 'aaa', locals: { date: '2012-01-02' } },
-      { foo: 'aaa', locals: { date: '2014-02-02' } },
-      { foo: 'bbb', locals: { date: '2013-05-06' } },
-      { foo: 'bbb', locals: {} },
-      { foo: 'ccc', locals: { date: '2014-01-02' } },
-      { foo: 'ddd', locals: { date: '2014-01-09' } },
-      { locals: { date: '2015-01-02' } },
-      { locals: { date: '2015-04-12' } },
-    ]);
-  });
-
-  it('should sort by multiple properties with null and undefined values:', function() {
-    var posts = [
+  it('sort by multiple properties in order with null, undefined and empty property', function() {
+    const posts = [
       { foo: 'bbb', locals: { date: '2013-05-06' } },
       { foo: 'aaa', locals: { date: null } },
       { locals: { date: '2015-04-12' } },
@@ -231,10 +129,8 @@ describe('basic sort', function() {
       { foo: 'ddd', locals: { date: '2014-01-09' } },
       { foo: null, locals: {} },
       { foo: 'aaa', locals: { date: '2014-02-02' } },
-    ];
-
-    var actual = arraySort(posts, ['foo', 'locals.date']);
-
+    ]
+    const actual = arraySort(posts, ['foo', 'locals.date'])
     actual.should.eql([
       { foo: 'aaa', locals: { date: '2014-02-02' } },
       { foo: 'aaa', locals: { date: null } },
@@ -244,123 +140,67 @@ describe('basic sort', function() {
       { locals: { date: '2015-01-02' } },
       { locals: { date: '2015-04-12' } },
       { foo: null, locals: {} },
-    ]);
-  });
+    ])
+  })
 
-  it('should sort with a function:', function() {
-    var arr = [{key: 'y'}, {key: 'z'}, {key: 'x'}];
+})
 
-    var actual = arraySort(arr, function(a, b) {
-      return a.key < b.key ? -1 : (a.key > b.key ? 1 : 0);
-    });
+describe('Test build-in plugins', function () {
 
-    actual.should.eql([
-      {key: 'x'},
-      {key: 'y'},
-      {key: 'z'}
-    ]);
-  });
+  it('plugin: ignore case', function () {
+    const arr = ['a', 'b', 'c', 'D']
+    arraySort(arr).should.eql(['D', 'a', 'b', 'c'])
+    arraySort(arr, 'i()').should.eql(['a', 'b', 'c', 'D'])
+  })
 
-  it('should support sorting with a list of function:', function() {
-    var arr = [
-      {foo: 'w', bar: 'y', baz: 'w', quux: 'a'},
-      {foo: 'x', bar: 'y', baz: 'w', quux: 'b'},
-      {foo: 'x', bar: 'y', baz: 'z', quux: 'c'},
-      {foo: 'x', bar: 'x', baz: 'w', quux: 'd'},
-    ];
+  it('plugin: reverse', function () {
+    const arr = ['a', 'b', 'c', 'D']
+    arraySort(arr, 'reverse()').should.eql(['c', 'b', 'a', 'D'])
+  })
 
-    var compare = function(prop) {
-      return function(a, b) {
-        return a[prop].localeCompare(b[prop]);
-      };
-    };
+  it('plugin: is', function () {
+    const arr = ['a', 'b', 'c', 'D']
+    arraySort(arr, 'is(c)').should.eql(['c', 'a', 'b', 'D'])
+  })
 
-    var actual = arraySort(arr,
-      compare('foo'),
-      compare('bar'),
-      compare('baz'),
-      compare('quux'));
+  it('plugin: has', function () {
+    const arrNums = [[1, 2], [2, 3], [2, 3], [1, 3]]
+    arraySort(arrNums, 'has(3)').should.eql([[2, 3], [2, 3], [1, 3], [1, 2]])
+    const arrStrings = ['alpha', 'google', 'zoo', 'oowps']
+    arraySort(arrStrings, 'has(oo)').should.eql(['google', 'zoo', 'oowps', 'alpha'])
+  })
 
-    actual.should.eql([
-      { foo: 'w', bar: 'y', baz: 'w', quux: 'a' },
-      { foo: 'x', bar: 'x', baz: 'w', quux: 'd' },
-      { foo: 'x', bar: 'y', baz: 'w', quux: 'b' },
-      { foo: 'x', bar: 'y', baz: 'z', quux: 'c' }
-    ]);
-  });
+  it('plugin: not', function () {
+    const arr = ['a', 'b', 'c', 'D']
+    arraySort(arr, 'not(c)').should.eql(['a', 'b', 'D', 'c'])
+  })
 
-  it('should support sorting with an array of function:', function() {
-    var arr = [
-      {foo: 'w', bar: 'y', baz: 'w', quux: 'a'},
-      {foo: 'x', bar: 'y', baz: 'w', quux: 'b'},
-      {foo: 'x', bar: 'y', baz: 'z', quux: 'c'},
-      {foo: 'x', bar: 'x', baz: 'w', quux: 'd'},
-    ];
+  it('plugin: len', function () {
+    const getArrStrings = () => ['alpha', 'google', 'zoo', 'oowps']
+    arraySort(getArrStrings(), 'len()').should.eql(['zoo', 'alpha', 'oowps', 'google'])
+    arraySort(getArrStrings(), 'len(3)').should.eql(['zoo', 'alpha', 'google', 'oowps'])
+  })
 
-    var compare = function(prop) {
-      return function(a, b) {
-        return a[prop].localeCompare(b[prop]);
-      };
-    };
+})
 
-    var actual = arraySort(arr, [
-      compare('foo'),
-      compare('bar'),
-      compare('baz'),
-      compare('quux')
-    ]);
+describe('Test advance plugin operations', function () {
 
-    actual.should.eql([
-      { foo: 'w', bar: 'y', baz: 'w', quux: 'a' },
-      { foo: 'x', bar: 'x', baz: 'w', quux: 'd' },
-      { foo: 'x', bar: 'y', baz: 'w', quux: 'b' },
-      { foo: 'x', bar: 'y', baz: 'z', quux: 'c' }
-    ]);
-  });
+  it('plugin: custom plugin', function () {
+    const arr = ['a', 'b', 'c', 'D']
+    anysort.extends({
+      lowercase: sort => sort.map(x => (x || '').toLowerCase())
+    })
+    arraySort(arr).should.eql(['D', 'a', 'b', 'c'])
+    arraySort(arr, 'lowercase()').should.eql(['a', 'b', 'c', 'D'])
+  })
 
-  it('should support sorting with any combination of functions and properties:', function() {
-    var posts = [
-      { path: 'a.md', locals: { date: '2014-01-01', foo: 'zzz', bar: 1 } },
-      { path: 'f.md', locals: { date: '2014-01-01', foo: 'mmm', bar: 2 } },
-      { path: 'd.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 3 } },
-      { path: 'i.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 5 } },
-      { path: 'k.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 1 } },
-      { path: 'j.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 4 } },
-      { path: 'h.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 6 } },
-      { path: 'l.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 7 } },
-      { path: 'e.md', locals: { date: '2015-01-02', foo: 'aaa', bar: 8 } },
-      { path: 'b.md', locals: { date: '2012-01-02', foo: 'ccc', bar: 9 } },
-      { path: 'f.md', locals: { date: '2014-06-01', foo: 'rrr', bar: 10 } },
-      { path: 'c.md', locals: { date: '2015-04-12', foo: 'ttt', bar: 11 } },
-      { path: 'g.md', locals: { date: '2014-02-02', foo: 'yyy', bar: 12 } },
-    ];
+  it('plugin: multy commands', function () {
+    const getArr = () => ['b', 'a', 'E', 'c', 'D']
+    arraySort(getArr(), 'i()').should.eql(['a', 'b', 'c', 'D', 'E'])
+    arraySort(getArr(), 'is(c)').should.eql(['c', 'b', 'a', 'E', 'D'])
+    arraySort(getArr(), 'is(c)-reverse()').should.eql(['b', 'a', 'E', 'D', 'c'])
+    arraySort(getArr(), 'is(c)-reverse()-reverse()').should.eql(['c', 'b', 'a', 'E', 'D'])
+    arraySort(getArr(), 'is(c)', 'i()-reverse()').should.eql(['c', 'E', 'D', 'b', 'a'])
+  })
 
-    var compare = function(prop) {
-      return function(a, b, fn) {
-        var valA = get(a, prop);
-        var valB = get(b, prop);
-        return valA === valB ? 0 : (valA < valB ? -1 : 1);
-      };
-    };
-
-    var actual = arraySort(posts, 'locals.date', 'doesnt.exist', compare('locals.foo'), [
-      compare('locals.bar')
-    ]);
-
-    actual.should.eql([
-      { path: 'b.md', locals: { date: '2012-01-02', foo: 'ccc', bar: 9 } },
-      { path: 'f.md', locals: { date: '2014-01-01', foo: 'mmm', bar: 2 } },
-      { path: 'k.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 1 } },
-      { path: 'd.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 3 } },
-      { path: 'j.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 4 } },
-      { path: 'i.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 5 } },
-      { path: 'h.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 6 } },
-      { path: 'l.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 7 } },
-      { path: 'a.md', locals: { date: '2014-01-01', foo: 'zzz', bar: 1 } },
-      { path: 'g.md', locals: { date: '2014-02-02', foo: 'yyy', bar: 12 } },
-      { path: 'f.md', locals: { date: '2014-06-01', foo: 'rrr', bar: 10 } },
-      { path: 'e.md', locals: { date: '2015-01-02', foo: 'aaa', bar: 8 } },
-      { path: 'c.md', locals: { date: '2015-04-12', foo: 'ttt', bar: 11 } }
-    ]);
-  });
-});
+})

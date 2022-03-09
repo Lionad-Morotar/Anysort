@@ -85,6 +85,7 @@ export default class Sort {
     this.pipeline.reverse().map(current => {
       const { _type, _value } = current
       if (_type === 'maping') targetSortFn = maping(_value)(targetSortFn)
+      // ! It is wrong to apply the maping plugin after applying the result plugin
       if (_type === 'result') targetSortFn = result(_value)(targetSortFn)
     })
     return targetSortFn
