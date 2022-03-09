@@ -42,10 +42,17 @@ const sortByDefault: SortFn =
     }
     const canSort = getCompareValue[typeA] && typeA === typeB
     if (!canSort) {
-      if (typeA === 'number' && typeB === 'string') return -1
-      if (typeA === 'string' && typeB === 'number') return 1
-      warn(`cant sort ${a} and ${b}，skip by default`)
-      return undefined
+      const defaultIdx = {
+        number: 1,
+        string: 2,
+        object: 3
+      }
+      if (defaultIdx[typeA] && defaultIdx[typeB]) {
+        return defaultIdx[typeA] - defaultIdx[typeB]
+      } else {
+        warn(`cant sort ${a} and ${b}，skip by default`)
+        return 0
+      }
     }
     return sortBySameType(typeA)(a, b)
   }
