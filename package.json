@@ -10,7 +10,10 @@
     "dev": "npm start",
     "build": "cross-env NODE_ENV=production rollup -c | cross-env NODE_ENV=development rollup -c",
     "test": "cross-env NODE_ENV=production mocha ./test/index",
-    "watch:test": "npm-watch test"
+    "watch:test": "npm-watch test",
+    "preversion": "npm run build && npm test",
+    "version": "git add -A build",
+    "postversion": "git push && git push --tags"
   },
   "watch": {
     "test": {
