@@ -2,6 +2,8 @@
 
 **Anysort：灵活、优雅、无依赖的多属性排序方法。**
 
+WIP：refactoring with TypeScript
+
 ## 安装 Install
 
 ```sh
