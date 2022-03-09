@@ -3,7 +3,7 @@ const path = require('path')
 const input = path.join(__dirname, './src/index.ts')
 const ouput = path.join(__dirname, './build/index')
 
-const isDev = process.env.NODE === 'DEV'
+const isDev = process.env.NODE_ENV === 'development'
 
 export default {
   input,
