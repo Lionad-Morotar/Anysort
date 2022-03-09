@@ -25,7 +25,6 @@
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "get-value": "^3.0.1",
     "mocha": "^2.5.3",
     "npm-watch": "^0.7.0",
     "rollup": "^2.38.5",
@@ -62,6 +61,5 @@
     "sort",
     "sorted",
     "sorting"
-  ],
-  "dependencies": {}
+  ]
 }

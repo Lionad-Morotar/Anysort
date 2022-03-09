@@ -2,7 +2,6 @@ lockfileVersion: 5.3
 
 specifiers:
   cross-env: ^7.0.3
-  get-value: ^3.0.1
   mocha: ^2.5.3
   npm-watch: ^0.7.0
   rollup: ^2.38.5
@@ -16,7 +15,6 @@ specifiers:
 
 devDependencies:
   cross-env: 7.0.3
-  get-value: 3.0.1
   mocha: 2.5.3
   npm-watch: 0.7.0
   rollup: 2.70.0
@@ -400,13 +398,6 @@ packages:
       pump: 3.0.0
     dev: true
 
-  /get-value/3.0.1:
-    resolution: {integrity: sha512-mKZj9JLQrwMBtj5wxi6MH8Z5eSKaERpAwjg43dPtlGI1ZVEgH/qC7T8/6R2OBSUA+zzHBZgICsVJaEIV2tKTDA==}
-    engines: {node: '>=6.0'}
-    dependencies:
-      isobject: 3.0.1
-    dev: true
-
   /glob-parent/5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
     engines: {node: '>= 6'}
@@ -595,11 +586,6 @@ packages:
 
   /isexe/2.0.0:
     resolution: {integrity: sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=}
-    dev: true
-
-  /isobject/3.0.1:
-    resolution: {integrity: sha1-TkMekrEalzFjaqH5yNHMvP2reN8=}
-    engines: {node: '>=0.10.0'}
     dev: true
 
   /jade/0.26.3:
