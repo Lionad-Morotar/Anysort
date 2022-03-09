@@ -1,20 +1,33 @@
 (function (factory) {
   typeof define === 'function' && define.amd ? define(factory) :
   factory();
-}(function () { 'use strict';
+})((function () { 'use strict';
 
-  /**
-   * Utils
-   */
+  var __DEBUG = false;
+  var warn = function (msg) { return __DEBUG ; };
+  var strObj = function (obj) { return JSON.stringify(obj); };
   var isVoid = function (x) { return x == undefined; };
   var isVoidType = function (x) { return x === 'void'; };
   var getType = function (x) { return isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase(); };
   var isFn = function (x) { return getType(x) === 'function'; };
   var notNull = function (x) { return !!x; };
-  //# sourceMappingURL=utils.js.map
+  var getValueFromPath = function (pathsStore) { return function (x) {
+      var paths = [].concat(pathsStore);
+      var val = x, nextPath = null;
+      while (val && paths.length) {
+          nextPath = paths.shift();
+          if (!val.hasOwnProperty(nextPath)) {
+              warn("cant find path \"".concat(pathsStore.join('.'), "\" in ").concat(strObj(x), ", skip by default"));
+          }
+          val = val[nextPath];
+      }
+      return val;
+  }; };
 
-  // TODO refactor to function: x => comparableValue
-  /* get comparable value from specific value */
+  /**
+   * get sorting function based on the type of the value
+   * @todo refactor x => comparableValue
+   */
   var getCompareValue = {
       string: String,
       number: Number,
@@ -25,119 +38,99 @@
   };
   var sortByType = function (type) { return function (a, b) {
       var getValFn = getCompareValue[type];
-      if (!getValFn)
-          throw new Error("[ERR] Error occured when compare value " + a + " with value " + b);
+      if (!getValFn) {
+          return undefined;
+      }
       var va = getValFn(a), vb = getValFn(b);
       return va === vb ? 0 : (va < vb ? -1 : 1);
   }; };
   var sortByDefault = function (a, b) {
       var typeA = getType(a);
       var typeB = getType(b);
-      var onceEmpty = isVoidType(typeA) || isVoidType(typeB);
-      if (onceEmpty) {
+      // ignore null or undefined
+      if (isVoidType(typeA) || isVoidType(typeB)) {
           if (typeA === typeB)
               return 0;
           return a ? -1 : 1;
       }
       var canSort = getCompareValue[typeA] && typeA === typeB;
       if (!canSort) {
-          console &&
-              console.warn &&
-              console.warn("[TIP] Cannot sort " + a + " with " + b + "\uFF0Cskip by default");
           return undefined;
       }
       return sortByType(typeA)(a, b);
   };
-  var pass = function (fn) { return function (a, b) { return fn(a, b); }; };
   var maping = function (map) { return function (fn) { return function (a, b) { return fn(map(a), map(b)); }; }; };
-  var plugin = function (plug) { return function (fn) { return function (a, b) { return plug(fn(a, b)); }; }; };
+  var result = function (change) { return function (fn) { return function (a, b) { return change(fn(a, b)); }; }; };
   var Sort = /** @class */ (function () {
       function Sort() {
-          this.compare = sortByDefault;
           this.pipeline = [];
       }
-      // 给管道添加解构方法，用于解构对象并处理值
-      // @example
-      // sort.map(x => String(x.a))
-      // 从 x 中取得 a 属性并转换为字符串，再继续比较
       Sort.prototype.map = function (_value) {
           this.pipeline.push({ _value: _value, _type: 'maping' });
           return this;
       };
-      // 给管道添加插件，用于调整排序动作
-      // @example
-      // sort.plugin(fn => (a, b) => -fn(a, b))
-      // 将上一个排序结果反转
-      Sort.prototype.plugin = function (_value) {
-          this.pipeline.push({ _value: _value, _type: 'plugin' });
+      Sort.prototype.result = function (_value) {
+          this.pipeline.push({ _value: _value, _type: 'result' });
           return this;
       };
-      // 设定排序方法，用来处理排序的值的顺序
-      Sort.prototype.sortby = function (s) {
-          var validMethod = s.toLowerCase();
-          this.compare = sortByType(validMethod);
-      };
-      // 将管道合并为函数
       Sort.prototype.seal = function () {
-          var compose = function (last, current) {
+          var targetSortFn = sortByDefault;
+          this.pipeline.reverse().map(function (current) {
               var _type = current._type, _value = current._value;
               if (_type === 'maping')
-                  return maping(last(_value));
-              if (_type === 'plugin')
-                  return plugin(_value)(last);
-          };
-          return this.pipeline.reduce(compose, pass)(this.compare);
+                  targetSortFn = maping(_value)(targetSortFn);
+              if (_type === 'result')
+                  targetSortFn = result(_value)(targetSortFn);
+          });
+          return targetSortFn;
       };
       return Sort;
   }());
-  //# sourceMappingURL=Sort.js.map
 
-  /* Default Plugins */
+  /**
+   * default plugins
+   */
   var plugins = {
-      // by: (sort, args) => sort.sortby(args),
-      // i: sort => sort.map(x => (x || '').toLowerCase()),
-      // asc: sort => sort.plugin(pass),
-      // dec: sort => sort.plugin(fn => (...args) => -fn(...args)),
-      // rand: sort => sort.plugin(() => () => Math.random() < .5 ? -1 : 1),
-      // is: (sort, args = '') => sort.map(x => x === args).sortby('boolean'),
-      // all: (sort, args = '') => sort.map(x => x.every ? x.every(y => String(y) === args) : x === args).sortby('boolean'),
-      // has: (sort, args) => sort.map(x => x.some(y => String(y) === args)).sortby('boolean'),
-      // not: (sort, args = '') => sort.map(x => args ? (x !== args) : !x).sortby('boolean'),
-      // len: (sort, args = null) => isVoid(args)
-      //   ? sort.map(x => x.length).sortby('number')
-      //   : sort.map(x => x.length === args).sortby('boolean'),
-      getValue: function (name) {
-          var pathsStore = name.split('.');
-          var getVal = function (x) {
-              var paths = [].concat(pathsStore);
-              var val = x, next = null;
-              while (val && paths.length) {
-                  next = paths.shift();
-                  val = val[next];
-              }
-              return val;
-          };
-          return function (sort) { return sort.map(getVal); };
-      }
+      i: function (sort) { return sort.map(function (x) { return (x || '').toLowerCase(); }); },
+      dec: function (sort) { return sort.result(function (res) { return -res; }); },
+      reverse: function (sort) { return sort.result(function (res) { return -res; }); },
+      rand: function (sort) { return sort.result(function (_) { return Math.random() < .5 ? -1 : 1; }); },
+      is: function (sort, arg) { return sort.map(function (x) { return x === arg; }); },
+      all: function (sort, arg) { return sort.map(function (x) { return x.every
+          ? x.every(function (y) { return String(y) === arg; })
+          : x === arg; }); },
+      has: function (sort, arg) { return sort.map(function (x) { return x instanceof Array
+          ? x.some(function (y) { return String(y) === arg; })
+          : x.includes(arg); }); },
+      not: function (sort, arg) { return sort.map(function (x) { return arg
+          ? (x !== arg)
+          : !x; }); },
+      len: function (sort, arg) { return !arg.length
+          ? sort.map(function (x) { return x.length; })
+          : sort.map(function (x) { return x.length === +arg; }); },
+      getValue: function (paths) { return function (sort) { return sort.map(getValueFromPath(paths.split('.'))); }; }
   };
   /**
-   * generate SortFn from strings
+   * generate SortFn from string
    */
   function generateSortFnFromStr(ss) {
       var sort = new Sort();
       ss.split('-')
           .filter(notNull)
           .map(function (action) {
-          var _a = action.match(/([^(]+)(\(([^)]*)\))?/), name = _a[1], argsWithQuote = _a[2], args = _a[3];
-          var plugin = argsWithQuote
-              ? plugins[name]
-              : plugins.getValue(name);
-          plugin(sort, args || undefined);
+          // TODO args
+          var _a = action.match(/([^(]+)(\(([^)]*)\))?/), fnName = _a[1], argsWithParen = _a[2], arg = _a[3];
+          var plugin = argsWithParen
+              ? plugins[fnName]
+              : plugins.getValue(fnName);
+          // the default value of arg is empty string because the value cames from regex matching
+          plugin(sort, arg);
       });
       return sort.seal();
   }
   /**
    * main
+   * @todo anysort(Array)
    */
   function factory() {
       var cmd = [];
@@ -145,16 +138,17 @@
           cmd[_i] = arguments[_i];
       }
       // flatten
+      // TODO perf count
       cmd = cmd.reduce(function (h, c) { return (h.concat(c)); }, []);
       // sort by default if no arguments
-      if (cmd.length < 1)
+      if (cmd.length === 0)
           return undefined;
       var sortFns = cmd.map(function (x, i) {
           try {
               return isFn(x) ? x : generateSortFnFromStr(x);
           }
-          catch (error) {
-              throw new Error("[ERR] Error on generate sort function, Index " + (i + 1) + "th: " + x + ".");
+          catch (err) {
+              throw new Error("[ERR] Error on generate sort function, Index ".concat(i + 1, "th: ").concat(x, ", error: ").concat(err));
           }
       });
       var flat = (function (fns) { return function (a, b) { return fns.reduce(function (sortResult, fn) { return sortResult || fn(a, b); }, 0); }; });

@@ -1,4 +1,5 @@
 import {
+  SortableValue,
   SortVal,
   SortFn,
   SortPlugin,
@@ -6,27 +7,30 @@ import {
 } from './type'
 
 import Sort from './Sort'
-import { pass } from './Sort'
 import { isVoid, isFn, getValueFromPath, notNull } from './utils'
 
 /**
  * default plugins
  */
 const plugins = {
-  // by: (sort, args) => sort.sortby(args),
-  // i: sort => sort.map(x => (x || '').toLowerCase()),
-  // asc: sort => sort.plugin(pass),
-  // dec: sort => sort.plugin(fn => (...args) => -fn(...args)),
-  // rand: sort => sort.plugin(() => () => Math.random() < .5 ? -1 : 1),
-  // is: (sort, args = '') => sort.map(x => x === args).sortby('boolean'),
-  // all: (sort, args = '') => sort.map(x => x.every ? x.every(y => String(y) === args) : x === args).sortby('boolean'),
-  // has: (sort, args) => sort.map(x => x.some(y => String(y) === args)).sortby('boolean'),
-  // not: (sort, args = '') => sort.map(x => args ? (x !== args) : !x).sortby('boolean'),
-  // len: (sort, args = null) => isVoid(args)
-  //   ? sort.map(x => x.length).sortby('number')
-  //   : sort.map(x => x.length === args).sortby('boolean'),
-
-  getValue: (name: string) => (sort: Sort) => sort.map(getValueFromPath(name.split('.')))
+  i: sort => sort.map(x => (x || '').toLowerCase()),
+  dec: sort => sort.result(res => -res),
+  reverse: sort => sort.result(res => -res),
+  rand: sort => sort.result(_ => Math.random() < .5 ? -1 : 1),
+  is: (sort, arg) => sort.map(x => x === arg),
+  all: (sort, arg) => sort.map(x => x.every
+    ? x.every(y => String(y) === arg)
+    : x === arg),
+  has: (sort, arg) => sort.map(x => x instanceof Array
+    ? x.some(y => String(y) === arg)
+    : x.includes(arg)),
+  not: (sort, arg) => sort.map(x => arg
+    ? (x !== arg)
+    : !x),
+  len: (sort, arg) => !arg.length
+    ? sort.map(x => x.length)
+    : sort.map(x => x.length === +arg),
+  getValue: (paths: string) => sort => sort.map(getValueFromPath(paths.split('.')))
 }
 
 /**
@@ -37,15 +41,16 @@ function generateSortFnFromStr(ss: string): SortFn {
   ss.split('-')
     .filter(notNull)
     .map(action => {
-      const [, fnName, argsWithParen, args] = action.match(/([^(]+)(\(([^)]*)\))?/)
+      // TODO args
+      const [, fnName, argsWithParen, arg] = action.match(/([^(]+)(\(([^)]*)\))?/)
       const plugin = argsWithParen
         ? plugins[fnName]
         : plugins.getValue(fnName)
-      plugin(sort, args || undefined)
+      // the default value of arg is empty string because the value cames from regex matching
+      plugin(sort, arg)
     })
   return sort.seal()
 }
-
 
 /**
  * main

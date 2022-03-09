@@ -3,9 +3,11 @@ import {
   SortableValue
 } from './type'
 
-const isDev = () => process.env.NODE_ENV !== 'production'
-const warn = (msg: String) => isDev && console.log(`[WARN] ${msg}`)
-const strObj = (obj: Object) => JSON.stringify(obj)
+const __DEBUG = false
+
+export const isDev = () => process.env.NODE_ENV === 'development'
+export const warn = (msg: String) => __DEBUG && console.log(`[WARN] ${msg}`)
+export const strObj = (obj: Object) => JSON.stringify(obj)
 
 export const isVoid = (x: SortableValue): boolean => x == undefined
 export const isVoidType = (x: SortableTypeEnum): boolean => x === 'void'
@@ -19,7 +21,7 @@ export const getValueFromPath = (pathsStore: String[]) => (x: any) => {
   while (val && paths.length) {
     nextPath = paths.shift()
     if (!val.hasOwnProperty(nextPath)) {
-      warn(`cant find path "${pathsStore.join('.')}" in ${strObj(x)}`)
+      warn(`cant find path "${pathsStore.join('.')}" in ${strObj(x)}, skip by default`)
     }
     val = val[nextPath]
   }
