@@ -4,7 +4,7 @@
   "version": "1.4.1",
   "homepage": "https://github.com/Lionad-Morotar/any-sort",
   "license": "MIT",
-  "main": "build/index.js",
+  "main": "build/index.min.js",
   "scripts": {
     "start": "cross-env NODE_ENV=development rollup -c -w",
     "dev": "npm start",

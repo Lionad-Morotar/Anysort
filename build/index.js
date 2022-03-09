@@ -7,7 +7,6 @@
   var warn = function (msg) { return __DEBUG ; };
   var strObj = function (obj) { return JSON.stringify(obj); };
   var isVoid = function (x) { return x == undefined; };
-  var isVoidType = function (x) { return x === 'void'; };
   var getType = function (x) { return isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase(); };
   var isFn = function (x) { return getType(x) === 'function'; };
   var notNull = function (x) { return !!x; };
@@ -29,6 +28,7 @@
    * @todo refactor x => comparableValue
    */
   var getCompareValue = {
+      void: function (_) { return null; },
       string: String,
       number: Number,
       date: function (x) { return +x; },
@@ -44,27 +44,36 @@
       var va = getValFn(a), vb = getValFn(b);
       return va === vb ? 0 : (va < vb ? -1 : 1);
   }; };
+  var sortByDiffType = function (typeA, typeB) { return function (a, b) {
+      var idx = {
+          number: 1,
+          string: 2,
+          object: 3,
+          void: 4,
+      };
+      if (idx[typeA] && idx[typeB]) {
+          var minus = idx[typeA] - idx[typeB];
+          return minus > 0 ? 1 : -1;
+      }
+      else {
+          return 0;
+      }
+  }; };
   var sortByDefault = function (a, b) {
       var typeA = getType(a);
       var typeB = getType(b);
-      // ignore null or undefined
-      if (isVoidType(typeA) || isVoidType(typeB)) {
-          if (typeA === typeB)
-              return 0;
-          return a ? -1 : 1;
+      var isSameType = typeA === typeB;
+      var isComparable = getCompareValue[typeA] && getCompareValue[typeB];
+      if (isSameType && isComparable) {
+          return sortBySameType(typeA)(a, b);
       }
-      var canSort = getCompareValue[typeA] && typeA === typeB;
-      if (!canSort) {
-          if (typeA === 'number' && typeB === 'string')
-              return -1;
-          if (typeA === 'string' && typeB === 'number')
-              return 1;
-          return undefined;
+      else if (isComparable) {
+          return sortByDiffType(typeA, typeB)(a, b);
       }
-      return sortBySameType(typeA)(a, b);
+      else ;
   };
-  var maping = function (map) { return function (fn) { return function (a, b) { return fn(map(a), map(b)); }; }; };
-  var result = function (change) { return function (fn) { return function (a, b) { return change(fn(a, b)); }; }; };
+  var maping = (function (map) { return function (fn) { return function (a, b) { return fn(map(a), map(b)); }; }; });
+  var result = (function (change) { return function (fn) { return function (a, b) { return change(fn(a, b)); }; }; });
   var Sort = /** @class */ (function () {
       function Sort() {
           this.pipeline = [];
@@ -83,6 +92,7 @@
               var _type = current._type, _value = current._value;
               if (_type === 'maping')
                   targetSortFn = maping(_value)(targetSortFn);
+              // ! It is wrong to apply the maping plugin after applying the result plugin
               if (_type === 'result')
                   targetSortFn = result(_value)(targetSortFn);
           });
@@ -92,11 +102,10 @@
   }());
 
   /**
-   * default plugins
+   * build-in plugins
    */
   var plugins = {
       i: function (sort) { return sort.map(function (x) { return (x || '').toLowerCase(); }); },
-      dec: function (sort) { return sort.result(function (res) { return -res; }); },
       reverse: function (sort) { return sort.result(function (res) { return -res; }); },
       rand: function (sort) { return sort.result(function (_) { return Math.random() < .5 ? -1 : 1; }); },
       is: function (sort, arg) { return sort.map(function (x) { return x === arg; }); },
