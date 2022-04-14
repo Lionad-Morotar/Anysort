@@ -1,7 +1,7 @@
 import { SortableTypeEnum, SortableValue } from './type'
 
 export const isDev = () => process.env.NODE_ENV === 'development'
-export const warn = (msg: String) => isDev && console.log(`[WARN] ${msg}`)
+export const warn = (msg: String) => isDev() && console.log(`[WARN] ${msg}`)
 export const strObj = (obj: Object) => JSON.stringify(obj)
 
 export const isVoid = (x: SortableValue): boolean => x == undefined
