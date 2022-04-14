@@ -1,6 +1,6 @@
 import { SortVal, SortFn, SortPlugin, SortCMD } from './type'
 
-import Sort from './Sort'
+import Sort from './sort'
 import { isFn, getValueFromPath, notNull } from './utils'
 
 /**

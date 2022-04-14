@@ -1,4 +1,4 @@
-import Sort from './Sort'
+import Sort from './sort'
 
 export type SortableValue = any
 export type SkipValue = void
