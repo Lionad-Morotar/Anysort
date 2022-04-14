@@ -50,17 +50,25 @@ const genSortFnFromStr = genSortFnFromStrGen()
 
 /**
  * main
- * @exam Array.sort(anysort(...args))
- * @exam anysort(Array, ...args)
+ * @exam UnsortArray.sort(anysort(...cmds))
+ * @exam anysort(UnsortArray, ...cmds)
+ * @todo types override (3 ways to call anysort's factory function)
+ *       1. function factory (arr: any[], cmds: SortCMD[]): any[];
+ *       2. function factory (arr: any[], ...cmds: SortCMD[]): any[];
+ *       3. function factory (...cmds: SortCMD[]): SortFn;
  */
-function factory (...cmd: SortCMD[]): SortFn {
-  // flatten
-  // TODO perf count
-  cmd = cmd.reduce((h, c) => (h.concat(c)), [])
+function factory (arr: any[], ...args: SortCMD[]) {
+  const isFirstArr = arr instanceof Array
+  const cmds = (isFirstArr ? args : [].concat(arr).concat(args))
+    .reduce((h, c) => (h.concat(c)), [])
+    .filter(Boolean)
 
-  const sortFns = cmd.length === 0
+  // * for debug
+  // console.log('@@', args, '=>', cmds)
+
+  const sortFns = cmds.length === 0
     ? [new Sort().seal()]
-    : cmd.map((x, i) => {
+    : cmds.map((x: SortCMD, i: number) => {
       try {
         return isFn(x) ? <SortFn>x : genSortFnFromStr(<string>x)
       } catch (err) {
@@ -71,8 +79,11 @@ function factory (...cmd: SortCMD[]): SortFn {
   const flat:
     (fns: SortFn[]) => SortFn =
     fns => (a, b) => fns.reduce((sortResult: SortVal, fn: SortFn) => sortResult || fn(a, b), 0)
+  const flattenCMDs = flat(sortFns)
 
-  return flat(sortFns)
+  return isFirstArr
+    ? arr.sort(flattenCMDs)
+    : flattenCMDs
 }
 
 // install plugins for Sort

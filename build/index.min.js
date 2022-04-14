@@ -158,20 +158,27 @@
   var genSortFnFromStr = genSortFnFromStrGen();
   /**
    * main
-   * @exam Array.sort(anysort(...args))
-   * @exam anysort(Array, ...args)
+   * @exam UnsortArray.sort(anysort(...cmds))
+   * @exam anysort(UnsortArray, ...cmds)
+   * @todo types override (3 ways to call anysort's factory function)
+   *       1. function factory (arr: any[], cmds: SortCMD[]): any[];
+   *       2. function factory (arr: any[], ...cmds: SortCMD[]): any[];
+   *       3. function factory (...cmds: SortCMD[]): SortFn;
    */
-  function factory() {
-      var cmd = [];
-      for (var _i = 0; _i < arguments.length; _i++) {
-          cmd[_i] = arguments[_i];
+  function factory(arr) {
+      var args = [];
+      for (var _i = 1; _i < arguments.length; _i++) {
+          args[_i - 1] = arguments[_i];
       }
-      // flatten
-      // TODO perf count
-      cmd = cmd.reduce(function (h, c) { return (h.concat(c)); }, []);
-      var sortFns = cmd.length === 0
+      var isFirstArr = arr instanceof Array;
+      var cmds = (isFirstArr ? args : [].concat(arr).concat(args))
+          .reduce(function (h, c) { return (h.concat(c)); }, [])
+          .filter(Boolean);
+      // * for debug
+      // console.log('@@', args, '=>', cmds)
+      var sortFns = cmds.length === 0
           ? [new Sort().seal()]
-          : cmd.map(function (x, i) {
+          : cmds.map(function (x, i) {
               try {
                   return isFn(x) ? x : genSortFnFromStr(x);
               }
@@ -180,7 +187,10 @@
               }
           });
       var flat = function (fns) { return function (a, b) { return fns.reduce(function (sortResult, fn) { return sortResult || fn(a, b); }, 0); }; };
-      return flat(sortFns);
+      var flattenCMDs = flat(sortFns);
+      return isFirstArr
+          ? arr.sort(flattenCMDs)
+          : flattenCMDs;
   }
   // install plugins for Sort
   var extendPlugins = function (exts) { return Object.entries(exts).map(function (_a) {

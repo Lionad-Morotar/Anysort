@@ -1,8 +1,7 @@
 import Sort from './sort'
 
 export type SortableValue = any
-export type SkipValue = void
-export type SortVal = SkipValue | 1 | 0 | -1
+export type SortVal = 1 | 0 | -1
 export type SortFn = (a: SortableValue, b: SortableValue) => SortVal
 
 export type ComparableValue = string | number | boolean | SkipValue

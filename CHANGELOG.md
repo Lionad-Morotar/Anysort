@@ -1,10 +1,21 @@
 ## Changelog
 
+##### TODO
+
+* 接口变更！
+  - 错误使用：array.sort(anysort(['plugin-a', 'plugin-b']))
+  - 可以使用：array.sort(anysort('plugin-a', 'plugin-b'))
+  - 可以使用：anysort(array, 'plugin-a', 'plugin-b')
+  - 可以使用：anysort(array, ['plugin-a', 'plugin-b'])
+* 新增内置插件 get，用于获取对象中某个属性值：anysort(arr, get(object.a.b)) 等同于 anysort(arr, object.a.b)
+* 修复跑测试用例时仍会输出警告的问题
+* 完善测试用例
+
 ##### 2.0.0（Wed Mar 09 2022 15:03:17 GMT+0800）
 
 * 使用 TypeScript 重写了插件逻辑，修复了一些逻辑错误
 * 内置插件只留下了关键的 i、reverse、rand、is、all、has、not、len
-* 完善了测试用例
+* 完善测试用例
 
 ##### 1.4.x（Wed Jan 20 2021 02:46:22 GMT+0800）
 
