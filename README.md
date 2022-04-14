@@ -95,16 +95,9 @@ $ npm run test
 
 以前我写过一篇文章说明 Anysort 是如何工作的，但它的内容已经很旧，不再适合阅读：<del>[《一文学废排序》](https://juejin.cn/post/6916229848126111751)</del>
 
-## Author
+## Pull & Request
 
-**Lionad**
-
-* [github/Lionad-Morotar](https://github.com/Lionad-Morotar)
-
-TODO，help wanted
-
-* perf benchmark
-* full api doc
+See [TODO.MD](./TODO.md)，help wanted!
 
 ## License
 
