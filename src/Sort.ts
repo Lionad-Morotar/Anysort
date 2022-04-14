@@ -87,11 +87,21 @@ export default class Sort {
     plugin(this, arg)
   }
 
+  /**
+   * its not same as Array.prototype.map in js,
+   * but more like map value a to value b,
+   * array.sort((a, b) => a - b) then becames:
+   * array.sort((a, b) => map(a) - map(b))
+   */
   map (_value: MapingPlugin): Sort {
     this.pipeline.push({ _value, _type: 'maping' })
     return this
   }
 
+  /**
+   * becareful, the result plugin should be
+   * the last one in this.pipeline
+   */
   result (_value: ResultPlugin): Sort {
     this.pipeline.push({ _value, _type: 'result' })
     return this
@@ -102,7 +112,6 @@ export default class Sort {
     this.pipeline.reverse().map(current => {
       const { _type, _value } = current
       if (_type === 'maping') targetSortFn = maping(_value)(targetSortFn)
-      // ! It is wrong to apply the maping plugin after applying the result plugin
       if (_type === 'result') targetSortFn = result(_value)(targetSortFn)
     })
     return targetSortFn

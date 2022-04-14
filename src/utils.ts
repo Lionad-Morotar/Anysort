@@ -10,13 +10,20 @@ export const getType = (x: SortableValue): SortableTypeEnum => isVoid(x) ? 'void
 export const isFn = (x: SortableValue): boolean => getType(x) === 'function'
 export const notNull = (x: any) => !!x
 
-export const getValueFromPath = (pathsStore: String[]) => (x: any) => {
-  const paths = [].concat(pathsStore)
+/**
+ * @example
+ *    1. walk('a.b')({a:{b:3}}) returns 3
+ *    2. walk(['a','b'])({a:{b:3}}) returns 3
+ */
+export const walk = (pathsStore: String | String[]) => (x: any) => {
+  const paths = pathsStore instanceof Array
+    ? [].concat(pathsStore)
+    : pathsStore.split('.')
   let val = x; let nextPath = null
   while (val && paths.length) {
     nextPath = paths.shift()
     if (!Object.prototype.hasOwnProperty.call(val, nextPath)) {
-      warn(`cant find path "${pathsStore.join('.')}" in ${strObj(x)}, skip by default`)
+      warn(`cant find path "${JSON.stringify(pathsStore)}" in ${strObj(x)}, skip by default`)
     }
     val = val[nextPath]
   }

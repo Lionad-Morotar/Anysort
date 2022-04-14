@@ -10,14 +10,21 @@
   var getType = function (x) { return isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase(); };
   var isFn = function (x) { return getType(x) === 'function'; };
   var notNull = function (x) { return !!x; };
-  var getValueFromPath = function (pathsStore) { return function (x) {
-      var paths = [].concat(pathsStore);
+  /**
+   * @example
+   *    1. walk('a.b')({a:{b:3}}) returns 3
+   *    2. walk(['a','b'])({a:{b:3}}) returns 3
+   */
+  var walk = function (pathsStore) { return function (x) {
+      var paths = pathsStore instanceof Array
+          ? [].concat(pathsStore)
+          : pathsStore.split('.');
       var val = x;
       var nextPath = null;
       while (val && paths.length) {
           nextPath = paths.shift();
           if (!Object.prototype.hasOwnProperty.call(val, nextPath)) {
-              warn("cant find path \"".concat(pathsStore.join('.'), "\" in ").concat(strObj(x), ", skip by default"));
+              warn("cant find path \"".concat(JSON.stringify(pathsStore), "\" in ").concat(strObj(x), ", skip by default"));
           }
           val = val[nextPath];
       }
@@ -88,10 +95,20 @@
       Sort.prototype.register = function (plugin, arg) {
           plugin(this, arg);
       };
+      /**
+       * its not same as Array.prototype.map in js,
+       * but more like map value a to value b,
+       * array.sort((a, b) => a - b) then becames:
+       * array.sort((a, b) => map(a) - map(b))
+       */
       Sort.prototype.map = function (_value) {
           this.pipeline.push({ _value: _value, _type: 'maping' });
           return this;
       };
+      /**
+       * becareful, the result plugin should be
+       * the last one in this.pipeline
+       */
       Sort.prototype.result = function (_value) {
           this.pipeline.push({ _value: _value, _type: 'result' });
           return this;
@@ -102,7 +119,6 @@
               var _type = current._type, _value = current._value;
               if (_type === 'maping')
                   targetSortFn = maping(_value)(targetSortFn);
-              // ! It is wrong to apply the maping plugin after applying the result plugin
               if (_type === 'result')
                   targetSortFn = result(_value)(targetSortFn);
           });
@@ -126,9 +142,11 @@
       },
       not: function (sort, arg) { return sort.map(function (x) { return arg ? (x !== arg) : !x; }); },
       len: function (sort, arg) {
-          return !arg.length ? sort.map(function (x) { return x.length; }) : sort.map(function (x) { return x.length === +arg; });
+          return arg.length
+              ? sort.map(function (x) { return x.length === +arg; })
+              : sort.map(function (x) { return x.length; });
       },
-      get: function (sort, arg) { return sort.map(getValueFromPath(arg.split('.'))); },
+      get: function (sort, arg) { return sort.map(walk(arg)); },
       /* Plugins that change sort order directly */
       reverse: function (sort) { return sort.result(function (res) { return -res; }); },
       rand: function (sort) { return sort.result(function (_) { return Math.random() < 0.5 ? -1 : 1; }); }

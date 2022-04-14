@@ -1,7 +1,7 @@
 import { SortVal, SortFn, SortPlugin, SortCMD } from './type'
 
 import Sort from './sort'
-import { isFn, getValueFromPath, notNull } from './utils'
+import { isFn, walk, notNull } from './utils'
 
 // build-in plugins
 const plugins: { [k: string]: SortPlugin } = {
@@ -18,8 +18,10 @@ const plugins: { [k: string]: SortPlugin } = {
       : x.includes(arg)),
   not: (sort: Sort, arg: string) => sort.map(x => arg ? (x !== arg) : !x),
   len: (sort: Sort, arg: string) =>
-    !arg.length ? sort.map(x => x.length) : sort.map(x => x.length === +arg),
-  get: (sort: Sort, arg: string) => sort.map(getValueFromPath(arg.split('.'))),
+    arg.length
+      ? sort.map(x => x.length === +arg)
+      : sort.map(x => x.length),
+  get: (sort: Sort, arg: string) => sort.map(walk(arg)),
 
   /* Plugins that change sort order directly */
 
