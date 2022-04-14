@@ -1,3 +1,5 @@
+// @ts-ignore
+
 // TODO test extends
 
 require('mocha')
@@ -172,6 +174,30 @@ describe('Test build-in plugins', function () {
     const getArrStrings = () => ['alpha', 'google', 'zoo', 'oowps']
     arraySort(getArrStrings(), 'len()').should.eql(['zoo', 'alpha', 'oowps', 'google'])
     arraySort(getArrStrings(), 'len(3)').should.eql(['zoo', 'alpha', 'google', 'oowps'])
+  })
+
+  it('plugin: get', function () {
+    const posts = [
+      { foo: 'bbb', locals: { date: '2013-05-06' } },
+      { foo: 'aaa', locals: { date: null } },
+      { locals: { date: '2015-04-12' } },
+      { foo: 'ccc', locals: { date: '2014-01-02' } },
+      { locals: { date: '2015-01-02' } },
+      { foo: 'ddd', locals: { date: '2014-01-09' } },
+      { foo: null, locals: {} },
+      { foo: 'aaa', locals: { date: '2014-02-02' } }
+    ]
+    const actual = arraySort(posts, ['foo', 'get(locals.date)'])
+    actual.should.eql([
+      { foo: 'aaa', locals: { date: '2014-02-02' } },
+      { foo: 'aaa', locals: { date: null } },
+      { foo: 'bbb', locals: { date: '2013-05-06' } },
+      { foo: 'ccc', locals: { date: '2014-01-02' } },
+      { foo: 'ddd', locals: { date: '2014-01-09' } },
+      { locals: { date: '2015-01-02' } },
+      { locals: { date: '2015-04-12' } },
+      { foo: null, locals: {} }
+    ])
   })
 })
 

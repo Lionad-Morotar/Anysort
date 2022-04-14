@@ -4,7 +4,7 @@
 })((function () { 'use strict';
 
   var isDev = function () { return process.env.NODE_ENV === 'development'; };
-  var warn = function (msg) { return isDev && console.log("[WARN] ".concat(msg)); };
+  var warn = function (msg) { return isDev() && console.log("[WARN] ".concat(msg)); };
   var strObj = function (obj) { return JSON.stringify(obj); };
   var isVoid = function (x) { return x == undefined; };
   var getType = function (x) { return isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase(); };
@@ -84,6 +84,10 @@
       function Sort() {
           this.pipeline = [];
       }
+      // TODO multi-arguments
+      Sort.prototype.register = function (plugin, arg) {
+          plugin(this, arg);
+      };
       Sort.prototype.map = function (_value) {
           this.pipeline.push({ _value: _value, _type: 'maping' });
           return this;
@@ -107,49 +111,55 @@
       return Sort;
   }());
 
-  /**
-   * build-in plugins
-   */
+  // build-in plugins
   var plugins = {
+      /* Plugins that change sort argument */
       i: function (sort) { return sort.map(function (x) { return (x || '').toLowerCase(); }); },
-      reverse: function (sort) { return sort.result(function (res) { return -res; }); },
-      rand: function (sort) { return sort.result(function (_) { return Math.random() < 0.5 ? -1 : 1; }); },
       is: function (sort, arg) { return sort.map(function (x) { return x === arg; }); },
-      all: function (sort, arg) { return sort.map(function (x) { return x.every
-          ? x.every(function (y) { return String(y) === arg; })
-          : x === arg; }); },
-      has: function (sort, arg) { return sort.map(function (x) { return x instanceof Array
-          ? x.some(function (y) { return String(y) === arg; })
-          : x.includes(arg); }); },
-      not: function (sort, arg) { return sort.map(function (x) { return arg
-          ? (x !== arg)
-          : !x; }); },
-      len: function (sort, arg) { return !arg.length
-          ? sort.map(function (x) { return x.length; })
-          : sort.map(function (x) { return x.length === +arg; }); },
-      getValue: function (paths) { return function (sort) { return sort.map(getValueFromPath(paths.split('.'))); }; }
+      all: function (sort, arg) {
+          return sort.map(function (x) { return x.every ? x.every(function (y) { return String(y) === arg; }) : x === arg; });
+      },
+      has: function (sort, arg) {
+          return sort.map(function (x) { return x instanceof Array
+              ? x.some(function (y) { return String(y) === arg; })
+              : x.includes(arg); });
+      },
+      not: function (sort, arg) { return sort.map(function (x) { return arg ? (x !== arg) : !x; }); },
+      len: function (sort, arg) {
+          return !arg.length ? sort.map(function (x) { return x.length; }) : sort.map(function (x) { return x.length === +arg; });
+      },
+      get: function (sort, arg) { return sort.map(getValueFromPath(arg.split('.'))); },
+      /* Plugins that change sort order directly */
+      reverse: function (sort) { return sort.result(function (res) { return -res; }); },
+      rand: function (sort) { return sort.result(function (_) { return Math.random() < 0.5 ? -1 : 1; }); }
   };
   /**
-   * generate SortFn from string
+   * generate SortFn from string command
+   * @exam 'date-reverse()' would be a valid command,
+   *        then would be split into 'date' and 'reverse()' plugin
    */
-  function generateSortFnFromStr(ss) {
-      var sort = new Sort();
-      ss.split('-')
-          .filter(notNull)
-          .map(function (action) {
-          // TODO args
-          var _a = action.match(/([^(]+)(\(([^)]*)\))?/), fnName = _a[1], argsWithParen = _a[2], arg = _a[3];
-          var plugin = argsWithParen
-              ? plugins[fnName]
-              : plugins.getValue(fnName);
-          // the default value of arg is empty string because the value cames from regex matching
-          plugin(sort, arg);
-      });
-      return sort.seal();
-  }
+  var genSortFnFromStrGen = function (delim) {
+      if (delim === void 0) { delim = '-'; }
+      return function (ss) {
+          var sort = new Sort();
+          ss.split(delim)
+              .filter(notNull)
+              .map(function (action) {
+              // if match with parens, it's a plugin, such as is(a)),
+              // else it's a object path such as 'a.b'
+              var _a = action.match(/([^(]+)(\(([^)]*)\))?/), name = _a[1], callable = _a[2], fnArg = _a[3];
+              callable
+                  ? sort.register(plugins[name], fnArg)
+                  : sort.register(plugins.get, name);
+          });
+          return sort.seal();
+      };
+  };
+  var genSortFnFromStr = genSortFnFromStrGen();
   /**
    * main
-   * @todo anysort(Array)
+   * @exam Array.sort(anysort(...args))
+   * @exam anysort(Array, ...args)
    */
   function factory() {
       var cmd = [];
@@ -163,7 +173,7 @@
           ? [new Sort().seal()]
           : cmd.map(function (x, i) {
               try {
-                  return isFn(x) ? x : generateSortFnFromStr(x);
+                  return isFn(x) ? x : genSortFnFromStr(x);
               }
               catch (err) {
                   throw new Error("[ERR] Error on generate sort function, Index ".concat(i + 1, "th: ").concat(x, ", error: ").concat(err));
@@ -172,15 +182,16 @@
       var flat = function (fns) { return function (a, b) { return fns.reduce(function (sortResult, fn) { return sortResult || fn(a, b); }, 0); }; };
       return flat(sortFns);
   }
-  /**
-   * install plugins for SortCMD strings
-   */
+  // install plugins for Sort
   var extendPlugins = function (exts) { return Object.entries(exts).map(function (_a) {
       var k = _a[0], v = _a[1];
       return plugins[k] = v;
   }); };
+  /**
+   * Module Exports
+   */
   factory.extends = extendPlugins;
-  /* Module Exports */
+  factory.genSortFnFromStrGen = genSortFnFromStrGen;
   module.exports = factory;
 
 }));

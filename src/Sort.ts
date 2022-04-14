@@ -1,4 +1,4 @@
-import { SortFn, SortableValue, GetCompareValFn } from './type'
+import { SortFn, SortPlugin, SortableValue, GetCompareValFn } from './type'
 
 import { getType, warn } from './utils'
 
@@ -71,6 +71,7 @@ type PipeLine = {
 export const maping:
   (map: (x: any) => any) => (fn: SortFn) => (a: any, b: any) => SortableValue =
   map => fn => (a, b) => fn(map(a), map(b))
+
 export const result:
   (change: (x: SortableValue) => SortableValue) => (fn: SortFn) => (a: any, b: any) => SortableValue =
   change => fn => (a, b) => change(fn(a, b))
@@ -79,6 +80,11 @@ export default class Sort {
   pipeline: PipeLine[]
   constructor () {
     this.pipeline = []
+  }
+
+  // TODO multi-arguments
+  register (plugin: SortPlugin, arg: string) {
+    plugin(this, arg)
   }
 
   map (_value: MapingPlugin): Sort {

@@ -11,11 +11,9 @@ export type GetCompareValFn = (x: SortableValue) => ComparableValue
 export type SortableTypeEnum = 'string' | 'number' | 'boolean' | 'symbol' | 'function' | 'void' | 'date'
 export type ConditionSortFn = (type: SortableTypeEnum) => SortFn
 
-// TODO check
-export type SortPlugin = (sort: Sort, args?: any) => void
+export type SortPlugin = (sort: Sort, arg?: string) => void | Sort
 
 /**
- * 排序指令
  * @example 'date-dec()'
  * @example (a, b) => (a - b)
  */
