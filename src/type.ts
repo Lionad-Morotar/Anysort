@@ -4,7 +4,7 @@ export type SortableValue = any
 export type SortVal = 1 | 0 | -1
 export type SortFn = (a: SortableValue, b: SortableValue) => SortVal
 
-export type ComparableValue = string | number | boolean | SkipValue
+export type ComparableValue = string | number | boolean
 export type GetCompareValFn = (x: SortableValue) => ComparableValue
 
 export type SortableTypeEnum = 'string' | 'number' | 'boolean' | 'symbol' | 'function' | 'void' | 'date'
