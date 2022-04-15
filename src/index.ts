@@ -69,9 +69,13 @@ const wrapperProxy = (arr: any[]): any[] => {
         return true
       }
       if (prop === 'apply') {
-        return (...args: any[]) => {
-          // console.log(target, prop, args)
-          return factory(target, ...args)
+        return (...args: SortCMD[]) => factory(target, ...args)
+      }
+      if (Object.prototype.hasOwnProperty.call(plugins, prop)) {
+        // TODO check typeof arg
+        return (arg: string = '') => {
+          const cmd = `${String(prop)}(${String(arg)})`
+          return factory(target, cmd)
         }
       }
       return target[prop]
@@ -97,7 +101,11 @@ const factory: AnysortFactory = (arr: any[], ...cmds: SortCMD[]) => {
 
   const isEmptyCMDs = filteredCMDs.length === 0
   if (isEmptyCMDs && !config.autoSort) {
-    return arr
+    if (config.autoWrap) {
+      return wrapperProxy(arr)
+    } else {
+      return arr
+    }
   }
 
   const sortFns = isEmptyCMDs

@@ -9,6 +9,10 @@ require('should')
 const assert = require('assert')
 const anysort = require('../build/index.min.js')
 
+/**
+ * Test Anysort Configuration
+ */
+
 describe('Test Anysort Configuration', function () {
 
   it('config.autoSort', function () {
@@ -37,6 +41,10 @@ describe('Test Anysort Configuration', function () {
   })
 
 })
+
+/**
+ * Test Anysort APIs
+ */
 
 describe('Test Anysort APIs', function () {
   let arraySort
@@ -214,6 +222,9 @@ describe('Test Anysort APIs', function () {
         it('plugin: is', function () {
           const arr = ['a', 'b', 'c', 'D']
           arraySort(arr, ['is(c)']).should.eql(['c', 'a', 'b', 'D'])
+          // * wrong usage because '0' cant compare with number 0
+          // const arr2 = [3, 5, 0, 2, -9, 6, 1, 4, 7, 8]
+          // arraySort(arr2, ['is(0)']).should.eql([0, 3, 5, 2, -9, 6, 1, 4, 7, 8])
         })
 
         it('plugin: nth', function () {
@@ -316,3 +327,64 @@ describe('Test Anysort APIs', function () {
   }
 })
 
+/**
+ * Test Proxy API
+ */
+
+ describe('Test Proxy API', function () {
+
+  const getArr = () => ['a', 'b', 'c', 'D']
+  const patchedKey = anysort.config.patched
+  const patchedResult = true
+
+  it('anysort(arr)', function () {
+    anysort(getArr()).should.eql(['D', 'a', 'b', 'c'])
+    assert.equal(anysort(getArr())[patchedKey], patchedResult)
+  })
+
+  it('anysort(arr).plugin(arg)', function () {
+    anysort(getArr())
+      .i().should.eql(['a', 'b', 'c', 'D'])
+    anysort(getArr())
+      .is('b').should.eql(['b', 'D', 'a', 'c'])
+    anysort(['aaac', 'aaaa', 'aaad', 'aaab'])
+      .nth(3).should.eql(['aaaa', 'aaab', 'aaac', 'aaad'])
+    anysort([['a', 'b'], ['a'], ['a', 'c']])
+      .all('a').should.eql([['a'], ['a', 'b'], ['a', 'c']])
+
+    anysort.config.autoSort = false
+    anysort(['alpha', 'google', 'zoo', 'oowps'])
+      .has('oo').should.eql(['google', 'zoo', 'oowps', 'alpha'])
+    anysort.config.autoSort = true
+    anysort(['alpha', 'google', 'zoo', 'oowps'])
+      .has('oo').should.eql(['google', 'oowps', 'zoo', 'alpha'])
+  })
+
+  it('anysort(arr).plugin(arg).plugin(arg)', function () {
+    anysort(getArr())
+      .i().should.eql(['a', 'b', 'c', 'D'])
+    anysort(getArr())
+      .i().is('c').should.eql(['c', 'a', 'b', 'D'])
+    anysort(getArr())
+      .i().is('c').is('b').should.eql(['b', 'c', 'a', 'D'])
+    anysort(getArr())
+      .i().is('c').is('b').all('a').should.eql(['a', 'b', 'c', 'D'])
+  })
+
+  it('anysort(arr).plugin(arg).plugin(arg) with custom plugin', function () {
+    anysort.extends({
+      ltZ: sort => sort.map(x => (x < 'Z') ? -1 : 1)
+    })
+    anysort(getArr())
+      .i().should.eql(['a', 'b', 'c', 'D'])
+    anysort(getArr())
+      .i().is('c').should.eql(['c', 'a', 'b', 'D'])
+    anysort(getArr())
+      .i().is('c').is('b').should.eql(['b', 'c', 'a', 'D'])
+    anysort(getArr())
+      .i().is('c').is('b').ltZ().should.eql(['D', 'b', 'c', 'a'])
+    anysort(getArr())
+      .i().is('c').ltZ().is('b').should.eql(['b', 'D', 'c', 'a'])
+  })
+
+})

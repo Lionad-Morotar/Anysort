@@ -198,8 +198,15 @@
                         for (var _i = 0; _i < arguments.length; _i++) {
                             args[_i] = arguments[_i];
                         }
-                        // console.log(target, prop, args)
                         return factory.apply(void 0, tslib.__spreadArray([target], args, false));
+                    };
+                }
+                if (Object.prototype.hasOwnProperty.call(plugins, prop)) {
+                    // TODO check typeof arg
+                    return function (arg) {
+                        if (arg === void 0) { arg = ''; }
+                        var cmd = "".concat(String(prop), "(").concat(String(arg), ")");
+                        return factory(target, cmd);
                     };
                 }
                 return target[prop];
@@ -227,7 +234,12 @@
             .filter(Boolean);
         var isEmptyCMDs = filteredCMDs.length === 0;
         if (isEmptyCMDs && !config.autoSort) {
-            return arr;
+            if (config.autoWrap) {
+                return wrapperProxy(arr);
+            }
+            else {
+                return arr;
+            }
         }
         var sortFns = isEmptyCMDs
             ? [new Sort().seal()]
