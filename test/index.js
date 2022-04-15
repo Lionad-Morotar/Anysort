@@ -387,4 +387,96 @@ describe('Test Anysort APIs', function () {
       .i().is('c').ltZ().is('b').should.eql(['b', 'D', 'c', 'a'])
   })
 
+  it('anysort(arr).sort(function)', function () {
+    const getArr = () => ['b', 'a', 'E', 'c', 'D']
+    anysort.extends({
+      ltZ: sort => sort.map(x => (x < 'Z') ? -1 : 1)
+    })
+    anysort(getArr())
+      .should.eql(['D', 'E', 'a', 'b', 'c'])
+    anysort(getArr())
+      .sort((a, b) => (a > b) ? -1 : 1).should.eql(['c', 'b', 'a', 'E', 'D'])
+    anysort(getArr())
+      .sort((a, b) => (a > b) ? -1 : 1).is('b').should.eql(['b', 'c', 'a', 'E', 'D'])
+    anysort(getArr())
+      .ltZ().is('c').should.eql(['c', 'D', 'E', 'a', 'b'])
+    anysort(getArr())
+      .ltZ_reverse().is('c').should.eql(['c', 'a', 'b', 'D', 'E'])
+    // * wrong usage
+    // anysort(getArr())
+    //   .ltZ().reverse().is('c').should.eql(['c', 'a', 'b', 'D', 'E'])
+    anysort(getArr())
+      .sort((a, b) => (a > 'Z') ? -1 : 1)
+      .should.eql(['c', 'b', 'a', 'D', 'E'])
+    anysort(getArr())
+      .sort((a, b) => (a > 'Z') ? -1 : 1)
+      .sort((a, b) => (a === 'a') ? -1 : 1)
+      .should.eql(['a', 'c', 'b', 'D', 'E'])
+  })
+
+  it('anysort(arr).xxx: test nested objects', function () {
+    const getPosts = () => [
+      { foo: 'bbb', locals: { date: '2013-05-06' } },
+      { foo: 'aab', locals: { date: null } },
+      { locals: { date: '2015-04-12' } },
+      { foo: 'ccc', locals: { date: '2014-01-02' } },
+      { locals: { date: '2015-01-02' } },
+      { foo: 'ddd', locals: { date: '2014-01-09' } },
+      { foo: null, locals: {} },
+      { foo: 'aac', locals: { date: '2014-02-02' } }
+    ]
+    anysort(getPosts())
+      .get('locals.date')
+      .should.eql([
+        { foo: 'bbb', locals: { date: '2013-05-06' } },
+        { foo: 'ccc', locals: { date: '2014-01-02' } },
+        { foo: 'ddd', locals: { date: '2014-01-09' } },
+        { foo: 'aac', locals: { date: '2014-02-02' } },
+        { locals: { date: '2015-01-02' } },
+        { locals: { date: '2015-04-12' } },
+        { foo: 'aab', locals: { date: null } },
+        { foo: null, locals: {} }
+      ])
+    anysort(getPosts())
+      .get('locals.date')
+      .get('foo')
+      .should.eql([
+        { foo: 'aab', locals: { date: null } },
+        { foo: 'aac', locals: { date: '2014-02-02' } },
+        { foo: 'bbb', locals: { date: '2013-05-06' } },
+        { foo: 'ccc', locals: { date: '2014-01-02' } },
+        { foo: 'ddd', locals: { date: '2014-01-09' } },
+        { locals: { date: '2015-01-02' } },
+        { locals: { date: '2015-04-12' } },
+        { foo: null, locals: {} }
+      ])
+    anysort(getPosts())
+      .locals.date.result()
+      .foo.result()
+      .should.eql([
+        { foo: 'aab', locals: { date: null } },
+        { foo: 'aac', locals: { date: '2014-02-02' } },
+        { foo: 'bbb', locals: { date: '2013-05-06' } },
+        { foo: 'ccc', locals: { date: '2014-01-02' } },
+        { foo: 'ddd', locals: { date: '2014-01-09' } },
+        { locals: { date: '2015-01-02' } },
+        { locals: { date: '2015-04-12' } },
+        { foo: null, locals: {} }
+      ])
+    anysort(getPosts())
+      .locals.date.result()
+      .foo.result()
+      .foo.is('ccc')
+      .should.eql([
+        { foo: 'ccc', locals: { date: '2014-01-02' } },
+        { foo: 'aab', locals: { date: null } },
+        { foo: 'aac', locals: { date: '2014-02-02' } },
+        { foo: 'bbb', locals: { date: '2013-05-06' } },
+        { foo: 'ddd', locals: { date: '2014-01-09' } },
+        { locals: { date: '2015-01-02' } },
+        { locals: { date: '2015-04-12' } },
+        { foo: null, locals: {} }
+      ])
+  })
+
 })

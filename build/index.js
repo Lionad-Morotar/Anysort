@@ -11,6 +11,12 @@
     var getType = function (x) { return isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase(); };
     var isFn = function (x) { return getType(x) === 'function'; };
     var notNull = function (x) { return !!x; };
+    var getValsFrom = function (x) {
+        var ret = [];
+        while (x.length > 0)
+            ret.push(x.shift());
+        return ret;
+    };
     /**
      * @example
      *    1. walk('a.b')({a:{b:3}}) returns 3
@@ -158,7 +164,9 @@
         get: function (sort, arg) { return sort.map(walk(arg)); },
         /* Plugins that change sort order directly */
         reverse: function (sort) { return sort.result(function (res) { return -res; }); },
-        rand: function (sort) { return sort.result(function (_) { return Math.random() < 0.5 ? -1 : 1; }); }
+        rand: function (sort) { return sort.result(function (_) { return Math.random() < 0.5 ? -1 : 1; }); },
+        /* Plugins for Proxy API */
+        result: function (sort) { return sort.result(function (res) { return res; }); }
     };
     /**
      * generate SortFn from string command
@@ -187,7 +195,9 @@
         if (arr[config.patched]) {
             throw new Error('[ANYSORT] patched arr cant be wrapped again');
         }
-        return new Proxy(arr, {
+        var proxy = null;
+        var pathStore = [];
+        return (proxy = new Proxy(arr, {
             get: function (target, prop) {
                 if (prop === config.patched) {
                     return true;
@@ -201,17 +211,33 @@
                         return factory.apply(void 0, tslib.__spreadArray([target], args, false));
                     };
                 }
+                if (prop === 'sort') {
+                    return function (arg) { return factory(target, arg); };
+                }
                 if (Object.prototype.hasOwnProperty.call(plugins, prop)) {
                     // TODO check typeof arg
                     return function (arg) {
                         if (arg === void 0) { arg = ''; }
-                        var cmd = "".concat(String(prop), "(").concat(String(arg), ")");
+                        var cmdName = [getValsFrom(pathStore).join('.'), prop].join('-');
+                        var cmd = "".concat(cmdName, "(").concat(String(arg), ")");
                         return factory(target, cmd);
                     };
                 }
-                return target[prop];
+                if (prop in target) {
+                    return target[prop];
+                }
+                if (prop.includes('_')) {
+                    return function (arg) {
+                        if (arg === void 0) { arg = ''; }
+                        var cmdName = [getValsFrom(pathStore).join('.'), prop].join('-');
+                        var cmd = "".concat(cmdName.replace('_', '()-'), "(").concat(String(arg), ")");
+                        return factory(target, cmd);
+                    };
+                }
+                pathStore.push(prop);
+                return proxy;
             }
-        });
+        }));
     };
     /**
      * main

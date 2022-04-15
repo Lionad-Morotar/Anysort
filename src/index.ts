@@ -1,5 +1,5 @@
 import Sort from './sort'
-import { isFn, walk, notNull } from './utils'
+import { isFn, walk, notNull, getValsFrom } from './utils'
 
 import { Anysort, AnysortConfiguration, AnysortFactory, SortVal, SortFn, Plugins, SortCMD } from './type'
 
@@ -35,7 +35,12 @@ const plugins: Plugins = {
   /* Plugins that change sort order directly */
 
   reverse: (sort: Sort) => sort.result(res => -res),
-  rand: (sort: Sort) => sort.result(_ => Math.random() < 0.5 ? -1 : 1)
+  rand: (sort: Sort) => sort.result(_ => Math.random() < 0.5 ? -1 : 1),
+
+  /* Plugins for Proxy API */
+
+  result: (sort: Sort) => sort.result(res => res)
+
 }
 
 /**
@@ -63,24 +68,41 @@ const wrapperProxy = (arr: any[]): any[] => {
   if (arr[config.patched]) {
     throw new Error('[ANYSORT] patched arr cant be wrapped again')
   }
-  return new Proxy(arr, {
-    get (target, prop) {
+  let proxy = null
+  const pathStore: string[] = []
+  return (proxy = new Proxy(arr, {
+    get (target, prop: string) {
       if (prop === config.patched) {
         return true
       }
       if (prop === 'apply') {
         return (...args: SortCMD[]) => factory(target, ...args)
       }
+      if (prop === 'sort') {
+        return (arg: SortFn) => factory(target, arg)
+      }
       if (Object.prototype.hasOwnProperty.call(plugins, prop)) {
         // TODO check typeof arg
         return (arg: string = '') => {
-          const cmd = `${String(prop)}(${String(arg)})`
+          const cmdName = [getValsFrom(pathStore).join('.'), prop].join('-')
+          const cmd = `${cmdName}(${String(arg)})`
           return factory(target, cmd)
         }
       }
-      return target[prop]
+      if (prop in target) {
+        return target[prop]
+      }
+      if (prop.includes('_')) {
+        return (arg: string = '') => {
+          const cmdName = [getValsFrom(pathStore).join('.'), prop].join('-')
+          const cmd = `${cmdName.replace('_', '()-')}(${String(arg)})`
+          return factory(target, cmd)
+        }
+      }
+      pathStore.push(prop)
+      return proxy
     }
-  })
+  }))
 }
 
 /**

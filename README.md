@@ -62,6 +62,15 @@ posts.sort(
   )
 ).map(print)
 
+// illness with string?
+// try this!
+anysort(getPosts())
+  .created.hour.result()
+  .created.date.reverse()
+  .tag.has('it')
+  .status.is('editing')
+  .map(print)
+
 // Results:
 { "tag":["it"], 
   "status":"editing",
@@ -81,10 +90,17 @@ posts.sort(
 }
 ```
 
-## Testing
+## Full API Doc
+
+TODO
+
+## Dev & Test
 
 ```sh
-$ npm run test
+# run test when files change in directory build
+npm run watch:test
+# modify source code then build
+npm run build
 ```
 
 ## How this work
