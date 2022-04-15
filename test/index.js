@@ -6,15 +6,38 @@
 require('mocha')
 require('should')
 
+const assert = require('assert')
 const anysort = require('../build/index.min.js')
 
-/**
- * @see comments with factory function at index.ts
- *  1. function factory (arr: any[], cmds: SortCMD[]): any[];
- *  2. function factory (arr: any[], ...cmds: SortCMD[]): any[];
- *  3. function factory (...cmds: SortCMD[]): SortFn;
- *
- */
+describe('Test Anysort Configuration', function () {
+
+  it('config.autoSort', function () {
+    const getArr = () => [3, 5, 0, 2, -9, 6, 1, 4, 7, 8]
+
+    anysort.config.autoSort = false
+    anysort(getArr()).should.eql([3, 5, 0, 2, -9, 6, 1, 4, 7, 8])
+    anysort(getArr(), []).should.eql([3, 5, 0, 2, -9, 6, 1, 4, 7, 8])
+
+    anysort.config.autoSort = true
+    anysort(getArr()).should.eql([-9, 0, 1, 2, 3, 4, 5, 6, 7, 8])
+    anysort(getArr(), []).should.eql([-9, 0, 1, 2, 3, 4, 5, 6, 7, 8])
+  })
+
+  it('config.autoWrap', function () {
+    const patchedKey = anysort.config.patched
+    const patchedResult = true
+
+    const getArr = () => [3, 5, 0, 2, -9, 6, 1, 4, 7, 8]
+
+    anysort.config.autoWrap = false
+    assert.equal(anysort(getArr())[patchedKey], undefined)
+
+    anysort.config.autoWrap = true
+    assert.equal(anysort(getArr())[patchedKey], patchedResult)
+  })
+
+})
+
 describe('Test Anysort APIs', function () {
   let arraySort
   for (let i = 0;;i++) {
@@ -24,12 +47,14 @@ describe('Test Anysort APIs', function () {
       arraySort = (arr, args) => args ? anysort(arr, ...args) : anysort(arr)
     else if (i === 2)
       arraySort = (arr, args) => args ? arr.sort(anysort(...args)) : arr.sort(anysort())
+    else if (i === 3)
+      arraySort = (arr, args) => anysort.wrap(arr).apply(args)
     else
       break
 
-    describe(`\n=== The ${i+1}th api ===`, function () {
+    describe(`The ${i+1}th api`, function () {
 
-      describe('\n    Test basic sorting functions', function () {
+      describe('Test basic sorting functions', function () {
 
         it('arrays of numbers', function () {
           const arr = [3, 5, 0, 2, -9, 6, 1, 4, 7, 8]
@@ -96,7 +121,7 @@ describe('Test Anysort APIs', function () {
 
       })
 
-      describe('\n    Test advance use cases', function () {
+      describe('Test advance use cases', function () {
 
         it('sort by multi-properties(multi-indexes)', function () {
           const posts = [
@@ -124,11 +149,12 @@ describe('Test Anysort APIs', function () {
 
       })
 
-      describe('\n    Test edge cases', function () {
+      describe('Test edge cases', function () {
 
         it('empty args', function () {
           const arr = []
           arraySort(arr).should.eql([])
+          arraySort(arr, []).should.eql([])
         })
 
         it('put null and undefined at the end of array', function () {
@@ -172,9 +198,9 @@ describe('Test Anysort APIs', function () {
 
       })
 
-      describe('\n    Test build-in plugins', function () {
+      describe('Test build-in plugins', function () {
 
-        it('plugin: ignore case', function () {
+        it('plugin: i (ignorecase)', function () {
           const arr = ['a', 'b', 'c', 'D']
           arraySort(arr).should.eql(['D', 'a', 'b', 'c'])
           arraySort(arr, ['i()']).should.eql(['a', 'b', 'c', 'D'])
@@ -252,7 +278,7 @@ describe('Test Anysort APIs', function () {
 
       })
 
-      describe('\n    Test advance plugin operations', function () {
+      describe('Test advance plugin operations', function () {
 
         it('plugin: custom plugin', function () {
           const arr = ['a', 'b', 'c', 'D']
@@ -279,10 +305,9 @@ describe('Test Anysort APIs', function () {
             // ltZ_filter: sort => sort.map(x => (x < 'Z') ? -1 : x),
           })
           arraySort(getArr(), ['is(c)', ((a, b) => (a < b) ? -1 : 1)]).should.eql(['c', 'D', 'E', 'a', 'b'])
-          arraySort(getArr(), ['is(c)', ((a, b) => (a < 'Z') ? -1 : 1), ((a, b) => (a < b) ? -1 : 1)], 'i()-reverse()').should.eql(['c', 'D', 'E', 'b', 'a'])
+          arraySort(getArr(), ['is(c)', ((a, b) => (a < 'Z') ? -1 : 1), ((a, b) => (a < b) ? -1 : 1), 'i()-reverse()', ]).should.eql(['c', 'D', 'E', 'b', 'a'])
           arraySort(getArr(), ['is(c)', 'ltZ()']).should.eql(['c', 'E', 'D', 'b', 'a'])
           arraySort(getArr(), ['is(c)', 'ltZ()-reverse()']).should.eql(['c', 'b', 'a', 'E', 'D'])
-          // TODO remap plugin
         })
 
       })
@@ -290,3 +315,4 @@ describe('Test Anysort APIs', function () {
     })
   }
 })
+

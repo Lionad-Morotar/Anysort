@@ -26,10 +26,20 @@ export type AnysortFactory = {
   (...args: SortCMD[]): SortFn;
 }
 
+export type AnysortConfiguration = {
+  readonly patched: string;
+  autoWrap: boolean;
+  autoSort: boolean;
+}
+
 export type Anysort = AnysortFactory & {
   // install plugins for Sort
   extends: (exts: Plugins) => void;
   // generate fn that generate SortFn from string command split by delim
   // default delim is '-'
   genSortFnFromStrGen: (delim: string) => (ss: string) => SortFn;
+
+  /** internal fns */
+  wrap: (arr: any[]) => any[];
+  config: AnysortConfiguration;
 }

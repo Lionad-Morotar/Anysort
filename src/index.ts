@@ -1,9 +1,17 @@
 import Sort from './sort'
 import { isFn, walk, notNull } from './utils'
 
-import { Anysort, AnysortFactory, SortVal, SortFn, Plugins, SortCMD } from './type'
+import { Anysort, AnysortConfiguration, AnysortFactory, SortVal, SortFn, Plugins, SortCMD } from './type'
+
+// global configuration
+const config: AnysortConfiguration = {
+  patched: '__ANYSORT_PATCHED__',
+  autoWrap: true,
+  autoSort: true
+}
 
 // build-in plugins
+// TODO plugin 'remap'
 const plugins: Plugins = {
 
   /* Plugins that change sort argument */
@@ -51,12 +59,33 @@ const genSortFnFromStrGen = (delim: string = '-') => (ss: string): SortFn => {
 }
 const genSortFnFromStr = genSortFnFromStrGen()
 
+const wrapperProxy = (arr: any[]): any[] => {
+  if (arr[config.patched]) {
+    throw new Error('[ANYSORT] patched arr cant be wrapped again')
+  }
+  return new Proxy(arr, {
+    get (target, prop) {
+      if (prop === config.patched) {
+        return true
+      }
+      if (prop === 'apply') {
+        return (...args: any[]) => {
+          // console.log(target, prop, args)
+          return factory(target, ...args)
+        }
+      }
+      return target[prop]
+    }
+  })
+}
+
 /**
  * main
- * @exam 3 ways to use anysort
- *       1. (arr: any[], args: SortCMD[]): any[];
- *       2. (arr: any[], ...args: SortCMD[]): any[];
- *       3. (...args: SortCMD[]): SortFn;
+ * @exam 4 ways to use anysort
+ *       1. anysort(arr: any[], args: SortCMD[]) => any[];
+ *       2. anysort(arr: any[], ...args: SortCMD[]) => any[];
+ *       3. anysort(...args: SortCMD[]) => SortFn;
+ *       4. anysort(arr: any[]) => any[]
  * @todo fix types
  */
 // @ts-ignore
@@ -66,10 +95,12 @@ const factory: AnysortFactory = (arr: any[], ...cmds: SortCMD[]) => {
     .reduce((h, c) => (h.concat(c)), [])
     .filter(Boolean)
 
-  // * for debug
-  // console.log('@@', cmds, '=>', filteredCMDs)
+  const isEmptyCMDs = filteredCMDs.length === 0
+  if (isEmptyCMDs && !config.autoSort) {
+    return arr
+  }
 
-  const sortFns = filteredCMDs.length === 0
+  const sortFns = isEmptyCMDs
     ? [new Sort().seal()]
     : filteredCMDs.map((x: SortCMD, i: number) => {
       try {
@@ -84,9 +115,19 @@ const factory: AnysortFactory = (arr: any[], ...cmds: SortCMD[]) => {
     fns => (a, b) => fns.reduce((sortResult: SortVal, fn: SortFn) => sortResult || fn(a, b), 0)
   const flattenCMDs = flat(sortFns)
 
-  return isFirstArr
+  let result = isFirstArr
     ? arr.sort(flattenCMDs)
     : flattenCMDs
+
+  if (config.autoWrap) {
+    if (isFirstArr) {
+      if (!result[config.patched]) {
+        result = wrapperProxy(result as any[])
+      }
+    }
+  }
+
+  return result
 }
 
 // install plugins for Sort
@@ -98,4 +139,6 @@ const extendPlugs = (exts: Plugins) =>
  */
 ;(factory as Anysort).extends = extendPlugs
 ;(factory as Anysort).genSortFnFromStrGen = genSortFnFromStrGen
+;(factory as Anysort).wrap = (arr: any[]) => wrapperProxy(arr)
+;(factory as Anysort).config = config
 module.exports = factory

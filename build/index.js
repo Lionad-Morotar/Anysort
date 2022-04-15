@@ -1,7 +1,8 @@
-(function (factory) {
-    typeof define === 'function' && define.amd ? define(factory) :
-    factory();
-})((function () { 'use strict';
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('tslib')) :
+    typeof define === 'function' && define.amd ? define(['tslib'], factory) :
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.tslib));
+})(this, (function (tslib) { 'use strict';
 
     var isDev = function () { return process.env.NODE_ENV === 'development'; };
     var warn = function (msg) { return isDev() && console.log("[WARN] ".concat(msg)); };
@@ -127,7 +128,14 @@
         return Sort;
     }());
 
+    // global configuration
+    var config = {
+        patched: '__ANYSORT_PATCHED__',
+        autoWrap: true,
+        autoSort: true
+    };
     // build-in plugins
+    // TODO plugin 'remap'
     var plugins = {
         /* Plugins that change sort argument */
         i: function (sort) { return sort.map(function (x) { return (x || '').toLowerCase(); }); },
@@ -175,12 +183,36 @@
         };
     };
     var genSortFnFromStr = genSortFnFromStrGen();
+    var wrapperProxy = function (arr) {
+        if (arr[config.patched]) {
+            throw new Error('[ANYSORT] patched arr cant be wrapped again');
+        }
+        return new Proxy(arr, {
+            get: function (target, prop) {
+                if (prop === config.patched) {
+                    return true;
+                }
+                if (prop === 'apply') {
+                    return function () {
+                        var args = [];
+                        for (var _i = 0; _i < arguments.length; _i++) {
+                            args[_i] = arguments[_i];
+                        }
+                        // console.log(target, prop, args)
+                        return factory.apply(void 0, tslib.__spreadArray([target], args, false));
+                    };
+                }
+                return target[prop];
+            }
+        });
+    };
     /**
      * main
-     * @exam 3 ways to use anysort
-     *       1. (arr: any[], args: SortCMD[]): any[];
-     *       2. (arr: any[], ...args: SortCMD[]): any[];
-     *       3. (...args: SortCMD[]): SortFn;
+     * @exam 4 ways to use anysort
+     *       1. anysort(arr: any[], args: SortCMD[]) => any[];
+     *       2. anysort(arr: any[], ...args: SortCMD[]) => any[];
+     *       3. anysort(...args: SortCMD[]) => SortFn;
+     *       4. anysort(arr: any[]) => any[]
      * @todo fix types
      */
     // @ts-ignore
@@ -193,9 +225,11 @@
         var filteredCMDs = (isFirstArr ? cmds : [].concat(arr).concat(cmds))
             .reduce(function (h, c) { return (h.concat(c)); }, [])
             .filter(Boolean);
-        // * for debug
-        // console.log('@@', cmds, '=>', filteredCMDs)
-        var sortFns = filteredCMDs.length === 0
+        var isEmptyCMDs = filteredCMDs.length === 0;
+        if (isEmptyCMDs && !config.autoSort) {
+            return arr;
+        }
+        var sortFns = isEmptyCMDs
             ? [new Sort().seal()]
             : filteredCMDs.map(function (x, i) {
                 try {
@@ -207,9 +241,17 @@
             });
         var flat = function (fns) { return function (a, b) { return fns.reduce(function (sortResult, fn) { return sortResult || fn(a, b); }, 0); }; };
         var flattenCMDs = flat(sortFns);
-        return isFirstArr
+        var result = isFirstArr
             ? arr.sort(flattenCMDs)
             : flattenCMDs;
+        if (config.autoWrap) {
+            if (isFirstArr) {
+                if (!result[config.patched]) {
+                    result = wrapperProxy(result);
+                }
+            }
+        }
+        return result;
     };
     // install plugins for Sort
     var extendPlugs = function (exts) {
@@ -220,6 +262,8 @@
     };
     factory["extends"] = extendPlugs;
     factory.genSortFnFromStrGen = genSortFnFromStrGen;
+    factory.wrap = function (arr) { return wrapperProxy(arr); };
+    factory.config = config;
     module.exports = factory;
 
 }));

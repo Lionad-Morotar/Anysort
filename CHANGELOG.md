@@ -2,15 +2,19 @@
 
 ##### TODO
 
-* 接口变更！
+* 接口变更
   - 错误使用：array.sort(anysort(['plugin-a', 'plugin-b']))
   - 可以使用：array.sort(anysort('plugin-a', 'plugin-b'))
   - 可以使用：anysort(array, 'plugin-a', 'plugin-b')
   - 可以使用：anysort(array, ['plugin-a', 'plugin-b'])
+  - 可以使用：anysort(array).apply('plugin-a', 'plugin-b')
+  - 可以使用：anysort(array).apply(['plugin-a', 'plugin-b'])
 * 新增内置插件 get，用于获取对象中某个属性值：anysort(arr, get(object.a.b)) 等同于 anysort(arr, object.a.b)
 * 新增内置插件 nth，用于获取数组的第 n 个值
-* 修复跑测试用例时仍会输出警告的问题
+* 新增默认配置项 autoSort，默认为 true，用于设定即使 anysort 在调用时传入空参数也会返回一个默认的排序函数（默认使用 little-than 的比较逻辑）
+* 新增默认配置项 autoWrap，默认为 true，用于设定经 anysort 调用后回传的数组会自动被 proxy 包装以获得 apply 等方法的使用权限
 * 完善测试用例
+* 修复跑测试用例时仍会输出警告的问题
 
 ##### 2.0.0（Wed Mar 09 2022 15:03:17 GMT+0800）
 

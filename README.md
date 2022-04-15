@@ -81,8 +81,6 @@ posts.sort(
 }
 ```
 
-WIP: 近期有用 Proxy 把它重写的想法，这样可以在语义上清晰许多。
-
 ## Testing
 
 ```sh
