@@ -1,10 +1,10 @@
-import { SortVal, SortFn, SortPlugin, SortCMD } from './type'
-
 import Sort from './sort'
 import { isFn, walk, notNull } from './utils'
 
+import { Anysort, AnysortFactory, SortVal, SortFn, Plugins, SortCMD } from './type'
+
 // build-in plugins
-const plugins: { [k: string]: SortPlugin } = {
+const plugins: Plugins = {
 
   /* Plugins that change sort argument */
 
@@ -52,25 +52,25 @@ const genSortFnFromStr = genSortFnFromStrGen()
 
 /**
  * main
- * @exam UnsortArray.sort(anysort(...cmds))
- * @exam anysort(UnsortArray, ...cmds)
- * @todo types override (3 ways to call anysort's factory function)
- *       1. function factory (arr: any[], cmds: SortCMD[]): any[];
- *       2. function factory (arr: any[], ...cmds: SortCMD[]): any[];
- *       3. function factory (...cmds: SortCMD[]): SortFn;
+ * @exam 3 ways to use anysort
+ *       1. (arr: any[], args: SortCMD[]): any[];
+ *       2. (arr: any[], ...args: SortCMD[]): any[];
+ *       3. (...args: SortCMD[]): SortFn;
+ * @todo fix types
  */
-function factory (arr: any[], ...args: SortCMD[]) {
+// @ts-ignore
+const factory: AnysortFactory = (arr: any[], ...cmds: SortCMD[]) => {
   const isFirstArr = arr instanceof Array
-  const cmds = (isFirstArr ? args : [].concat(arr).concat(args))
+  const filteredCMDs = (isFirstArr ? cmds : [].concat(arr).concat(cmds))
     .reduce((h, c) => (h.concat(c)), [])
     .filter(Boolean)
 
   // * for debug
-  // console.log('@@', args, '=>', cmds)
+  // console.log('@@', cmds, '=>', filteredCMDs)
 
-  const sortFns = cmds.length === 0
+  const sortFns = filteredCMDs.length === 0
     ? [new Sort().seal()]
-    : cmds.map((x: SortCMD, i: number) => {
+    : filteredCMDs.map((x: SortCMD, i: number) => {
       try {
         return isFn(x) ? <SortFn>x : genSortFnFromStr(<string>x)
       } catch (err) {
@@ -89,13 +89,12 @@ function factory (arr: any[], ...args: SortCMD[]) {
 }
 
 // install plugins for Sort
-const extendPlugins:
-  (exts: {[key: string]: SortPlugin}) => void =
-  exts => Object.entries(exts).map(([k, v]) => plugins[k] = v)
+const extendPlugs = (exts: Plugins) =>
+  Object.entries(exts).map(([k, v]) => plugins[k] = v)
 
 /**
  * Module Exports
  */
-factory.extends = extendPlugins
-factory.genSortFnFromStrGen = genSortFnFromStrGen
+;(factory as Anysort).extends = extendPlugs
+;(factory as Anysort).genSortFnFromStrGen = genSortFnFromStrGen
 module.exports = factory

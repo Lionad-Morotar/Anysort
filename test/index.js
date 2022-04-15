@@ -254,6 +254,18 @@ describe('Test Anysort APIs', function () {
           arraySort(getArr(), ['is(c)', 'i()-reverse()']).should.eql(['c', 'E', 'D', 'b', 'a'])
         })
 
+        it('plugin: commands with custom plugin', function () {
+          const getArr = () => ['b', 'a', 'E', 'c', 'D']
+          anysort.extends({
+            ltZ: sort => sort.map(x => (x < 'Z') ? -1 : 1),
+          })
+          arraySort(getArr(), ['is(c)', ((a, b) => (a < b) ? -1 : 1)]).should.eql(['c', 'D', 'E', 'a', 'b'])
+          arraySort(getArr(), ['is(c)', ((a, b) => (a < 'Z') ? -1 : 1), ((a, b) => (a < b) ? -1 : 1)], 'i()-reverse()').should.eql(['c', 'D', 'E', 'b', 'a'])
+          arraySort(getArr(), ['is(c)', 'ltZ()']).should.eql(['c', 'E', 'D', 'b', 'a'])
+          arraySort(getArr(), ['is(c)', 'ltZ()-reverse()']).should.eql(['c', 'b', 'a', 'E', 'D'])
+          // TODO remap plugin
+        })
+
       })
 
     })
