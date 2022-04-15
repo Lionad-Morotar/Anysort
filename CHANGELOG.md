@@ -8,6 +8,7 @@
   - 可以使用：anysort(array, 'plugin-a', 'plugin-b')
   - 可以使用：anysort(array, ['plugin-a', 'plugin-b'])
 * 新增内置插件 get，用于获取对象中某个属性值：anysort(arr, get(object.a.b)) 等同于 anysort(arr, object.a.b)
+* 新增内置插件 nth，用于获取数组的第 n 个值
 * 修复跑测试用例时仍会输出警告的问题
 * 完善测试用例
 

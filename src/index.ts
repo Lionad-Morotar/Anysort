@@ -10,6 +10,7 @@ const plugins: Plugins = {
 
   i: (sort: Sort) => sort.map(x => (x || '').toLowerCase()),
   is: (sort: Sort, arg: string) => sort.map(x => x === arg),
+  nth: (sort: Sort, arg: string) => sort.map(x => x[+arg]),
   all: (sort: Sort, arg: string) =>
     sort.map(x => x.every ? x.every(y => String(y) === arg) : x === arg),
   has: (sort: Sort, arg: string) =>

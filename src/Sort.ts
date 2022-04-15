@@ -68,13 +68,11 @@ type PipeLine = {
   _value: MapingPlugin
 }
 
-export const maping:
-  (map: (x: any) => any) => (fn: SortFn) => (a: any, b: any) => SortableValue =
-  map => fn => (a, b) => fn(map(a), map(b))
+type PLMaping = (map: (x: any) => any) => (fn: SortFn) => (a: any, b: any) => SortableValue
+type PLResult = (change: (x: SortableValue) => SortableValue) => (fn: SortFn) => (a: any, b: any) => SortableValue
 
-export const result:
-  (change: (x: SortableValue) => SortableValue) => (fn: SortFn) => (a: any, b: any) => SortableValue =
-  change => fn => (a, b) => change(fn(a, b))
+const maping: PLMaping = map => fn => (a, b) => fn(map(a), map(b))
+const result: PLResult = change => fn => (a, b) => change(fn(a, b))
 
 export default class Sort {
   pipeline: PipeLine[]

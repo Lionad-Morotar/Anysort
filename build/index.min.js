@@ -132,6 +132,7 @@
         /* Plugins that change sort argument */
         i: function (sort) { return sort.map(function (x) { return (x || '').toLowerCase(); }); },
         is: function (sort, arg) { return sort.map(function (x) { return x === arg; }); },
+        nth: function (sort, arg) { return sort.map(function (x) { return x[+arg]; }); },
         all: function (sort, arg) {
             return sort.map(function (x) { return x.every ? x.every(function (y) { return String(y) === arg; }) : x === arg; });
         },

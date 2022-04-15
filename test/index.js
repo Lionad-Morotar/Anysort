@@ -190,6 +190,24 @@ describe('Test Anysort APIs', function () {
           arraySort(arr, ['is(c)']).should.eql(['c', 'a', 'b', 'D'])
         })
 
+        it('plugin: nth', function () {
+          const arr = ['aaac', 'aaaa', 'aaad', 'aaab']
+          arraySort(arr, ['nth(3)']).should.eql(['aaaa', 'aaab', 'aaac', 'aaad'])
+          const arr2 = [['aaac'], ['aaaa'], ['aaad'], ['aaab']]
+          arraySort(arr2, ['nth(0)-nth(3)']).should.eql([['aaaa'], ['aaab'], ['aaac'], ['aaad']])
+          const arr3 = [[3, 'aaac'], ['aaaa'], [1, 'aaad', 1], ['aaab']]
+          arraySort(arr3, ['nth(0)-nth(3)']).should.eql([['aaaa'], ['aaab'], [3, 'aaac'], [1, 'aaad', 1]])
+        })
+
+        it('plugin: all', function () {
+          const arr = [['a', 'b'], ['a'], ['a', 'c']]
+          arraySort(arr, ['all(a)']).should.eql([['a'], ['a', 'b'], ['a', 'c']])
+          // * wrong usage
+          // const arr2 = ['aaac', 'aaaa', 'aaad', 'aaab']
+          const arr2 = ['c', 'a', 'd', 'b']
+          arraySort(arr2, ['all(a)']).should.eql(['a', 'c', 'd', 'b'])
+        })
+
         it('plugin: has', function () {
           const arrNums = [[1, 2], [2, 3], [2, 3], [1, 3]]
           arraySort(arrNums, ['has(3)']).should.eql([[2, 3], [2, 3], [1, 3], [1, 2]])
@@ -254,10 +272,11 @@ describe('Test Anysort APIs', function () {
           arraySort(getArr(), ['is(c)', 'i()-reverse()']).should.eql(['c', 'E', 'D', 'b', 'a'])
         })
 
-        it('plugin: commands with custom plugin', function () {
+        it('plugin: advance custom plugin usage', function () {
           const getArr = () => ['b', 'a', 'E', 'c', 'D']
           anysort.extends({
             ltZ: sort => sort.map(x => (x < 'Z') ? -1 : 1),
+            // ltZ_filter: sort => sort.map(x => (x < 'Z') ? -1 : x),
           })
           arraySort(getArr(), ['is(c)', ((a, b) => (a < b) ? -1 : 1)]).should.eql(['c', 'D', 'E', 'a', 'b'])
           arraySort(getArr(), ['is(c)', ((a, b) => (a < 'Z') ? -1 : 1), ((a, b) => (a < b) ? -1 : 1)], 'i()-reverse()').should.eql(['c', 'D', 'E', 'b', 'a'])
