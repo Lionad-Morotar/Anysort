@@ -19,28 +19,32 @@ npm install --save https://github.com/Lionad-Morotar/anysort
 ```js
 const posts = [
   {
-    tag: ['mp3'], status: '',
+    tag: ['mp3'],
+    status: '',
     created: {
       date: new Date('2019-08-01'),
       hour: 23
     }
   },
   {
-    tag: ['game', 'it'], status: 'editing',
+    tag: ['game', 'it'],
+    status: 'editing',
     created: {
       date: new Date('2021-01-01'),
       hour: 23
     }
   },
   {
-    tag: ['it'], status: 'editing',
+    tag: ['it'],
+    status: 'editing',
     created: {
       date: new Date('2021-01-01'),
       hour: 16
     }
   },
   {
-    tag: ['it'], status: 'editing',
+    tag: ['it'],
+    status: 'editing',
     created: {
       date: new Date('2021-01-02'),
       hour: 23
@@ -62,15 +66,6 @@ posts.sort(
   )
 ).map(print)
 
-// illness with string?
-// try this!
-anysort(getPosts())
-  .created.hour.result()
-  .created.date.reverse()
-  .tag.has('it')
-  .status.is('editing')
-  .map(print)
-
 // Results:
 { "tag":["it"], 
   "status":"editing",
@@ -88,17 +83,31 @@ anysort(getPosts())
   "status":"",
   "created":{"date":"2019-08-01","hour":23}
 }
+
+// illness with string?
+// try this!
+anysort(getPosts())
+  .created.hour.result()
+  .created.date.reverse()
+  .tag.has('it')
+  .status.is('editing')
+  .map(print)
 ```
 
 ## Full API Doc
 
 TODO
 
+## Change Log
+
+See [ChangeLog.md](./CHANGELOG.md)
+
 ## Dev & Test
 
 ```sh
 # run test when files change in directory build
 npm run watch:test
+
 # modify source code then build
 npm run build
 ```
