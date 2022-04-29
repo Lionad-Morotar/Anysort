@@ -134,6 +134,7 @@
         return Sort;
     }());
 
+    // TODO reduce compiled code size
     // TODO plugin 'remap'
     var plugins = {
         /* Plugins that change sort argument */
@@ -158,13 +159,8 @@
                         return x[+arg];
                     if (typeof x === 'string')
                         return x[+arg];
-                    else {
-                        console.log(typeof arg);
-                        console.log(arg);
-                        console.log(typeof x);
-                        console.log(x);
+                    else
                         throw new Error('[ANYSORT] "nth" plugin only works on string or array');
-                    }
                 });
             }
             else {

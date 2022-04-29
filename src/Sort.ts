@@ -62,11 +62,6 @@ const sortByDefault: SortFn =
     }
   }
 
-type PipeLine = {
-  _type: 'maping' | 'result'
-  _value: MappingFn
-}
-
 type PLMaping = (map: (x: any) => any) => (fn: SortFn) => (a: any, b: any) => SortableValue
 type PLResult = (change: (x: SortableValue) => SortableValue) => (fn: SortFn) => (a: any, b: any) => SortableValue
 
@@ -74,7 +69,11 @@ const maping: PLMaping = map => fn => (a, b) => fn(map(a), map(b))
 const result: PLResult = change => fn => (a, b) => change(fn(a, b))
 
 export default class Sort {
-  pipeline: PipeLine[]
+  pipeline: (
+    | { _type: 'maping', _value: MappingFn }
+    | { _type: 'result', _value: ResultFn }
+  )[]
+
   constructor () {
     this.pipeline = []
   }
