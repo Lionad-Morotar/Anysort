@@ -1,47 +1,9 @@
 import Sort from './sort'
-import { isFn, walk, notNull, getValsFrom } from './utils'
+import plugins from './build-in-plugins'
+import config from './config'
+import { isFn, notNull, getValsFrom } from './utils'
 
-import { Anysort, AnysortConfiguration, AnysortFactory, SortVal, SortFn, Plugins, SortCMD } from './type'
-
-// global configuration
-const config: AnysortConfiguration = {
-  patched: '__ANYSORT_PATCHED__',
-  autoWrap: true,
-  autoSort: true
-}
-
-// build-in plugins
-// TODO plugin 'remap'
-const plugins: Plugins = {
-
-  /* Plugins that change sort argument */
-
-  i: (sort: Sort) => sort.map(x => (x || '').toLowerCase()),
-  is: (sort: Sort, arg: string) => sort.map(x => x === arg),
-  nth: (sort: Sort, arg: string) => sort.map(x => x[+arg]),
-  all: (sort: Sort, arg: string) =>
-    sort.map(x => x.every ? x.every(y => String(y) === arg) : x === arg),
-  has: (sort: Sort, arg: string) =>
-    sort.map(x => x instanceof Array
-      ? x.some(y => String(y) === arg)
-      : x.includes(arg)),
-  not: (sort: Sort, arg: string) => sort.map(x => arg ? (x !== arg) : !x),
-  len: (sort: Sort, arg: string) =>
-    arg.length
-      ? sort.map(x => x.length === +arg)
-      : sort.map(x => x.length),
-  get: (sort: Sort, arg: string) => sort.map(walk(arg)),
-
-  /* Plugins that change sort order directly */
-
-  reverse: (sort: Sort) => sort.result(res => -res),
-  rand: (sort: Sort) => sort.result(_ => Math.random() < 0.5 ? -1 : 1),
-
-  /* Plugins for Proxy API */
-
-  result: (sort: Sort) => sort.result(res => res)
-
-}
+import type { Anysort, AnysortFactory, SortVal, Plugins, SortFn, SortCMD } from './type'
 
 /**
  * generate SortFn from string command

@@ -1,4 +1,4 @@
-import { SortableTypeEnum, SortableValue } from './type'
+import type { SortableTypeEnum, SortableValue } from './type'
 
 export const isDev = () => process.env.NODE_ENV === 'development'
 export const warn = (msg: String) => isDev() && console.log(`[WARN] ${msg}`)

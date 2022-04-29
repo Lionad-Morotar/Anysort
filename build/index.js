@@ -134,12 +134,6 @@
         return Sort;
     }());
 
-    // global configuration
-    var config = {
-        patched: '__ANYSORT_PATCHED__',
-        autoWrap: true,
-        autoSort: true
-    };
     // build-in plugins
     // TODO plugin 'remap'
     var plugins = {
@@ -168,6 +162,14 @@
         /* Plugins for Proxy API */
         result: function (sort) { return sort.result(function (res) { return res; }); }
     };
+
+    // global configuration
+    var config = {
+        patched: '__ANYSORT_PATCHED__',
+        autoWrap: true,
+        autoSort: true
+    };
+
     /**
      * generate SortFn from string command
      * @exam 'date-reverse()' would be a valid command,

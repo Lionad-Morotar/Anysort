@@ -1,6 +1,6 @@
-import { SortFn, SortPlugin, SortableValue, GetCompareValFn } from './type'
-
 import { getType, warn } from './utils'
+
+import type { SortFn, SortPlugin, SortableValue, GetCompareValFn } from './type'
 
 /**
  * get sorting function based on the type of the value
