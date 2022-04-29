@@ -17,74 +17,24 @@ npm install --save https://github.com/Lionad-Morotar/anysort
 简明的使用说明。
 
 ```js
-const posts = [
-  {
-    tag: ['mp3'],
-    status: '',
-    created: {
-      date: new Date('2019-08-01'),
-      hour: 23
-    }
-  },
-  {
-    tag: ['game', 'it'],
-    status: 'editing',
-    created: {
-      date: new Date('2021-01-01'),
-      hour: 23
-    }
-  },
-  {
-    tag: ['it'],
-    status: 'editing',
-    created: {
-      date: new Date('2021-01-01'),
-      hour: 16
-    }
-  },
-  {
-    tag: ['it'],
-    status: 'editing',
-    created: {
-      date: new Date('2021-01-02'),
-      hour: 23
-    }
-  },
-]
+const posts = getPosts()
+const print = (x) => console.log(JSON.stringify(x))
 
-const print = x => console.log(JSON.stringify(x))
-posts.sort(
-  anysort(
-    // use internal plugin "is" to find x in string or x in array
-    'status-is(editing)',
-    // use internal plugin "has" to find x in array
-    'tag-has(it)',
-    // use internal plugin reverse to reverse the default orders (less-than)
-    'created.date-reverse()',
-    // support forms like x dot y (x.y)
-    'created.hour'
-  )
-).map(print)
+// select articles being edited with IT tags,
+// sorted by date in reverse order and time in positive order
+anysort(posts, [
+  'status-is(editing)',
+  'tag-has(it)',
+  'created.date-reverse()',
+  'created.hour'
+]).map(print)
 
-// Results:
-{ "tag":["it"], 
-  "status":"editing",
-  "created":{"date":"2021-01-02","hour":23}
-}
-{ "tag":["it"],        
-  "status":"editing",
-  "created":{"date":"2021-01-01","hour":16}
-}
-{ "tag":["game","it"], 
-  "status":"editing",
-  "created":{"date":"2021-01-01","hour":23}
-}
-{ "tag":["mp3"],       
-  "status":"",
-  "created":{"date":"2019-08-01","hour":23}
-}
+// {"tag":["it"],"status":"editing","created":{"date":"2021-01-02T00:00:00.000Z","hour":23}}
+// {"tag":["it"],"status":"editing","created":{"date":"2021-01-01T00:00:00.000Z","hour":16}}
+// {"tag":["game","it"],"status":"editing","created":{"date":"2021-01-01T00:00:00.000Z","hour":23}}
+// {"tag":["mp3"],"status":"","created":{"date":"2019-08-01T00:00:00.000Z","hour":23}}
 
-// illness with string?
+// sick of using string manipulation?
 // try this!
 anysort(getPosts())
   .created.hour.result()
@@ -92,6 +42,48 @@ anysort(getPosts())
   .tag.has('it')
   .status.is('editing')
   .map(print)
+
+// {"tag":["it"],"status":"editing","created":{"date":"2021-01-02T00:00:00.000Z","hour":23}}
+// {"tag":["it"],"status":"editing","created":{"date":"2021-01-01T00:00:00.000Z","hour":16}}
+// {"tag":["game","it"],"status":"editing","created":{"date":"2021-01-01T00:00:00.000Z","hour":23}}
+// {"tag":["mp3"],"status":"","created":{"date":"2019-08-01T00:00:00.000Z","hour":23}}
+
+function getPosts () {
+  return [
+    {
+      tag: ['mp3'],
+      status: '',
+      created: {
+        date: new Date('2019-08-01'),
+        hour: 23
+      }
+    },
+    {
+      tag: ['game', 'it'],
+      status: 'editing',
+      created: {
+        date: new Date('2021-01-01'),
+        hour: 23
+      }
+    },
+    {
+      tag: ['it'],
+      status: 'editing',
+      created: {
+        date: new Date('2021-01-01'),
+        hour: 16
+      }
+    },
+    {
+      tag: ['it'],
+      status: 'editing',
+      created: {
+        date: new Date('2021-01-02'),
+        hour: 23
+      }
+    }
+  ]
+}
 ```
 
 ## Full API Doc
