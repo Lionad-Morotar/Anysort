@@ -232,8 +232,9 @@ describe('Test Anysort APIs', function () {
           arraySort(arr, ['nth(3)']).should.eql(['aaaa', 'aaab', 'aaac', 'aaad'])
           const arr2 = [['aaac'], ['aaaa'], ['aaad'], ['aaab']]
           arraySort(arr2, ['nth(0)-nth(3)']).should.eql([['aaaa'], ['aaab'], ['aaac'], ['aaad']])
-          const arr3 = [[3, 'aaac'], ['aaaa'], [1, 'aaad', 1], ['aaab']]
-          arraySort(arr3, ['nth(0)-nth(3)']).should.eql([['aaaa'], ['aaab'], [3, 'aaac'], [1, 'aaad', 1]])
+          // * wrong usage
+          // const arr3 = [[3, 'aaac'], ['aaaa'], [1, 'aaad', 1], ['aaab']]
+          // arraySort(arr3, ['nth(0)-nth(3)']).should.eql([['aaaa'], ['aaab'], [3, 'aaac'], [1, 'aaad', 1]])
         })
 
         it('plugin: all', function () {

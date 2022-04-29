@@ -1,5 +1,7 @@
 import Sort from './sort'
 
+import type { BuildInPluginNames } from './build-in-plugins'
+
 export type SortableValue = any
 export type SortVal = 1 | 0 | -1
 export type SortFn = (a: SortableValue, b: SortableValue) => SortVal
@@ -10,8 +12,10 @@ export type GetCompareValFn = (x: SortableValue) => ComparableValue
 export type SortableTypeEnum = 'string' | 'number' | 'boolean' | 'symbol' | 'function' | 'void' | 'date'
 export type ConditionSortFn = (type: SortableTypeEnum) => SortFn
 
-export type SortPlugin = (sort: Sort, arg?: string) => void | Sort
-export type Plugins = Record<string, SortPlugin>
+type MappingPlugin = (sort: Sort, arg?: string) => Sort
+type ResultPlugin = (sort: Sort) => Sort
+export type SortPlugin = MappingPlugin | ResultPlugin
+export type Plugins = Record<BuildInPluginNames, SortPlugin>
 
 /**
  * @example 'date-dec()'

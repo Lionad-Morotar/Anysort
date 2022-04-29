@@ -134,28 +134,105 @@
         return Sort;
     }());
 
-    // build-in plugins
     // TODO plugin 'remap'
     var plugins = {
         /* Plugins that change sort argument */
-        i: function (sort) { return sort.map(function (x) { return (x || '').toLowerCase(); }); },
-        is: function (sort, arg) { return sort.map(function (x) { return x === arg; }); },
-        nth: function (sort, arg) { return sort.map(function (x) { return x[+arg]; }); },
-        all: function (sort, arg) {
-            return sort.map(function (x) { return x.every ? x.every(function (y) { return String(y) === arg; }) : x === arg; });
+        i: function (sort) { return sort.map(function (x) {
+            if (typeof x === 'string')
+                return x.toLowerCase();
+            else
+                throw new Error('[ANYSORT] "i" plugin only works on string');
+        }); },
+        is: function (sort, arg) {
+            if (arg !== '') {
+                return sort.map(function (x) { return x === arg; });
+            }
+            else {
+                throw new Error('[ANYSORT] "is" plugin need a string as arg');
+            }
         },
-        has: function (sort, arg) {
-            return sort.map(function (x) { return x instanceof Array
-                ? x.some(function (y) { return String(y) === arg; })
-                : x.includes(arg); });
+        nth: function (sort, arg) {
+            if (arg !== '') {
+                return sort.map(function (x) {
+                    if (x instanceof Array)
+                        return x[+arg];
+                    if (typeof x === 'string')
+                        return x[+arg];
+                    else {
+                        console.log(typeof arg);
+                        console.log(arg);
+                        console.log(typeof x);
+                        console.log(x);
+                        throw new Error('[ANYSORT] "nth" plugin only works on string or array');
+                    }
+                });
+            }
+            else {
+                throw new Error('[ANYSORT] "nth" plugin need a string as arg');
+            }
         },
-        not: function (sort, arg) { return sort.map(function (x) { return arg ? (x !== arg) : !x; }); },
+        all: function (sort, arg) { return sort.map(function (x) {
+            if (arg !== '') {
+                if (x instanceof Array)
+                    return x.every(function (y) { return String(y) === arg; });
+                if (typeof x === 'string')
+                    return x === arg;
+                else
+                    throw new Error('[ANYSORT] "all" plugin only works on string or array');
+            }
+            else {
+                throw new Error('[ANYSORT] "all" plugin need a string as arg');
+            }
+        }); },
+        has: function (sort, arg) { return sort.map(function (x) {
+            if (arg !== '') {
+                if (x instanceof Array)
+                    return x.some(function (y) { return String(y) === arg; });
+                if (typeof x === 'string')
+                    return x.includes(arg);
+                else
+                    throw new Error('[ANYSORT] "has" plugin only works on string or array');
+            }
+            else {
+                throw new Error('[ANYSORT] "has" plugin need a string as arg');
+            }
+        }); },
+        not: function (sort, arg) {
+            if (arg !== '') {
+                return sort.map(function (x) { return x !== arg; });
+            }
+            else {
+                return sort.map(function (x) { return !x; });
+            }
+        },
         len: function (sort, arg) {
-            return arg.length
-                ? sort.map(function (x) { return x.length === +arg; })
-                : sort.map(function (x) { return x.length; });
+            if (arg !== '') {
+                return sort.map(function (x) {
+                    if (x instanceof Array)
+                        return (x.length === +arg);
+                    if (typeof x === 'string')
+                        return (x.length === +arg);
+                    else
+                        throw new Error('[ANYSORT] "len" plugin only works on string or array');
+                });
+            }
+            else {
+                return sort.map(function (x) {
+                    if (x instanceof Array)
+                        return x.length;
+                    if (typeof x === 'string')
+                        return x.length;
+                    else
+                        throw new Error('[ANYSORT] "len" plugin only works on string or array');
+                });
+            }
         },
-        get: function (sort, arg) { return sort.map(walk(arg)); },
+        get: function (sort, arg) {
+            if (arg !== '')
+                return sort.map(walk(arg));
+            else
+                throw new Error('[ANYSORT] "get" plugin must have a string argument');
+        },
         /* Plugins that change sort order directly */
         reverse: function (sort) { return sort.result(function (res) { return -res; }); },
         rand: function (sort) { return sort.result(function (_) { return Math.random() < 0.5 ? -1 : 1; }); },

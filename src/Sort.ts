@@ -1,6 +1,7 @@
 import { getType, warn } from './utils'
 
 import type { SortFn, SortPlugin, SortableValue, GetCompareValFn } from './type'
+import type { MappingFn, ResultFn } from './build-in-plugins'
 
 /**
  * get sorting function based on the type of the value
@@ -61,11 +62,9 @@ const sortByDefault: SortFn =
     }
   }
 
-type MapingPlugin = (arg: any) => any
-type ResultPlugin = (res: any) => any
 type PipeLine = {
   _type: 'maping' | 'result'
-  _value: MapingPlugin
+  _value: MappingFn
 }
 
 type PLMaping = (map: (x: any) => any) => (fn: SortFn) => (a: any, b: any) => SortableValue
@@ -91,7 +90,7 @@ export default class Sort {
    * array.sort((a, b) => a - b) then becames:
    * array.sort((a, b) => map(a) - map(b))
    */
-  map (_value: MapingPlugin): Sort {
+  map (_value: MappingFn): Sort {
     this.pipeline.push({ _value, _type: 'maping' })
     return this
   }
@@ -100,7 +99,7 @@ export default class Sort {
    * becareful, the result plugin should be
    * the last one in this.pipeline
    */
-  result (_value: ResultPlugin): Sort {
+  result (_value: ResultFn): Sort {
     this.pipeline.push({ _value, _type: 'result' })
     return this
   }

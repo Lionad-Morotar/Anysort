@@ -4,7 +4,9 @@ const anysort = require('../build/index.min.js')
 
 const post = getPosts()
 
-const test_type = anysort(post)
+const test_type = anysort(post, [
+  'tag.length',
+])
 
 function getPosts () {
   return [
