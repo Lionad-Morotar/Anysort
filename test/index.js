@@ -91,6 +91,36 @@ describe('Test Anysort APIs', function () {
           arraySort(arr).should.eql(arr.sort())
         })
 
+        it('arrays of date', function () {
+          const arr = [
+            new Date(1000),
+            new Date(1),
+            new Date(5000),
+            new Date(5),
+          ]
+          arraySort(arr).should.eql([
+            new Date(1),
+            new Date(5),
+            new Date(1000),
+            new Date(5000),
+          ])
+        })
+
+        it('arrays of functions by name', function () {
+          const arr = [
+            function name_c() {},
+            () => {},
+            function name_a() {},
+            function name_b() {},
+          ]
+          arraySort(arr).should.eql([
+            () => {},
+            function name_a() {},
+            function name_b() {},
+            function name_c() {},
+          ])
+        })
+
         it('arrays of objects sort by shallow property', function () {
           const arr = [{ key: 'y' }, { key: 'z' }, { key: 'x' }]
           arraySort(arr, ['key']).should.eql([{ key: 'x' }, { key: 'y' }, { key: 'z' }])

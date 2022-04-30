@@ -1,16 +1,20 @@
 import { getType, warn } from './utils'
 
-import type { SortFn, SortPlugin, SortableValue, GetCompareValFn } from './type'
+import type { SortFn, SortPlugin, SortableValue, SortableTypeEnum, ComparableValue } from './type'
 import type { MappingFn, ResultFn } from './build-in-plugins'
 
 /**
  * get sorting function based on the type of the value
  * @todo refactor x => comparableValue
  */
-const getCompareValue: ({ [key: string]: GetCompareValFn }) = {
+const getCompareValue: Record<
+  SortableTypeEnum,
+  (x: SortableValue) => ComparableValue
+> = {
   void: _ => null,
   string: String,
   number: Number,
+  function: (x: Function) => x.name,
   date: (x: Date): number => +x,
   symbol: (x: Symbol): string => x.toString(),
   // The priority of true is greater than false

@@ -7,21 +7,15 @@ export type SortVal = 1 | 0 | -1
 export type SortFn = (a: SortableValue, b: SortableValue) => SortVal
 
 export type ComparableValue = string | number | boolean
-export type GetCompareValFn = (x: SortableValue) => ComparableValue
-
 export type SortableTypeEnum = 'string' | 'number' | 'boolean' | 'symbol' | 'function' | 'void' | 'date'
-export type ConditionSortFn = (type: SortableTypeEnum) => SortFn
 
 type MappingPlugin = (sort: Sort, arg?: string) => Sort
 type ResultPlugin = (sort: Sort) => Sort
 export type SortPlugin = MappingPlugin | ResultPlugin
 export type Plugins = Record<BuildInPluginNames, SortPlugin>
 
-/**
- * @example 'date-dec()'
- * @example (a, b) => (a - b)
- */
-export type SortCMD = string | SortFn
+type SortStringCMD = string
+export type SortCMD = SortStringCMD | SortFn
 
 // 3 ways to use anysort
 export type AnysortFactory = {
