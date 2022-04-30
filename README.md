@@ -86,6 +86,51 @@ function getPosts () {
 }
 ```
 
+## Why Anysort
+
+* Anysort can sort with multi-attributes
+
+```js
+// select articles which has 'it' tag, put ahead,
+// then move articles which status is 'editing' at the begining
+anysort(articles)
+  .tag.has('it')
+  .status.is('editing')
+  .map(print)
+```
+
+* Intuitive
+
+```js
+// Array.prototype.sort: what hell the result is!
+[].sort.apply([0, '0', 1, 'd', '1', '0', 0, ''])
+// ['', 0, '0', '0', 0, 1, '1', 'd']
+
+// Anysort：the result is intuitive
+anysort([0, '0', 1, undefined, 'd', '1', '0', null, 0, '', undefined])
+// [0, 0, 1, '', '0', '0', '1', 'd']
+```
+
+* Flexible API
+
+```js
+// proxy chain api
+anysort(articles).created.date.reverse()
+
+// Array.prototype.sort
+articles.sort('created.date-reverse()')
+
+// or ...
+anysort(articles, 'created.date-reverse()')
+```
+
+* <del>WIP: With the power of TypeScript's type system</del>
+
+* <del>WIP: Full tested</del>
+
+* <del>WIP: Full API document</del>
+
+
 ## Full API Doc
 
 TODO
