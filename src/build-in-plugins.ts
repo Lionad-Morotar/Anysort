@@ -1,7 +1,7 @@
 import Sort from './sort'
 import { walk } from './utils'
 
-import type { SortVal, ComparableValue } from './type'
+import type { SortVal, ComparableValue, Plugins } from './type'
 
 // TODO reduce compiled code size
 // TODO plugin 'remap'
@@ -91,4 +91,4 @@ export type BuildInPluginNames = keyof typeof plugins
 export type MappingFn = (x: unknown) => ComparableValue
 export type ResultFn = (x: SortVal) => SortVal
 
-export default plugins
+export default plugins as Plugins

@@ -3,7 +3,7 @@ import plugins from './build-in-plugins'
 import config from './config'
 import { isFn, notNull, getValsFrom } from './utils'
 
-import type { Anysort, AnysortFactory, SortVal, Plugins, SortFn, SortCMD } from './type'
+import type { Anysort, AnysortFactory, SortVal, SortFn, SortCMD, SortPlugin } from './type'
 
 /**
  * generate SortFn from string command
@@ -123,8 +123,10 @@ const factory: AnysortFactory = (arr: any[], ...cmds: SortCMD[]) => {
 }
 
 // install plugins for Sort
-const extendPlugs = (exts: Plugins) =>
+const extendPlugs = (exts: Record<string, SortPlugin>) => {
   Object.entries(exts).map(([k, v]) => plugins[k] = v)
+  return factory as Anysort
+}
 
 /**
  * Module Exports

@@ -2,7 +2,7 @@ import Sort from './sort'
 
 import type { BuildInPluginNames } from './build-in-plugins'
 
-export type SortableValue = any
+export type SortableValue = unknown
 export type SortVal = 1 | 0 | -1
 export type SortFn = (a: SortableValue, b: SortableValue) => SortVal
 
@@ -12,7 +12,7 @@ export type SortableTypeEnum = 'string' | 'number' | 'boolean' | 'symbol' | 'fun
 type MappingPlugin = (sort: Sort, arg?: string) => Sort
 type ResultPlugin = (sort: Sort) => Sort
 export type SortPlugin = MappingPlugin | ResultPlugin
-export type Plugins = Record<BuildInPluginNames, SortPlugin>
+export type Plugins = Readonly<Record<BuildInPluginNames, SortPlugin>>
 
 type SortStringCMD = string
 export type SortCMD = SortStringCMD | SortFn
@@ -28,6 +28,10 @@ export type AnysortConfiguration = {
   readonly patched: string;
   autoWrap: boolean;
   autoSort: boolean;
+  orders: Partial<
+    Record<SortableTypeEnum, number> &
+    { rest: number, object: number }
+  >;
 }
 
 export type Anysort = AnysortFactory & {

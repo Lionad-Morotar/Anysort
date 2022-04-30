@@ -38,55 +38,69 @@
         return val;
     }; };
 
+    // global configuration
+    var config = {
+        patched: '__ANYSORT_PATCHED__',
+        autoWrap: true,
+        autoSort: true,
+        orders: {
+            number: 1,
+            string: 2,
+            symbol: 3,
+            date: 4,
+            object: 5,
+            "function": 6,
+            rest: 7,
+            // if no 'void' provided,
+            // undefined value will be ignored in sort,
+            // null value will be treated as normal unrecognized value
+            "void": 8
+        }
+    };
+
     /**
      * get sorting function based on the type of the value
      * @todo refactor x => comparableValue
+     * @todo extensible for custom types
      */
     var getCompareValue = {
         "void": function (_) { return null; },
-        string: String,
         number: Number,
-        date: function (x) { return +x; },
+        string: String,
         symbol: function (x) { return x.toString(); },
+        date: function (x) { return +x; },
+        "function": function (x) { return x.name; },
         // The priority of true is greater than false
         boolean: function (x) { return !x; }
     };
-    var sortBySameType = function (type) { return function (a, b) {
+    var sortBySameType = function (type, a, b) {
         var getValFn = getCompareValue[type];
-        if (!getValFn) {
-            warn("cant sort ".concat(a, " and ").concat(b, "\uFF0Cskip by default"));
-            return undefined;
-        }
-        var va = getValFn(a);
-        var vb = getValFn(b);
-        return va === vb ? 0 : (va < vb ? -1 : 1);
-    }; };
-    var sortByDiffType = function (typeA, typeB) { return function (a, b) {
-        var idx = {
-            number: 1,
-            string: 2,
-            object: 3,
-            "void": 4
-        };
-        if (idx[typeA] && idx[typeB]) {
-            var minus = idx[typeA] - idx[typeB];
-            return minus > 0 ? 1 : -1;
+        if (getValFn) {
+            var va = getValFn(a);
+            var vb = getValFn(b);
+            return va === vb ? 0 : (va < vb ? -1 : 1);
         }
         else {
             warn("cant sort ".concat(a, " and ").concat(b, "\uFF0Cskip by default"));
-            return 0;
         }
-    }; };
-    var sortByDefault = function (a, b) {
+    };
+    var sortByDiffType = function (oa, ob) {
+        var minus = oa - ob;
+        return minus === 0 ? 0 : (minus > 0 ? 1 : -1);
+    };
+    var sortByTypeOrder = function (a, b) {
         var typeA = getType(a);
         var typeB = getType(b);
-        var isSameType = typeA === typeB;
-        var isComparable = getCompareValue[typeA] && getCompareValue[typeB];
-        if (isSameType && isComparable) {
-            return sortBySameType(typeA)(a, b);
-        }
-        else if (isComparable) {
-            return sortByDiffType(typeA, typeB)(a, b);
+        var orders = config.orders;
+        var oa = orders[typeA] || orders.rest;
+        var ob = orders[typeB] || orders.rest;
+        var isSameType = oa === ob;
+        var isComparable = oa && ob;
+        // console.log('[ANYSORT DEBUG]', typeA, typeB, a, b, oa, ob)
+        if (isComparable) {
+            return isSameType
+                ? sortBySameType(typeA, a, b)
+                : sortByDiffType(oa, ob);
         }
         else {
             warn("cant sort ".concat(a, " and ").concat(b, "\uFF0Cskip by default"));
@@ -121,7 +135,7 @@
             return this;
         };
         Sort.prototype.seal = function () {
-            var targetSortFn = sortByDefault;
+            var targetSortFn = sortByTypeOrder;
             this.pipeline.reverse().map(function (current) {
                 var _type = current._type, _value = current._value;
                 if (_type === 'maping')
@@ -234,13 +248,6 @@
         rand: function (sort) { return sort.result(function (_) { return Math.random() < 0.5 ? -1 : 1; }); },
         /* Plugins for Proxy API */
         result: function (sort) { return sort.result(function (res) { return res; }); }
-    };
-
-    // global configuration
-    var config = {
-        patched: '__ANYSORT_PATCHED__',
-        autoWrap: true,
-        autoSort: true
     };
 
     /**
@@ -368,10 +375,11 @@
     };
     // install plugins for Sort
     var extendPlugs = function (exts) {
-        return Object.entries(exts).map(function (_a) {
+        Object.entries(exts).map(function (_a) {
             var k = _a[0], v = _a[1];
             return plugins[k] = v;
         });
+        return factory;
     };
     factory["extends"] = extendPlugs;
     factory.genSortFnFromStrGen = genSortFnFromStrGen;

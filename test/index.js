@@ -40,6 +40,20 @@ describe('Test Anysort Configuration', function () {
     assert.equal(anysort(getArr())[patchedKey], patchedResult)
   })
 
+  it('config.orders', function () {
+    const backupOrders = anysort.config.orders
+    const d1 = new Date(1)
+    const d5 = new Date(5)
+    const getArr = () => ['d', { a: 0 }, 3, 'b', d5, '', null, d1, 'zoo', null, { 1: 1 }, undefined, 'a', 'd', { c: 3 }, 1, 0, 'z']
+
+    anysort.config.orders = { string: 1, number: 2, rest: 3, void: 4 }
+    console.log(anysort(getArr()))
+    anysort(getArr()).should.eql(['', 'a', 'b', 'd', 'd', 'z', 'zoo', 0, 1, 3, { a: 0 }, d1, d5, { 1: 1 }, { c: 3 }, null, null, undefined])
+
+    anysort.config.orders = backupOrders
+    anysort(getArr()).should.eql([0, 1, 3, '', 'a', 'b', 'd', 'd', 'z', 'zoo', d1, d5, {a:0}, {1:1}, {c:3}, null, null, undefined])
+  })
+
 })
 
 /**
@@ -48,14 +62,16 @@ describe('Test Anysort Configuration', function () {
 
 describe('Test Anysort APIs', function () {
   let arraySort
-  for (let i = 0;;i++) {
-    if (i === 0)
+  for (let i = 1;;i++) {
+
+    // Test the four methods of calling anysort
+    if (i === 1)
       arraySort = (arr, args) => args ? anysort(arr, args) : anysort(arr)
-    else if (i === 1)
-      arraySort = (arr, args) => args ? anysort(arr, ...args) : anysort(arr)
     else if (i === 2)
-      arraySort = (arr, args) => args ? arr.sort(anysort(...args)) : arr.sort(anysort())
+      arraySort = (arr, args) => args ? anysort(arr, ...args) : anysort(arr)
     else if (i === 3)
+      arraySort = (arr, args) => args ? arr.sort(anysort(...args)) : arr.sort(anysort())
+    else if (i === 4)
       arraySort = (arr, args) => anysort.wrap(arr).apply(args)
     else
       break
@@ -82,28 +98,23 @@ describe('Test Anysort APIs', function () {
         })
 
         it('arrays of primitives', function () {
-          const arr = ['d', 3, 'b', '', 'zoo', 'a', 'd', 1, 0, 'z']
-          arraySort(arr).should.eql([0, 1, 3, '', 'a', 'b', 'd', 'd', 'z', 'zoo'])
+          const arr = [0, '0', 1, undefined, 'd', '1', '0', null, 0, '', undefined]
+          arraySort(arr).should.eql([0, 0, 1, '', '0', '0', '1', 'd', null, undefined, undefined])
         })
 
-        it('arrays of mixed-type-elements', function () {
-          const arr = ['d', { a: 0 }, 3, 'b', '', 'zoo', { 1: 1 }, 'a', 'd', { c: 3 }, 1, 0, 'z']
-          arraySort(arr).should.eql(arr.sort())
+        it('arrays of dates', function () {
+          const d1 = new Date(1)
+          const d5 = new Date(5)
+          const d100 = new Date(100)
+          const d500 = new Date(500)
+          const arr = [d100, d5, d1, d500]
+          arraySort(arr).should.eql([d1, d5, d100, d500])
         })
 
-        it('arrays of date', function () {
-          const arr = [
-            new Date(1000),
-            new Date(1),
-            new Date(5000),
-            new Date(5),
-          ]
-          arraySort(arr).should.eql([
-            new Date(1),
-            new Date(5),
-            new Date(1000),
-            new Date(5000),
-          ])
+        it('arrays of symbols', function () {
+          const toString = xs => xs.map(x => x.toString())
+          const arr = [Symbol('d'), Symbol('c'), Symbol('a'), Symbol('b')]
+          toString(arraySort(arr)).should.eql(toString([Symbol('a'), Symbol('b'), Symbol('c'), Symbol('d')]))
         })
 
         it('arrays of functions by name', function () {
@@ -113,12 +124,23 @@ describe('Test Anysort APIs', function () {
             function name_a() {},
             function name_b() {},
           ]
+          console.log(arraySort(arr))
           arraySort(arr).should.eql([
             () => {},
             function name_a() {},
             function name_b() {},
             function name_c() {},
           ])
+        })
+
+        it('do nothing with objects if no plugins in use', function () {
+          const arr = [{b:'b'}, {c:'c'}, {e:'e'}, {a:'a'}, {f:'f'}, {d:'d'}]
+          arraySort(arr).should.eql([{b:'b'}, {c:'c'}, {e:'e'}, {a:'a'}, {f:'f'}, {d:'d'}])
+        })
+
+        it('arrays of mixed-type-elements', function () {
+          const arr = ['d', { a: 0 }, 3, 'b', '', 'zoo', { 1: 1 }, 'a', 'd', { c: 3 }, 1, 0, 'z']
+          arraySort(arr).should.eql([0, 1, 3, '', 'a', 'b', 'd', 'd', 'z', 'zoo', {a:0}, {1:1}, {c:3}])
         })
 
         it('arrays of objects sort by shallow property', function () {
