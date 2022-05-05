@@ -25,11 +25,6 @@ function genSortFnFromStr<CMD> (ss: SortStringCMD<CMD>) {
   return sort.seal()
 }
 
-// const testCMD1: SortStringCMD<string> = 'date-reverse()'
-// console.log(testCMD1)
-const testCMD2 = genSortFnFromStr('date-reverse()')
-console.log(testCMD2)
-
 function wrapperProxy<CMD> (arr: any[]): any[] {
   if (arr[config.patched]) {
     throw new Error('[ANYSORT] patched arr cant be wrapped again')
@@ -119,6 +114,7 @@ function factory<CMD> (arr: any[], ...cmds: SortCMD<CMD>[]) {
 }
 
 // install plugins for Sort
+// TODO fix type
 const extendPlugs = (exts: Record<string, SortPlugin>) => {
   Object.entries(exts).map(([k, v]) => plugins[k] = v)
   return factory as Anysort<unknown>
@@ -132,5 +128,36 @@ const extendPlugs = (exts: Record<string, SortPlugin>) => {
 ;(factory as Anysort<unknown>).config = config
 module.exports = factory as Anysort<unknown>
 
-const testFactory = factory([], 'data-reverse()')
-console.log(testFactory)
+/* eslint-disable */
+/* test cases for type */
+
+if (false) {
+
+  /* test cases for SortStringCMD */
+
+  // @ts-expect-error
+  const testCMD_empty = genSortFnFromStr('')
+  const testCMD_1 = genSortFnFromStr('date.test')
+  const testCMD_2 = genSortFnFromStr('date-reverse()')
+  // @ts-expect-error
+  const testCMD_3 = genSortFnFromStr('date-notBuildInPlugin()')
+  // @ts-expect-error
+  const testCMD_4 = genSortFnFromStr('date-notBuildInPlugin()-reverse()')
+  const testCMD_5 = genSortFnFromStr('date-reverse()-reverse()')
+  const testCMD_6 = genSortFnFromStr('date-is(20220324)')
+  // @ts-expect-error
+  const testCMD_7 = genSortFnFromStr('date-reverse(20220324)')
+
+  /* test cases for extendPlugins */
+
+  // const testExtend_1 = extendPlugs({
+  //   lowercase: sort => sort.map(x => (x || '').toLowerCase())
+  // })
+
+  /* test cases for factory function */
+
+  const testFactory_1 = factory([], 'date-reverse()')
+  const testFactory_2 = factory([], 'date-reverse()', 'tag-has(editing)')
+
+}
+

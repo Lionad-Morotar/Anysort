@@ -270,10 +270,6 @@
         });
         return sort.seal();
     }
-    // const testCMD1: SortStringCMD<string> = 'date-reverse()'
-    // console.log(testCMD1)
-    var testCMD2 = genSortFnFromStr('date-reverse()');
-    console.log(testCMD2);
     function wrapperProxy(arr) {
         if (arr[config.patched]) {
             throw new Error('[ANYSORT] patched arr cant be wrapped again');
@@ -379,8 +375,6 @@
     factory.wrap = function (arr) { return wrapperProxy(arr); };
     factory.config = config;
     module.exports = factory;
-    var testFactory = factory([], 'data-reverse()');
-    console.log(testFactory);
 
 }));
 //# sourceMappingURL=index.js.map

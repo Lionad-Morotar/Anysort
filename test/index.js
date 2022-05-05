@@ -10,6 +10,12 @@ const assert = require('assert')
 const anysort = require('../build/index.min.js')
 
 /**
+ * Test Anysort Types
+ */
+
+// TODO
+
+/**
  * Test Anysort Configuration
  */
 

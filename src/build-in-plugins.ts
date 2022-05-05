@@ -87,7 +87,15 @@ const plugins = {
 
 }
 
+type PluginsLiteralTypes = {
+  [K in keyof typeof plugins]: typeof plugins[K]
+}
+type PluginsCallMaybeWithArg = {
+  [K in keyof PluginsLiteralTypes as PluginsLiteralTypes[K] extends (_: any) => any ? never : K]: any
+}
+
 export type BuildInPluginNames = keyof typeof plugins
+export type BuildInPluginNamesWithArgMaybe = keyof PluginsCallMaybeWithArg
 export type MappingFn = (x: unknown) => ComparableValue
 export type ResultFn = (x: SortVal) => SortVal
 

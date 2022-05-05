@@ -1,7 +1,7 @@
 import Sort from './sort'
 
 import type { BuildInPluginNames } from './build-in-plugins'
-import type { isStringLiteral } from './utils'
+import type { isValidCMD } from './type-utils'
 
 export type SortableValue = unknown
 export type SortVal = 1 | 0 | -1
@@ -15,7 +15,7 @@ type ResultPlugin = (sort: Sort) => Sort
 export type SortPlugin = MappingPlugin | ResultPlugin
 export type Plugins = Readonly<Record<BuildInPluginNames, SortPlugin>>
 
-export type SortStringCMD<CMD> = CMD extends isStringLiteral<CMD> ? CMD : never;
+export type SortStringCMD<CMD> = CMD extends isValidCMD<CMD> ? CMD : never
 // export type SortCMD = SortStringCMD | SortFn
 export type SortCMD<CMD> = SortStringCMD<CMD> | SortFn
 
