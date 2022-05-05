@@ -254,9 +254,9 @@
     /**
      * generate SortFn from string command
      * @exam 'date-reverse()' would be a valid command,
-     *        then would be split into 'date' and 'reverse()' plugin
+     *        it would be split into 'date', 'reverse()'  two plugins
      */
-    var genSortFnFromStr = function (ss) {
+    function genSortFnFromStr(ss) {
         var sort = new Sort();
         ss.split(config.delim)
             .filter(notNull)
@@ -269,8 +269,12 @@
                 : sort.register(plugins.get, name);
         });
         return sort.seal();
-    };
-    var wrapperProxy = function (arr) {
+    }
+    // const testCMD1: SortStringCMD<string> = 'date-reverse()'
+    // console.log(testCMD1)
+    var testCMD2 = genSortFnFromStr('date-reverse()');
+    console.log(testCMD2);
+    function wrapperProxy(arr) {
         if (arr[config.patched]) {
             throw new Error('[ANYSORT] patched arr cant be wrapped again');
         }
@@ -317,17 +321,16 @@
                 return proxy;
             }
         }));
-    };
+    }
     /**
      * main
      * @exam 3 ways to use anysort
      *       1. anysort(arr: any[], args: SortCMD[]) => any[];
      *       2. anysort(arr: any[], ...args: SortCMD[]) => any[];
      *       3. anysort(arr: any[]) => any[]
-     * @todo fix types
+     * @todo fix types AnysortFactory
      */
-    // @ts-ignore
-    var factory = function (arr) {
+    function factory(arr) {
         var cmds = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             cmds[_i - 1] = arguments[_i];
@@ -363,7 +366,7 @@
             }
         }
         return result;
-    };
+    }
     // install plugins for Sort
     var extendPlugs = function (exts) {
         Object.entries(exts).map(function (_a) {
@@ -376,6 +379,8 @@
     factory.wrap = function (arr) { return wrapperProxy(arr); };
     factory.config = config;
     module.exports = factory;
+    var testFactory = factory([], 'data-reverse()');
+    console.log(testFactory);
 
 }));
 //# sourceMappingURL=index.js.map

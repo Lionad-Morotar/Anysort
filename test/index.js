@@ -15,6 +15,8 @@ const anysort = require('../build/index.min.js')
 
 describe('Test Anysort Configuration', function () {
 
+  // TODO test cases for delimeter
+
   it('config.autoSort', function () {
     const getArr = () => [3, 5, 0, 2, -9, 6, 1, 4, 7, 8]
 

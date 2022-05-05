@@ -34,3 +34,7 @@ export const walk = (pathsStore: String | String[]) => (x: any) => {
   }
   return val
 }
+
+/** Type Utils */
+
+export type isStringLiteral<T> = T extends string ? string extends T ? never : T : never;
