@@ -70,8 +70,6 @@ describe('Test Anysort APIs', function () {
     else if (i === 2)
       arraySort = (arr, args) => args ? anysort(arr, ...args) : anysort(arr)
     else if (i === 3)
-      arraySort = (arr, args) => args ? arr.sort(anysort(...args)) : arr.sort(anysort())
-    else if (i === 4)
       arraySort = (arr, args) => anysort.wrap(arr).apply(args)
     else
       break

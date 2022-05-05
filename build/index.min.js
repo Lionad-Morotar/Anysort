@@ -323,11 +323,10 @@
     };
     /**
      * main
-     * @exam 4 ways to use anysort
+     * @exam 3 ways to use anysort
      *       1. anysort(arr: any[], args: SortCMD[]) => any[];
      *       2. anysort(arr: any[], ...args: SortCMD[]) => any[];
-     *       3. anysort(...args: SortCMD[]) => SortFn;
-     *       4. anysort(arr: any[]) => any[]
+     *       3. anysort(arr: any[]) => any[]
      * @todo fix types
      */
     // @ts-ignore
@@ -336,8 +335,7 @@
         for (var _i = 1; _i < arguments.length; _i++) {
             cmds[_i - 1] = arguments[_i];
         }
-        var isFirstArr = arr instanceof Array;
-        var filteredCMDs = (isFirstArr ? cmds : [].concat(arr).concat(cmds))
+        var filteredCMDs = cmds
             .reduce(function (h, c) { return (h.concat(c)); }, [])
             .filter(Boolean);
         var isEmptyCMDs = filteredCMDs.length === 0;
@@ -361,14 +359,10 @@
             });
         var flat = function (fns) { return function (a, b) { return fns.reduce(function (sortResult, fn) { return sortResult || fn(a, b); }, 0); }; };
         var flattenCMDs = flat(sortFns);
-        var result = isFirstArr
-            ? arr.sort(flattenCMDs)
-            : flattenCMDs;
+        var result = arr.sort(flattenCMDs);
         if (config.autoWrap) {
-            if (isFirstArr) {
-                if (!result[config.patched]) {
-                    result = wrapperProxy(result);
-                }
+            if (!result[config.patched]) {
+                result = wrapperProxy(result);
             }
         }
         return result;

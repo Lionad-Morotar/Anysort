@@ -117,10 +117,7 @@ anysort([0, '0', 1, undefined, 'd', '1', '0', null, 0, '', undefined])
 // proxy chain api
 anysort(articles).created.date.reverse()
 
-// Array.prototype.sort
-articles.sort('created.date-reverse()')
-
-// or ...
+// or
 anysort(articles, 'created.date-reverse()')
 ```
 

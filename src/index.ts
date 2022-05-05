@@ -69,17 +69,15 @@ const wrapperProxy = (arr: any[]): any[] => {
 
 /**
  * main
- * @exam 4 ways to use anysort
+ * @exam 3 ways to use anysort
  *       1. anysort(arr: any[], args: SortCMD[]) => any[];
  *       2. anysort(arr: any[], ...args: SortCMD[]) => any[];
- *       3. anysort(...args: SortCMD[]) => SortFn;
- *       4. anysort(arr: any[]) => any[]
+ *       3. anysort(arr: any[]) => any[]
  * @todo fix types
  */
 // @ts-ignore
 const factory: AnysortFactory = (arr: any[], ...cmds: SortCMD[]) => {
-  const isFirstArr = arr instanceof Array
-  const filteredCMDs = (isFirstArr ? cmds : [].concat(arr).concat(cmds))
+  const filteredCMDs = cmds
     .reduce((h, c) => (h.concat(c)), [])
     .filter(Boolean)
 
@@ -107,15 +105,10 @@ const factory: AnysortFactory = (arr: any[], ...cmds: SortCMD[]) => {
     fns => (a, b) => fns.reduce((sortResult: SortVal, fn: SortFn) => sortResult || fn(a, b), 0)
   const flattenCMDs = flat(sortFns)
 
-  let result = isFirstArr
-    ? arr.sort(flattenCMDs)
-    : flattenCMDs
-
+  let result = arr.sort(flattenCMDs)
   if (config.autoWrap) {
-    if (isFirstArr) {
-      if (!result[config.patched]) {
-        result = wrapperProxy(result as any[])
-      }
+    if (!result[config.patched]) {
+      result = wrapperProxy(result as any[])
     }
   }
 
