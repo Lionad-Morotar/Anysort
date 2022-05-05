@@ -10,9 +10,9 @@ import type { Anysort, AnysortFactory, SortVal, SortFn, SortCMD, SortPlugin } fr
  * @exam 'date-reverse()' would be a valid command,
  *        then would be split into 'date' and 'reverse()' plugin
  */
-const genSortFnFromStrGen = (delim: string = '-') => (ss: string): SortFn => {
+const genSortFnFromStr = (ss: string): SortFn => {
   const sort = new Sort()
-  ss.split(delim)
+  ss.split(config.delim)
     .filter(notNull)
     .map(action => {
       // if match with parens, it's a plugin, such as is(a)),
@@ -24,7 +24,6 @@ const genSortFnFromStrGen = (delim: string = '-') => (ss: string): SortFn => {
     })
   return sort.seal()
 }
-const genSortFnFromStr = genSortFnFromStrGen()
 
 const wrapperProxy = (arr: any[]): any[] => {
   if (arr[config.patched]) {
@@ -125,7 +124,6 @@ const extendPlugs = (exts: Record<string, SortPlugin>) => {
  * Module Exports
  */
 ;(factory as Anysort).extends = extendPlugs
-;(factory as Anysort).genSortFnFromStrGen = genSortFnFromStrGen
 ;(factory as Anysort).wrap = (arr: any[]) => wrapperProxy(arr)
 ;(factory as Anysort).config = config
 module.exports = factory

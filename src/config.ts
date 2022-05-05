@@ -2,6 +2,7 @@ import type { AnysortConfiguration } from './type'
 
 // global configuration
 const config: AnysortConfiguration = {
+  delim: '-',
   patched: '__ANYSORT_PATCHED__',
   autoWrap: true,
   autoSort: true,

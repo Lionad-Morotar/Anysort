@@ -40,6 +40,7 @@
 
     // global configuration
     var config = {
+        delim: '-',
         patched: '__ANYSORT_PATCHED__',
         autoWrap: true,
         autoSort: true,
@@ -255,24 +256,20 @@
      * @exam 'date-reverse()' would be a valid command,
      *        then would be split into 'date' and 'reverse()' plugin
      */
-    var genSortFnFromStrGen = function (delim) {
-        if (delim === void 0) { delim = '-'; }
-        return function (ss) {
-            var sort = new Sort();
-            ss.split(delim)
-                .filter(notNull)
-                .map(function (action) {
-                // if match with parens, it's a plugin, such as is(a)),
-                // else it's a object path such as 'a.b'
-                var _a = action.match(/([^(]+)(\(([^)]*)\))?/), name = _a[1], callable = _a[2], fnArg = _a[3];
-                callable
-                    ? sort.register(plugins[name], fnArg)
-                    : sort.register(plugins.get, name);
-            });
-            return sort.seal();
-        };
+    var genSortFnFromStr = function (ss) {
+        var sort = new Sort();
+        ss.split(config.delim)
+            .filter(notNull)
+            .map(function (action) {
+            // if match with parens, it's a plugin, such as is(a)),
+            // else it's a object path such as 'a.b'
+            var _a = action.match(/([^(]+)(\(([^)]*)\))?/), name = _a[1], callable = _a[2], fnArg = _a[3];
+            callable
+                ? sort.register(plugins[name], fnArg)
+                : sort.register(plugins.get, name);
+        });
+        return sort.seal();
     };
-    var genSortFnFromStr = genSortFnFromStrGen();
     var wrapperProxy = function (arr) {
         if (arr[config.patched]) {
             throw new Error('[ANYSORT] patched arr cant be wrapped again');
@@ -376,7 +373,6 @@
         return factory;
     };
     factory["extends"] = extendPlugs;
-    factory.genSortFnFromStrGen = genSortFnFromStrGen;
     factory.wrap = function (arr) { return wrapperProxy(arr); };
     factory.config = config;
     module.exports = factory;

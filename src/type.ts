@@ -25,9 +25,30 @@ export type AnysortFactory = {
 }
 
 export type AnysortConfiguration = {
+  // delimeter for SortCMD
+  delim: string;
+  // identity for the proxy
   readonly patched: string;
+  // switch for auto wrap the result with proxy
   autoWrap: boolean;
+  // switch for auto sort policy even if empty SortCMD provided
   autoSort: boolean;
+  // default sort direction for different data types,
+  // numbers should bigger than 0,
+  // default value:
+  //   {
+  //     number: 1,
+  //     string: 2,
+  //     symbol: 3,
+  //     date: 4,
+  //     object: 5,
+  //     function: 6,
+  //     rest: 7,
+  //     void: 8
+  //   }
+  // if no 'void' provided,
+  // undefined value will be ignored in sort,
+  // null value will be treated as normal unrecognized value
   orders: Partial<
     Record<SortableTypeEnum, number> &
     { rest: number, object: number }
@@ -37,9 +58,6 @@ export type AnysortConfiguration = {
 export type Anysort = AnysortFactory & {
   // install plugins for Sort
   extends: (exts: Plugins) => void;
-  // generate fn that generate SortFn from string command split by delim
-  // default delim is '-'
-  genSortFnFromStrGen: (delim: string) => (ss: string) => SortFn;
 
   /** internal fns */
   wrap: (arr: any[]) => any[];
