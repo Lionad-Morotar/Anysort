@@ -5,10 +5,11 @@
   "homepage": "https://github.com/Lionad-Morotar/anysort",
   "license": "MIT",
   "main": "build/index.min.js",
+  "types": "build/types/index.d.ts",
   "scripts": {
-    "prebuild": "rimraf dist/index.*",
+    "prebuild": "rimraf build/index.*",
     "build": "cross-env NODE_ENV=production rollup -c | cross-env NODE_ENV=development rollup -c",
-    "prebuild:types": "rimraf dist/types/**/*",
+    "prebuild:types": "rimraf build/types",
     "build:types": "tsc",
     "build:all": "npm run build:types | npm run build",
     "test": "cross-env NODE_ENV=production mocha ./test/index",
