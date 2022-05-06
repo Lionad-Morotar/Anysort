@@ -4,6 +4,7 @@
     "target": "es6",
     "module": "esnext",
     "declaration": true,
+    "emitDeclarationOnly": true,
     "outDir": "./build/types",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
