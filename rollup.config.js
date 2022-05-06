@@ -21,6 +21,9 @@ export default {
     name: 'module',
     file: ouput + (isDev ? '.js' : '.min.js'),
     format: 'umd',
-    sourcemap: true
+    sourcemap: true,
+    globals: {
+      tslib: 'tslib'
+    }
   }
 }
