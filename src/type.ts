@@ -5,6 +5,7 @@ import type { isValidCMD } from './type-utils'
 
 export type SortableValue = unknown
 export type SortVal = 1 | 0 | -1
+// eslint-disable-next-line no-unused-vars
 export type SortFn = (a: SortableValue, b: SortableValue) => SortVal | undefined
 
 export type ComparableValue = string | number | boolean | null
@@ -16,8 +17,9 @@ export type SortPlugin = MappingPlugin | ResultPlugin
 export type Plugins = Readonly<Record<BuildInPluginNames, SortPlugin>>
 
 export type SortStringCMD<CMD> = CMD extends isValidCMD<CMD> ? CMD : never
-// export type SortCMD = SortStringCMD | SortFn
-export type SortCMD<CMD> = SortStringCMD<CMD> | SortFn
+export type SortCMD<CMD> = CMD extends isValidCMD<CMD>
+  ? (SortStringCMD<CMD> | SortFn)
+  : never
 
 export type AnysortConfiguration = {
   // delimeter for SortCMD

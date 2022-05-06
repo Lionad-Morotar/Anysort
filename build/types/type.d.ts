@@ -11,7 +11,7 @@ declare type ResultPlugin = (sort: Sort) => Sort;
 export declare type SortPlugin = MappingPlugin | ResultPlugin;
 export declare type Plugins = Readonly<Record<BuildInPluginNames, SortPlugin>>;
 export declare type SortStringCMD<CMD> = CMD extends isValidCMD<CMD> ? CMD : never;
-export declare type SortCMD<CMD> = SortStringCMD<CMD> | SortFn;
+export declare type SortCMD<CMD> = CMD extends isValidCMD<CMD> ? (SortStringCMD<CMD> | SortFn) : never;
 export declare type AnysortConfiguration = {
     delim: string;
     readonly patched: string;

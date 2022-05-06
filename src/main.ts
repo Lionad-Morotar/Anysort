@@ -44,17 +44,17 @@ function wrapperProxy<ARR extends any[], CMD = ''> (arr: ARR): AnySortWrapper<AR
         return true
       }
       if (prop === 'apply') {
-        return (...args: SortCMD<CMD>[]) => factory(target, ...args)
+        return (...args: SortCMD<CMD>[]) => factory(target, ...args as SortCMD<CMD>[])
       }
       if (prop === 'sort') {
-        return (arg: SortFn) => factory(target, arg)
+        return (arg: SortFn) => factory(target, arg as SortCMD<CMD>)
       }
       if (Object.prototype.hasOwnProperty.call(plugins, prop)) {
         // TODO check typeof arg
         return (arg: string = '') => {
           const cmdName = [pathStore.splice(0, pathStore.length).join('.'), prop].join('-')
           const cmd = `${cmdName}(${String(arg)})`
-          return factory(target, cmd as SortStringCMD<CMD>)
+          return factory(target, cmd as SortCMD<CMD>)
         }
       }
       if (prop in target) {
@@ -64,7 +64,7 @@ function wrapperProxy<ARR extends any[], CMD = ''> (arr: ARR): AnySortWrapper<AR
         return (arg: string = '') => {
           const cmdName = [pathStore.splice(0, pathStore.length).join('.'), prop].join('-')
           const cmd = `${cmdName.replace('_', '()-')}(${String(arg)})`
-          return factory(target, cmd as SortStringCMD<CMD>)
+          return factory(target, cmd as SortCMD<CMD>)
         }
       }
       pathStore.push(prop)
