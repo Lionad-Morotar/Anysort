@@ -5,9 +5,9 @@ import type { isValidCMD } from './type-utils'
 
 export type SortableValue = unknown
 export type SortVal = 1 | 0 | -1
-export type SortFn = (a: SortableValue, b: SortableValue) => SortVal
+export type SortFn = (a: SortableValue, b: SortableValue) => SortVal | undefined
 
-export type ComparableValue = string | number | boolean
+export type ComparableValue = string | number | boolean | null
 export type SortableTypeEnum = 'string' | 'number' | 'boolean' | 'symbol' | 'function' | 'void' | 'date'
 
 type MappingPlugin = (sort: Sort, arg?: string) => Sort
@@ -18,11 +18,6 @@ export type Plugins = Readonly<Record<BuildInPluginNames, SortPlugin>>
 export type SortStringCMD<CMD> = CMD extends isValidCMD<CMD> ? CMD : never
 // export type SortCMD = SortStringCMD | SortFn
 export type SortCMD<CMD> = SortStringCMD<CMD> | SortFn
-
-export type AnysortFactory<CMD> = {
-  (arr: any[], args: SortCMD<CMD>[]): any[];
-  (arr: any[], ...args: SortCMD<CMD>[]): any[];
-}
 
 export type AnysortConfiguration = {
   // delimeter for SortCMD
@@ -55,11 +50,18 @@ export type AnysortConfiguration = {
   >;
 }
 
-export type Anysort<CMD> = AnysortFactory<CMD> & {
+type AnysortFactory = {
+  <ARR extends any[], CMD>(arr:ARR, args: SortCMD<CMD>[]): ARR;
+  <ARR extends any[], CMD>(arr: ARR, ...args: SortCMD<CMD>[]): ARR;
+}
+
+export type Anysort = AnysortFactory & {
+
   // install plugins for Sort
   extends: (exts: Plugins) => void;
 
   /** internal fns */
-  wrap: (arr: any[]) => any[];
+  wrap: <ARR extends any[]>(arr: ARR) => ARR;
   config: AnysortConfiguration;
+
 }

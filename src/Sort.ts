@@ -26,12 +26,15 @@ const getCompareValue: Record<
 }
 
 const sortBySameType:
-  (type: SortableTypeEnum, a: SortableValue, b: SortableValue) => SortVal =
+  (type: SortableTypeEnum | string, a: SortableValue, b: SortableValue) => SortVal | undefined =
   (type, a, b) => {
     const getValFn = getCompareValue[type]
     if (getValFn) {
       const va = getValFn(a)
       const vb = getValFn(b)
+      // something interesting:
+      // null < null === false
+      // null > null === false
       return va === vb ? 0 : (va < vb ? -1 : 1)
     } else {
       warn(`cant sort ${a} and ${b}，skip by default`)
@@ -68,7 +71,7 @@ type PLMaping = (map: MappingFn) => (fn: SortFn) => SortFn
 type PLResult = (change: ResultFn) => (fn: SortFn) => SortFn
 
 const maping: PLMaping = map => fn => (a, b) => fn(map(a), map(b))
-const result: PLResult = change => fn => (a, b) => change(fn(a, b))
+const result: PLResult = change => fn => (a, b) => change(fn(a, b) as SortVal)
 
 export default class Sort {
   pipeline: (

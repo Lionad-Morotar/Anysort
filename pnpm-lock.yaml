@@ -15,6 +15,7 @@ specifiers:
   eslint-plugin-promise: ^5.2.0
   mocha: ^2.5.3
   npm-watch: ^0.7.0
+  rimraf: ^3.0.2
   rollup: ^2.38.5
   rollup-plugin-uglify: ^6.0.4
   should: ^8.4.0
@@ -36,6 +37,7 @@ devDependencies:
   eslint-plugin-promise: 5.2.0_eslint@7.32.0
   mocha: 2.5.3
   npm-watch: 0.7.0
+  rimraf: 3.0.2
   rollup: 2.70.2
   rollup-plugin-uglify: 6.0.4_rollup@2.70.2
   should: 8.4.0

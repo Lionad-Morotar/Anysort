@@ -4,6 +4,7 @@ import typescript from '@rollup/plugin-typescript'
 
 const path = require('path')
 
+const getPath = _path => path.resolve(__dirname, _path)
 const input = path.join(__dirname, './src/index.ts')
 const ouput = path.join(__dirname, './build/index')
 
@@ -14,7 +15,9 @@ export default {
   plugins: [
     common(),
     node(),
-    typescript()
+    typescript({
+      tsconfig: getPath('./tsconfig.json')
+    })
   ],
   external: [/node_modules/],
   output: {

@@ -1,0 +1,15 @@
+{
+  "include": ["src/index.ts"],
+  "compilerOptions": {
+    "target": "es6",
+    "module": "esnext",
+    "declaration": true,
+    "outDir": "./build/types",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "skipLibCheck": true
+  }
+}

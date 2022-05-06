@@ -6,14 +6,10 @@ export const strObj = (obj: Object) => JSON.stringify(obj)
 
 export const isVoid = (x: SortableValue): boolean => x == undefined
 export const isVoidType = (x: SortableTypeEnum): boolean => x === 'void'
-export const getType = (x: SortableValue): SortableTypeEnum => isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase()
+export const getType = (x: SortableValue): SortableTypeEnum | string =>
+  isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase()
 export const isFn = (x: SortableValue): boolean => getType(x) === 'function'
 export const notNull = (x: any) => !!x
-export const getValsFrom = (x: any[]): any[] => {
-  const ret = []
-  while (x.length > 0) ret.push(x.shift())
-  return ret
-}
 
 /**
  * @example
@@ -22,11 +18,12 @@ export const getValsFrom = (x: any[]): any[] => {
  */
 export const walk = (pathsStore: String | String[]) => (x: any) => {
   const paths = pathsStore instanceof Array
-    ? [].concat(pathsStore)
+    ? pathsStore.slice(0, pathsStore.length)
     : pathsStore.split('.')
-  let val = x; let nextPath = null
+  let val = x
+  let nextPath: string | null = null
   while (val && paths.length) {
-    nextPath = paths.shift()
+    nextPath = paths.shift() as string
     if (!Object.prototype.hasOwnProperty.call(val, nextPath)) {
       warn(`cant find path "${JSON.stringify(pathsStore)}" in ${strObj(x)}, skip by default`)
     }
