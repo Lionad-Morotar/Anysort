@@ -4,9 +4,9 @@ import type { Anysort } from '../build/types'
 import type { GetPath, UnionToTupleSafe, ObjectKeyPaths, isPathAvailable, validOut } from '../build/types/type-utils'
 import type { PluginNames, PluginNamesWithArgMaybe, PluginNamesWithoutArg } from '../build/types/build-in-plugins'
 
-type P1 = PluginNames
-type P2 = PluginNamesWithArgMaybe
-type P3 = PluginNamesWithoutArg
+type PS1 = PluginNames
+type PS2 = PluginNamesWithArgMaybe
+type PS3 = PluginNamesWithoutArg
 
 import { getPosts } from './readme-example'
 
@@ -81,16 +81,16 @@ type test_isPathAvailable = [
  ******************************************************************************/
 
 type test_validOut = [
-  Expect<Equal<validOut<P1, P2, P3, Posts, ''>, never>>,
-  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date'>, 'created.date'>>,
-  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date-reverse()'>, 'created.date-reverse()'>>,
-  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date-notBuildInPlugin()'>, never>>,
-  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date-notBuildInPlugin()-reverse()'>, never>>,
-  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date-reverse()-reverse()'>, 'created.date-reverse()-reverse()'>>,
-  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date-is(20220324)'>, 'created.date-is(20220324)'>>,
-  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date-reverse(20220324)'>, never>>,
-  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date--reverse()'>, never>>,
-  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date--'>, never>>,
+  Expect<Equal<validOut<PS1, PS2, PS3, Posts, ''>, never>>,
+  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date'>, 'created.date'>>,
+  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-reverse()'>, 'created.date-reverse()'>>,
+  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-notBuildInPlugin()'>, never>>,
+  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-notBuildInPlugin()-reverse()'>, never>>,
+  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-reverse()-reverse()'>, 'created.date-reverse()-reverse()'>>,
+  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-is(20220324)'>, 'created.date-is(20220324)'>>,
+  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-reverse(20220324)'>, never>>,
+  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date--reverse()'>, never>>,
+  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date--'>, never>>,
 ]
 
 

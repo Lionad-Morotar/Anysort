@@ -81,9 +81,9 @@ export type isPathAvailable<
   : false
 
 type isEveryCMDValid<
-  P1 extends PluginNames,
-  P2 extends PluginNamesWithArgMaybe,
-  P3 extends PluginNamesWithoutArg,
+  PS1 extends PluginNames,
+  PS2 extends PluginNamesWithArgMaybe,
+  PS3 extends PluginNamesWithoutArg,
   ARR extends unknown[],
   CMD extends unknown[]
 > =
@@ -91,25 +91,25 @@ type isEveryCMDValid<
     ? P extends ''
       ? false
       : P extends `${infer Name}()`
-        ? Name extends P3
-          ? isEveryCMDValid<P1, P2, P3, ARR, R>
+        ? Name extends PS3
+          ? isEveryCMDValid<PS1, PS2, PS3, ARR, R>
           : false
         : P extends `${infer Name}(${infer Arg})`
-          ? Name extends P2
-            ? isEveryCMDValid<P1, P2, P3, ARR, R>
+          ? Name extends PS2
+            ? isEveryCMDValid<PS1, PS2, PS3, ARR, R>
             : false
           // not a build-in-plugin,
           // it's properties such as "a.b.c",
           // so check if every item in arr has "a.b.c"
           : isPathAvailable<ARR, P & string> extends true
-            ? isEveryCMDValid<P1, P2, P3, ARR, R>
+            ? isEveryCMDValid<PS1, PS2, PS3, ARR, R>
             : false
     : true
 
 export type validOut<
-  P1 extends PluginNames,
-  P2 extends PluginNamesWithArgMaybe,
-  P3 extends PluginNamesWithoutArg,
+  PS1 extends PluginNames,
+  PS2 extends PluginNamesWithArgMaybe,
+  PS3 extends PluginNamesWithoutArg,
   ARR extends unknown[],
   S,
   SS extends string[] = Split<S>
@@ -117,7 +117,7 @@ export type validOut<
   S extends isStringLiteral<S>
   ? S extends ''
     ? never
-    : isEveryCMDValid<P1, P2, P3, ARR, SS> extends true ? S : never
+    : isEveryCMDValid<PS1, PS2, PS3, ARR, SS> extends true ? S : never
   : never
 
 // * for test

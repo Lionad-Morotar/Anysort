@@ -6,9 +6,9 @@ import { isFn, notNull } from './utils'
 import type { Anysort, SortVal, SortFn, SortStringCMD, SortCMD, SortPlugin } from './type'
 import type { PluginNames, PluginNamesWithArgMaybe, PluginNamesWithoutArg } from './build-in-plugins'
 
-type P1 = PluginNames
-type P2 = PluginNamesWithArgMaybe
-type P3 = PluginNamesWithoutArg
+type PS1 = PluginNames
+type PS2 = PluginNamesWithArgMaybe
+type PS3 = PluginNamesWithoutArg
 
 /**
  * generate SortFn from string command
@@ -16,12 +16,12 @@ type P3 = PluginNamesWithoutArg
  *        it would be split into 'date', 'reverse()'  two plugins
  */
 function genSortFnFromStr<
-  P1 extends PluginNames,
-  P2 extends PluginNamesWithArgMaybe,
-  P3 extends PluginNamesWithoutArg,
+  PS1 extends PluginNames,
+  PS2 extends PluginNamesWithArgMaybe,
+  PS3 extends PluginNamesWithoutArg,
   ARR extends unknown[],
   CMD
-> (ss: SortStringCMD<P1, P2, P3, ARR, CMD>) {
+> (ss: SortStringCMD<PS1, PS2, PS3, ARR, CMD>) {
   const sort = new Sort()
   ss.split(config.delim)
     .filter(notNull)
@@ -44,9 +44,9 @@ function genSortFnFromStr<
 type AnySortWrapper<ARR> = ARR
 
 function wrapperProxy<
-  P1 extends PluginNames,
-  P2 extends PluginNamesWithArgMaybe,
-  P3 extends PluginNamesWithoutArg,
+  PS1 extends PluginNames,
+  PS2 extends PluginNamesWithArgMaybe,
+  PS3 extends PluginNamesWithoutArg,
   ARR extends any[],
   CMD = ''
 > (arr: ARR): AnySortWrapper<ARR> {
@@ -61,7 +61,7 @@ function wrapperProxy<
         return true
       }
       if (prop === 'apply') {
-        return (...args: SortCMD<P1, P2, P3, ARR, CMD>[]) =>
+        return (...args: SortCMD<PS1, PS2, PS3, ARR, CMD>[]) =>
           factory(target, ...args as unknown as SortCMD<PluginNames, PluginNamesWithArgMaybe, PluginNamesWithoutArg, ARR, CMD>[])
       }
       if (prop === 'sort') {
@@ -100,19 +100,19 @@ function wrapperProxy<
  *       3. anysort(arr: any[]) => any[]
  */
 function genFactory<
-  P1 extends PluginNames,
-  P2 extends PluginNamesWithArgMaybe,
-  P3 extends PluginNamesWithoutArg,
+  PS1 extends PluginNames,
+  PS2 extends PluginNamesWithArgMaybe,
+  PS3 extends PluginNamesWithoutArg,
 > () {
-  const factory = <ARR extends unknown[], CMD> (arr: ARR, ...cmds: SortCMD<P1, P2, P3, ARR, CMD>[]): ARR => {
+  const factory = <ARR extends unknown[], CMD> (arr: ARR, ...cmds: SortCMD<PS1, PS2, PS3, ARR, CMD>[]): ARR => {
     const filteredCMDs = cmds
-      .reduce((h, c) => (h.concat(c)), <SortCMD<P1, P2, P3, ARR, CMD>[]>[])
+      .reduce((h, c) => (h.concat(c)), <SortCMD<PS1, PS2, PS3, ARR, CMD>[]>[])
       .filter(Boolean)
 
     const isEmptyCMDs = filteredCMDs.length === 0
     if (isEmptyCMDs && !config.autoSort) {
       if (config.autoWrap) {
-        return wrapperProxy<P1, P2, P3, ARR, CMD>(arr)
+        return wrapperProxy<PS1, PS2, PS3, ARR, CMD>(arr)
       } else {
         return arr
       }
@@ -120,9 +120,9 @@ function genFactory<
 
     const sortFns = isEmptyCMDs
       ? [new Sort().seal()]
-      : filteredCMDs.map((x: SortCMD<P1, P2, P3, ARR, CMD>, i: number) => {
+      : filteredCMDs.map((x: SortCMD<PS1, PS2, PS3, ARR, CMD>, i: number) => {
         try {
-          return isFn(x) ? <SortFn>x : genSortFnFromStr<P1, P2, P3, ARR, CMD>(<SortStringCMD<P1, P2, P3, ARR, CMD>>x)
+          return isFn(x) ? <SortFn>x : genSortFnFromStr<PS1, PS2, PS3, ARR, CMD>(<SortStringCMD<PS1, PS2, PS3, ARR, CMD>>x)
         } catch (err) {
           throw new Error(`[ERR] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`)
         }
@@ -143,22 +143,22 @@ function genFactory<
 
     return result
   }
-  return factory as Anysort<P1, P2, P3>
+  return factory as Anysort<PS1, PS2, PS3>
 }
-const factory = genFactory<P1, P2, P3>()
+const factory = genFactory<PS1, PS2, PS3>()
 
 // install plugins
 // TODO fix type
 const extendPlugs = <PluginName extends string>(exts: Record<PluginName, SortPlugin>) => {
   Object.entries(exts).map(([k, v]) => plugins[k] = v)
-  return factory as Anysort<P1, P2, P3>
+  return factory as Anysort<PS1, PS2, PS3>
 }
 
 /**
  * Module Exports
  */
-;(factory as Anysort<P1, P2, P3>).extends = extendPlugs
-;(factory as Anysort<P1, P2, P3>).wrap = arr => wrapperProxy(arr)
-;(factory as Anysort<P1, P2, P3>).config = config
+;(factory as Anysort<PS1, PS2, PS3>).extends = extendPlugs
+;(factory as Anysort<PS1, PS2, PS3>).wrap = arr => wrapperProxy(arr)
+;(factory as Anysort<PS1, PS2, PS3>).config = config
 
-export default factory as Anysort<P1, P2, P3>
+export default factory as Anysort<PS1, PS2, PS3>
