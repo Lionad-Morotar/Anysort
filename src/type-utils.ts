@@ -91,7 +91,7 @@ type isEveryCMDValid<
     ? P extends ''
       ? false
       : P extends `${infer Name}()`
-        ? Name extends PS3
+        ? Name extends (PS2 | PS3)
           ? isEveryCMDValid<PS1, PS2, PS3, ARR, R>
           : false
         : P extends `${infer Name}(${infer Arg})`
