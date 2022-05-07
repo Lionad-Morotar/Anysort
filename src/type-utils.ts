@@ -24,10 +24,6 @@ type Split<S, Delim extends string = '-', Res extends string[] = []> =
   : S extends isStringLiteral<S>
     ? [...Res, S]
     : Res
-type Split_test = [
-  Split<'date.a.b.c-1-2()-4-5()'>,
-  Split<'a.b.c-1--2()'>,
-]
 
 /* objects */
 
@@ -68,6 +64,13 @@ export type UnionToTupleSafe<T> =
   : T
   : [...UnionToTupleSafe<Exclude<T, UnionLast<T>>>, UnionLast<T>]
 
+/* function */
+
+export type RequiredArguments<Fn> =
+  Fn extends ((...xs: infer Args) => any)
+  ? ((...xs: Required<Args>) => any)
+  : never
+
 /* AnySort */
 
 export type isPathAvailable<
@@ -81,9 +84,9 @@ export type isPathAvailable<
   : false
 
 type isEveryCMDValid<
-  PS1 extends PluginNames,
-  PS2 extends PluginNamesWithArgMaybe,
-  PS3 extends PluginNamesWithoutArg,
+  PS1,
+  PS2,
+  PS3,
   ARR extends unknown[],
   CMD extends unknown[]
 > =
@@ -107,9 +110,9 @@ type isEveryCMDValid<
     : true
 
 export type validOut<
-  PS1 extends PluginNames,
-  PS2 extends PluginNamesWithArgMaybe,
-  PS3 extends PluginNamesWithoutArg,
+  PS1,
+  PS2,
+  PS3,
   ARR extends unknown[],
   S,
   SS extends string[] = Split<S>

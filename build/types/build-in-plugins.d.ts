@@ -1,5 +1,5 @@
 import Sort from './sort';
-import type { SortVal, SortPlugin, ComparableValue } from './type';
+import type { SortVal, SortPlugin, ComparableValue, ExtsPluginsLiteralTypes, ExtsPluginsCallMaybeWithArg } from './type';
 declare const plugins: {
     i: (sort: Sort) => Sort;
     is: (sort: Sort, arg: string) => Sort;
@@ -13,13 +13,9 @@ declare const plugins: {
     rand: (sort: Sort) => Sort;
     result: (sort: Sort) => Sort;
 };
-declare type PluginsLiteralTypes = {
-    [K in keyof typeof plugins]: typeof plugins[K];
-};
-declare type PluginsCallMaybeWithArg = {
-    [K in keyof PluginsLiteralTypes as PluginsLiteralTypes[K] extends (_: any) => any ? never : K]: any;
-};
-export declare type PluginNames = Exclude<keyof typeof plugins, never>;
+declare type PluginsLiteralTypes = ExtsPluginsLiteralTypes<typeof plugins>;
+declare type PluginsCallMaybeWithArg = ExtsPluginsCallMaybeWithArg<typeof plugins>;
+export declare type PluginNames = Exclude<keyof PluginsLiteralTypes, never>;
 export declare type PluginNamesWithArgMaybe = Exclude<keyof PluginsCallMaybeWithArg, never>;
 export declare type PluginNamesWithoutArg = Exclude<PluginNames, PluginNamesWithArgMaybe>;
 export declare type MappingFn = (x: unknown) => ComparableValue;

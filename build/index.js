@@ -357,7 +357,6 @@
     }
     const factory = genFactory();
     // install plugins
-    // TODO fix type
     const extendPlugs = (exts) => {
         Object.entries(exts).map(([k, v]) => plugins[k] = v);
         return factory;

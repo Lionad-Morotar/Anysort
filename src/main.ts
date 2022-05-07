@@ -5,6 +5,7 @@ import { isFn, notNull } from './utils'
 
 import type { Anysort, SortVal, SortFn, SortStringCMD, SortCMD, SortPlugin } from './type'
 import type { PluginNames, PluginNamesWithArgMaybe, PluginNamesWithoutArg } from './build-in-plugins'
+import type { RequiredArguments } from './type-utils'
 
 type PS1 = PluginNames
 type PS2 = PluginNamesWithArgMaybe
@@ -148,10 +149,16 @@ function genFactory<
 const factory = genFactory<PS1, PS2, PS3>()
 
 // install plugins
-// TODO fix type
 const extendPlugs = <PluginName extends string>(exts: Record<PluginName, SortPlugin>) => {
+  type ExtsPluginsLiteralTypes = { [K in keyof typeof exts]: typeof exts[K] }
+  type ExtsPluginsCallMaybeWithArg = { [K in keyof ExtsPluginsLiteralTypes as RequiredArguments<ExtsPluginsLiteralTypes[K]> extends (_: any) => any ? never : K]: any }
+  type ExtsPluginNames = Exclude<keyof typeof exts, never>
+  type ExtsPluginNamesWithArgMaybe = Exclude<keyof ExtsPluginsCallMaybeWithArg, never>
+  type ExtsPluginNamesWithoutArg = Exclude<ExtsPluginNames, ExtsPluginNamesWithArgMaybe>
+  type ExtendedAnysort = Anysort<PS1 | ExtsPluginNames, PS2 | ExtsPluginNamesWithArgMaybe, PS3 | ExtsPluginNamesWithoutArg>
+
   Object.entries(exts).map(([k, v]) => plugins[k] = v)
-  return factory as Anysort<PS1, PS2, PS3>
+  return factory as ExtendedAnysort
 }
 
 /**

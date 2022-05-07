@@ -1,7 +1,13 @@
 import Sort from './sort'
 import { walk } from './utils'
 
-import type { SortVal, SortPlugin, ComparableValue } from './type'
+import type {
+  SortVal,
+  SortPlugin,
+  ComparableValue,
+  ExtsPluginsLiteralTypes,
+  ExtsPluginsCallMaybeWithArg
+} from './type'
 
 // TODO reduce compiled code size
 // TODO plugin 'remap'
@@ -87,15 +93,11 @@ const plugins = {
 
 }
 
-type PluginsLiteralTypes = {
-  [K in keyof typeof plugins]: typeof plugins[K]
-}
-type PluginsCallMaybeWithArg = {
-  [K in keyof PluginsLiteralTypes as PluginsLiteralTypes[K] extends (_: any) => any ? never : K]: any
-}
+type PluginsLiteralTypes = ExtsPluginsLiteralTypes<typeof plugins>
+type PluginsCallMaybeWithArg = ExtsPluginsCallMaybeWithArg<typeof plugins>
 // use Exclude<> to delay the type check,
 // which make coding tips in VS Code readable
-export type PluginNames = Exclude<keyof typeof plugins, never>
+export type PluginNames = Exclude<keyof PluginsLiteralTypes, never>
 export type PluginNamesWithArgMaybe = Exclude<keyof PluginsCallMaybeWithArg, never>
 export type PluginNamesWithoutArg = Exclude<PluginNames, PluginNamesWithArgMaybe>
 

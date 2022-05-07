@@ -88,6 +88,7 @@ type test_validOut = [
   Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-notBuildInPlugin()-reverse()'>, never>>,
   Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-reverse()-reverse()'>, 'created.date-reverse()-reverse()'>>,
   Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-is(20220324)'>, 'created.date-is(20220324)'>>,
+  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-is()'>, 'created.date-is()'>>,
   Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-reverse(20220324)'>, never>>,
   Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date--reverse()'>, never>>,
   Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date--'>, never>>,
@@ -118,12 +119,25 @@ const wrappedArr = anysort(arr)
  * test cases for extendPlugins
  ******************************************************************************/
 
-// // @ts-expect-error unknownPlugin
-// const test_anysort_extend_1 = anysort(numberArr, 'customPlugin()')
-// anysort.extends({
-//   customPlugin: (sort) => sort.map(x => (x || '').toLowerCase())
-// })
-// const test_anysort_extend_2 = anysort(numberArr, 'customPlugin()')
+// @ts-expect-error unknownPlugin
+const test_anysort_extend_1 = anysort(numberArr, 'customPlugin()')
+const anysortWithCustomPlugins = anysort.extends({
+  customPluginWithoutArg: (sort) => sort.map(x => (x || '').toLowerCase()),
+  customPluginWithArgMaybe: (sort, arg = '') => {
+    if (arg !== '') {
+      return sort.map(x => x === arg)
+    } else {
+      throw new Error('[ANYSORT] "is" plugin need a string as arg')
+    }
+  }
+})
+const test_anysort_extend_2 = anysortWithCustomPlugins(numberArr, 'customPluginWithoutArg()')
+// @ts-expect-error
+const test_anysort_extend_3 = anysortWithCustomPlugins(numberArr, 'customPluginWithoutArg(123)')
+const test_anysort_extend_4 = anysortWithCustomPlugins(numberArr, 'customPluginWithArgMaybe(123)')
+const test_anysort_extend_5 = anysortWithCustomPlugins(numberArr, 'customPluginWithArgMaybe()')
+// @ts-expect-error unknownPlugin
+const test_anysort_extend_6 = anysortWithCustomPlugins(numberArr, 'unknownPlugin()')
 
 
 
