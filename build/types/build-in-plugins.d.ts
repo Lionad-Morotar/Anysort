@@ -1,5 +1,5 @@
 import Sort from './sort';
-import type { SortVal, ComparableValue } from './type';
+import type { SortVal, SortPlugin, ComparableValue } from './type';
 declare const plugins: {
     i: (sort: Sort) => Sort;
     is: (sort: Sort, arg: string) => Sort;
@@ -19,9 +19,10 @@ declare type PluginsLiteralTypes = {
 declare type PluginsCallMaybeWithArg = {
     [K in keyof PluginsLiteralTypes as PluginsLiteralTypes[K] extends (_: any) => any ? never : K]: any;
 };
-export declare type BuildInPluginNames = keyof typeof plugins;
-export declare type BuildInPluginNamesWithArgMaybe = keyof PluginsCallMaybeWithArg;
+export declare type PluginNames = Exclude<keyof typeof plugins, never>;
+export declare type PluginNamesWithArgMaybe = Exclude<keyof PluginsCallMaybeWithArg, never>;
+export declare type PluginNamesWithoutArg = Exclude<PluginNames, PluginNamesWithArgMaybe>;
 export declare type MappingFn = (x: unknown) => ComparableValue;
 export declare type ResultFn = (x: SortVal) => SortVal;
-declare const _default: Readonly<Record<"i" | "is" | "nth" | "all" | "has" | "not" | "len" | "get" | "reverse" | "rand" | "result", import("./type").SortPlugin>>;
+declare const _default: Readonly<Record<PluginNames, SortPlugin>>;
 export default _default;

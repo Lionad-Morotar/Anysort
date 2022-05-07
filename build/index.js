@@ -319,40 +319,44 @@
      *       2. anysort(arr: any[], ...args: SortCMD[]) => any[];
      *       3. anysort(arr: any[]) => any[]
      */
-    function factory(arr, ...cmds) {
-        const filteredCMDs = cmds
-            .reduce((h, c) => (h.concat(c)), [])
-            .filter(Boolean);
-        const isEmptyCMDs = filteredCMDs.length === 0;
-        if (isEmptyCMDs && !config.autoSort) {
+    function genFactory() {
+        const factory = (arr, ...cmds) => {
+            const filteredCMDs = cmds
+                .reduce((h, c) => (h.concat(c)), [])
+                .filter(Boolean);
+            const isEmptyCMDs = filteredCMDs.length === 0;
+            if (isEmptyCMDs && !config.autoSort) {
+                if (config.autoWrap) {
+                    return wrapperProxy(arr);
+                }
+                else {
+                    return arr;
+                }
+            }
+            const sortFns = isEmptyCMDs
+                ? [new Sort().seal()]
+                : filteredCMDs.map((x, i) => {
+                    try {
+                        return isFn(x) ? x : genSortFnFromStr(x);
+                    }
+                    catch (err) {
+                        throw new Error(`[ERR] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`);
+                    }
+                });
+            const flat = fns => (a, b) => fns.reduce((sortResult, fn) => (sortResult || fn(a, b)), 0);
+            const flattenCMDs = flat(sortFns);
+            let result = arr.sort(flattenCMDs);
             if (config.autoWrap) {
-                return wrapperProxy(arr);
-            }
-            else {
-                return arr;
-            }
-        }
-        const sortFns = isEmptyCMDs
-            ? [new Sort().seal()]
-            : filteredCMDs.map((x, i) => {
-                try {
-                    return isFn(x) ? x : genSortFnFromStr(x);
+                if (!result[config.patched]) {
+                    result = wrapperProxy(result);
                 }
-                catch (err) {
-                    throw new Error(`[ERR] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`);
-                }
-            });
-        const flat = fns => (a, b) => fns.reduce((sortResult, fn) => (sortResult || fn(a, b)), 0);
-        const flattenCMDs = flat(sortFns);
-        let result = arr.sort(flattenCMDs);
-        if (config.autoWrap) {
-            if (!result[config.patched]) {
-                result = wrapperProxy(result);
             }
-        }
-        return result;
+            return result;
+        };
+        return factory;
     }
-    // install plugins for Sort
+    const factory = genFactory();
+    // install plugins
     // TODO fix type
     const extendPlugs = (exts) => {
         Object.entries(exts).map(([k, v]) => plugins[k] = v);

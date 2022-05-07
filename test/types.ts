@@ -1,11 +1,23 @@
 /* eslint-disable */
 
-import { Anysort } from '../build/types'
-import { GetPath, UnionToTupleSafe, ObjectKeyPaths, isPathAvailable, validOut } from '../build/types/type-utils'
+import type { Anysort } from '../build/types'
+import type { GetPath, UnionToTupleSafe, ObjectKeyPaths, isPathAvailable, validOut } from '../build/types/type-utils'
+import type { PluginNames, PluginNamesWithArgMaybe, PluginNamesWithoutArg } from '../build/types/build-in-plugins'
+
+type P1 = PluginNames
+type P2 = PluginNamesWithArgMaybe
+type P3 = PluginNamesWithoutArg
 
 import { getPosts } from './readme-example'
 
 const anysort: Anysort = require('../build/index')
+/* *
+ * test if types imported correctly,
+ * because VS Code down sometimes when importing complex types
+ **/
+// @ts-expect-error
+anysort([1,2], '')
+anysort([1,2], 'reverse()')
 
 const arr = [1, '2', new Date(3), Symbol('4'), null]
 const numberArr = [1, 2, 3]
@@ -69,16 +81,16 @@ type test_isPathAvailable = [
  ******************************************************************************/
 
 type test_validOut = [
-  Expect<Equal<validOut<Posts, ''>, never>>,
-  Expect<Equal<validOut<Posts, 'created.date'>, 'created.date'>>,
-  Expect<Equal<validOut<Posts, 'created.date-reverse()'>, 'created.date-reverse()'>>,
-  Expect<Equal<validOut<Posts, 'created.date-notBuildInPlugin()'>, never>>,
-  Expect<Equal<validOut<Posts, 'created.date-notBuildInPlugin()-reverse()'>, never>>,
-  Expect<Equal<validOut<Posts, 'created.date-reverse()-reverse()'>, 'created.date-reverse()-reverse()'>>,
-  Expect<Equal<validOut<Posts, 'created.date-is(20220324)'>, 'created.date-is(20220324)'>>,
-  Expect<Equal<validOut<Posts, 'created.date-reverse(20220324)'>, never>>,
-  Expect<Equal<validOut<Posts, 'created.date--reverse()'>, never>>,
-  Expect<Equal<validOut<Posts, 'created.date--'>, never>>,
+  Expect<Equal<validOut<P1, P2, P3, Posts, ''>, never>>,
+  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date'>, 'created.date'>>,
+  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date-reverse()'>, 'created.date-reverse()'>>,
+  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date-notBuildInPlugin()'>, never>>,
+  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date-notBuildInPlugin()-reverse()'>, never>>,
+  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date-reverse()-reverse()'>, 'created.date-reverse()-reverse()'>>,
+  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date-is(20220324)'>, 'created.date-is(20220324)'>>,
+  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date-reverse(20220324)'>, never>>,
+  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date--reverse()'>, never>>,
+  Expect<Equal<validOut<P1, P2, P3, Posts, 'created.date--'>, never>>,
 ]
 
 
@@ -106,10 +118,12 @@ const wrappedArr = anysort(arr)
  * test cases for extendPlugins
  ******************************************************************************/
 
-// const testExtend_1 = extendPlugs({
-//   lowercase: sort => sort.map(x => (x || '').toLowerCase())
+// // @ts-expect-error unknownPlugin
+// const test_anysort_extend_1 = anysort(numberArr, 'customPlugin()')
+// anysort.extends({
+//   customPlugin: (sort) => sort.map(x => (x || '').toLowerCase())
 // })
-
+// const test_anysort_extend_2 = anysort(numberArr, 'customPlugin()')
 
 
 

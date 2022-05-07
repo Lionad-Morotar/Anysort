@@ -1,7 +1,11 @@
 import Sort from './sort'
 
-import type { BuildInPluginNames } from './build-in-plugins'
+import type { PluginNames, PluginNamesWithArgMaybe, PluginNamesWithoutArg } from './build-in-plugins'
 import type { validOut } from './type-utils'
+
+type P1 = PluginNames
+type P2 = PluginNamesWithArgMaybe
+type P3 = PluginNamesWithoutArg
 
 export type SortableValue = unknown
 export type SortVal = 1 | 0 | -1
@@ -14,13 +18,25 @@ export type SortableTypeEnum = 'string' | 'number' | 'boolean' | 'symbol' | 'fun
 type MappingPlugin = (sort: Sort, arg?: string) => Sort
 type ResultPlugin = (sort: Sort) => Sort
 export type SortPlugin = MappingPlugin | ResultPlugin
-export type Plugins = Readonly<Record<BuildInPluginNames, SortPlugin>>
 
-export type SortStringCMD<ARR extends unknown[], CMD> =
-  CMD extends validOut<ARR, CMD> ? CMD : never
-export type SortCMD<ARR extends unknown[], CMD> =
-  CMD extends validOut<ARR, CMD>
-  ? (SortStringCMD<ARR, CMD> | SortFn)
+export type SortStringCMD<
+  P1 extends PluginNames,
+  P2 extends PluginNamesWithArgMaybe,
+  P3 extends PluginNamesWithoutArg,
+  ARR extends unknown[],
+  CMD
+> =
+  CMD extends validOut<P1, P2, P3, ARR, CMD> ? CMD : never
+
+export type SortCMD<
+  P1 extends PluginNames,
+  P2 extends PluginNamesWithArgMaybe,
+  P3 extends PluginNamesWithoutArg,
+  ARR extends unknown[],
+  CMD
+> =
+  CMD extends validOut<P1, P2, P3, ARR, CMD>
+  ? (SortStringCMD<P1, P2, P3, ARR, CMD> | SortFn)
   : never
 
 export type AnysortConfiguration = {
@@ -54,18 +70,29 @@ export type AnysortConfiguration = {
   >;
 }
 
-type AnysortFactory = {
-  <ARR extends unknown[], CMD>(arr:ARR, args: SortCMD<ARR, CMD>[]): ARR;
-  <ARR extends unknown[], CMD>(arr: ARR, ...args: SortCMD<ARR, CMD>[]): ARR;
+type AnysortFactory<
+  P1 extends PluginNames,
+  P2 extends PluginNamesWithArgMaybe,
+  P3 extends PluginNamesWithoutArg,
+> = {
+  <ARR extends unknown[], CMD>(arr: ARR, args: SortCMD<P1, P2, P3, ARR, CMD>[]): ARR;
+  <ARR extends unknown[], CMD>(arr: ARR, ...args: SortCMD<P1, P2, P3, ARR, CMD>[]): ARR;
 }
 
-export type Anysort = AnysortFactory & {
+export type Anysort<
+  P1 extends PluginNames,
+  P2 extends PluginNamesWithArgMaybe,
+  P3 extends PluginNamesWithoutArg,
+> = AnysortFactory<P1, P2, P3> & {
 
   // install plugins for Sort
-  extends: (exts: Plugins) => void;
+  // TODO fix type
+  extends: <PluginName extends string>(exts: Record<PluginName, SortPlugin>) => Anysort<P1, P2, P3>
 
   /** internal fns */
   wrap: <ARR extends any[]>(arr: ARR) => ARR;
   config: AnysortConfiguration;
 
 }
+
+export type BuildInAnysort = Anysort<P1, P2, P3>

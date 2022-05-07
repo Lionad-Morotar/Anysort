@@ -1,7 +1,7 @@
 import Sort from './sort'
 import { walk } from './utils'
 
-import type { SortVal, ComparableValue, Plugins } from './type'
+import type { SortVal, SortPlugin, ComparableValue } from './type'
 
 // TODO reduce compiled code size
 // TODO plugin 'remap'
@@ -93,9 +93,14 @@ type PluginsLiteralTypes = {
 type PluginsCallMaybeWithArg = {
   [K in keyof PluginsLiteralTypes as PluginsLiteralTypes[K] extends (_: any) => any ? never : K]: any
 }
+// use Exclude<> to delay the type check,
+// which make coding tips in VS Code readable
+export type PluginNames = Exclude<keyof typeof plugins, never>
+export type PluginNamesWithArgMaybe = Exclude<keyof PluginsCallMaybeWithArg, never>
+export type PluginNamesWithoutArg = Exclude<PluginNames, PluginNamesWithArgMaybe>
 
-export type BuildInPluginNames = keyof typeof plugins
-export type BuildInPluginNamesWithArgMaybe = keyof PluginsCallMaybeWithArg
+type Plugins = Readonly<Record<PluginNames, SortPlugin>>
+
 export type MappingFn = (x: unknown) => ComparableValue
 export type ResultFn = (x: SortVal) => SortVal
 

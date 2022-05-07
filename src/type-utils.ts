@@ -1,8 +1,6 @@
 /* eslint-disable */
 
-import type { BuildInPluginNames, BuildInPluginNamesWithArgMaybe } from './build-in-plugins'
-
-type BuildInPluginNamesWithoutArg = Exclude<BuildInPluginNames, BuildInPluginNamesWithArgMaybe>
+import type { PluginNames, PluginNamesWithArgMaybe, PluginNamesWithoutArg } from './build-in-plugins'
 
 /* Logic */
 
@@ -82,27 +80,36 @@ export type isPathAvailable<
   ? true
   : false
 
-type isEveryCMDValid<ARR extends unknown[], CMD extends unknown[]> =
+type isEveryCMDValid<
+  P1 extends PluginNames,
+  P2 extends PluginNamesWithArgMaybe,
+  P3 extends PluginNamesWithoutArg,
+  ARR extends unknown[],
+  CMD extends unknown[]
+> =
   CMD extends [infer P, ...infer R]
     ? P extends ''
       ? false
       : P extends `${infer Name}()`
-        ? Name extends BuildInPluginNamesWithoutArg
-          ? isEveryCMDValid<ARR, R>
+        ? Name extends P3
+          ? isEveryCMDValid<P1, P2, P3, ARR, R>
           : false
         : P extends `${infer Name}(${infer Arg})`
-          ? Name extends BuildInPluginNamesWithArgMaybe
-            ? isEveryCMDValid<ARR, R>
+          ? Name extends P2
+            ? isEveryCMDValid<P1, P2, P3, ARR, R>
             : false
           // not a build-in-plugin,
           // it's properties such as "a.b.c",
           // so check if every item in arr has "a.b.c"
           : isPathAvailable<ARR, P & string> extends true
-            ? isEveryCMDValid<ARR, R>
+            ? isEveryCMDValid<P1, P2, P3, ARR, R>
             : false
     : true
 
 export type validOut<
+  P1 extends PluginNames,
+  P2 extends PluginNamesWithArgMaybe,
+  P3 extends PluginNamesWithoutArg,
   ARR extends unknown[],
   S,
   SS extends string[] = Split<S>
@@ -110,7 +117,7 @@ export type validOut<
   S extends isStringLiteral<S>
   ? S extends ''
     ? never
-    : isEveryCMDValid<ARR, SS> extends true ? S : never
+    : isEveryCMDValid<P1, P2, P3, ARR, SS> extends true ? S : never
   : never
 
 // * for test
