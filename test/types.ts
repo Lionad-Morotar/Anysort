@@ -121,24 +121,35 @@ const wrappedArr = anysort(arr)
 
 // @ts-expect-error unknownPlugin
 const test_anysort_extend_1 = anysort(numberArr, 'customPlugin()')
-const anysortWithCustomPlugins = anysort.extends({
-  customPluginWithoutArg: (sort) => sort.map(x => (x || '').toLowerCase()),
-  customPluginWithArgMaybe: (sort, arg = '') => {
-    if (arg !== '') {
-      return sort.map(x => x === arg)
-    } else {
-      throw new Error('[ANYSORT] "is" plugin need a string as arg')
-    }
-  }
+
+const anysortWithCustomPlugins_wrong = anysort.extends({
+  // @ts-expect-error incorrect counts of arguments
+  wrongPlugin: (sort, x1, x2) => x1.toLocaleString(),
 })
-const test_anysort_extend_2 = anysortWithCustomPlugins(numberArr, 'customPluginWithoutArg()')
+
+const anysortWithCustomPlugins = anysort.extends({
+  customPluginWithoutArg_1: (sort) => sort.map(x => (x || '').toLowerCase()),
+  customPluginWithArgMaybe_1: (sort, arg = '') => sort.map(x => x === arg),
+})
+const test_anysort_extend_2 = anysortWithCustomPlugins(numberArr, 'customPluginWithoutArg_1()')
 // @ts-expect-error
-const test_anysort_extend_3 = anysortWithCustomPlugins(numberArr, 'customPluginWithoutArg(123)')
-const test_anysort_extend_4 = anysortWithCustomPlugins(numberArr, 'customPluginWithArgMaybe(123)')
-const test_anysort_extend_5 = anysortWithCustomPlugins(numberArr, 'customPluginWithArgMaybe()')
+const test_anysort_extend_3 = anysortWithCustomPlugins(numberArr, 'customPluginWithoutArg_1(123)')
+const test_anysort_extend_4 = anysortWithCustomPlugins(numberArr, 'customPluginWithArgMaybe_1(123)')
+const test_anysort_extend_5 = anysortWithCustomPlugins(numberArr, 'customPluginWithArgMaybe_1()')
 // @ts-expect-error unknownPlugin
 const test_anysort_extend_6 = anysortWithCustomPlugins(numberArr, 'unknownPlugin()')
 
+const anysortWithCustomPlugins_2 = anysortWithCustomPlugins.extends({
+  customPluginWithoutArg_2: (sort) => sort.map(x => (x || '').toLowerCase()),
+  customPluginWithArgMaybe_2: (sort, arg = '') => sort.map(x => x === arg),
+})
+const test_anysort_extend_7 = anysortWithCustomPlugins_2(numberArr, 'customPluginWithoutArg_2()')
+// @ts-expect-error
+const test_anysort_extend_8 = anysortWithCustomPlugins_2(numberArr, 'customPluginWithoutArg_2(123)')
+const test_anysort_extend_9 = anysortWithCustomPlugins_2(numberArr, 'customPluginWithArgMaybe_2(123)')
+const test_anysort_extend_10 = anysortWithCustomPlugins_2(numberArr, 'customPluginWithArgMaybe_2()')
+// @ts-expect-error unknownPlugin
+const test_anysort_extend_11 = anysortWithCustomPlugins_2(numberArr, 'unknownPlugin()')
 
 
 
