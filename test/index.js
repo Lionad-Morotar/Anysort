@@ -72,7 +72,7 @@ describe('Test Anysort APIs', function () {
   let arraySort
   for (let i = 1;;i++) {
 
-    // Test the four methods of calling anysort
+    // Test the three mdethods of calling anysort
     if (i === 1)
       arraySort = (arr, args) => args ? anysort(arr, args) : anysort(arr)
     else if (i === 2)
@@ -157,6 +157,13 @@ describe('Test Anysort APIs', function () {
         it('arrays of objects sort by nested property', function () {
           const arr = [{ key: { key: 'y' } }, { key: { key: 'z' } }, { key: { key: 'x' } }]
           arraySort(arr, ['key.key']).should.eql([{ key: { key: 'x' } }, { key: { key: 'y' } }, { key: { key: 'z' } }])
+        })
+
+        it('arrays of objects sort by property on its prototype', function () {
+          const arr = ['aa', 'cccc', 'd', 'eee', 'b']
+          arraySort(arr, ['length']).should.eql(['d', 'b', 'aa', 'eee', 'cccc'])
+          const arr2 = ['aa', 'cccc', 'd', 'eee', 'b']
+          arraySort(arr2, ['length-reverse()']).should.eql(['cccc', 'eee', 'aa', 'd', 'b'])
         })
 
         it('sort with custom functions', function () {

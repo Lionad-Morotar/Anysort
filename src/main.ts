@@ -10,7 +10,7 @@ import type { Anysort, SortVal, SortFn, SortStringCMD, SortCMD, SortPlugin } fro
  * @exam 'date-reverse()' would be a valid command,
  *        it would be split into 'date', 'reverse()'  two plugins
  */
-function genSortFnFromStr<CMD> (ss: SortStringCMD<CMD>) {
+function genSortFnFromStr<ARR extends unknown[], CMD> (ss: SortStringCMD<ARR, CMD>) {
   const sort = new Sort()
   ss.split(config.delim)
     .filter(notNull)
@@ -44,17 +44,17 @@ function wrapperProxy<ARR extends any[], CMD = ''> (arr: ARR): AnySortWrapper<AR
         return true
       }
       if (prop === 'apply') {
-        return (...args: SortCMD<CMD>[]) => factory(target, ...args as SortCMD<CMD>[])
+        return (...args: SortCMD<ARR, CMD>[]) => factory(target, ...args as SortCMD<ARR, CMD>[])
       }
       if (prop === 'sort') {
-        return (arg: SortFn) => factory(target, arg as SortCMD<CMD>)
+        return (arg: SortFn) => factory(target, arg as SortCMD<ARR, CMD>)
       }
       if (Object.prototype.hasOwnProperty.call(plugins, prop)) {
         // TODO check typeof arg
         return (arg: string = '') => {
           const cmdName = [pathStore.splice(0, pathStore.length).join('.'), prop].join('-')
           const cmd = `${cmdName}(${String(arg)})`
-          return factory(target, cmd as SortCMD<CMD>)
+          return factory(target, cmd as SortCMD<ARR, CMD>)
         }
       }
       if (prop in target) {
@@ -64,7 +64,7 @@ function wrapperProxy<ARR extends any[], CMD = ''> (arr: ARR): AnySortWrapper<AR
         return (arg: string = '') => {
           const cmdName = [pathStore.splice(0, pathStore.length).join('.'), prop].join('-')
           const cmd = `${cmdName.replace('_', '()-')}(${String(arg)})`
-          return factory(target, cmd as SortCMD<CMD>)
+          return factory(target, cmd as SortCMD<ARR, CMD>)
         }
       }
       pathStore.push(prop)
@@ -80,9 +80,9 @@ function wrapperProxy<ARR extends any[], CMD = ''> (arr: ARR): AnySortWrapper<AR
  *       2. anysort(arr: any[], ...args: SortCMD[]) => any[];
  *       3. anysort(arr: any[]) => any[]
  */
-function factory<ARR extends any[], CMD> (arr: ARR, ...cmds: SortCMD<CMD>[]): ARR {
+function factory<ARR extends unknown[], CMD> (arr: ARR, ...cmds: SortCMD<ARR, CMD>[]): ARR {
   const filteredCMDs = cmds
-    .reduce((h, c) => (h.concat(c)), <SortCMD<CMD>[]>[])
+    .reduce((h, c) => (h.concat(c)), <SortCMD<ARR, CMD>[]>[])
     .filter(Boolean)
 
   const isEmptyCMDs = filteredCMDs.length === 0
@@ -96,9 +96,9 @@ function factory<ARR extends any[], CMD> (arr: ARR, ...cmds: SortCMD<CMD>[]): AR
 
   const sortFns = isEmptyCMDs
     ? [new Sort().seal()]
-    : filteredCMDs.map((x: SortCMD<CMD>, i: number) => {
+    : filteredCMDs.map((x: SortCMD<ARR, CMD>, i: number) => {
       try {
-        return isFn(x) ? <SortFn>x : genSortFnFromStr(<SortStringCMD<CMD>>x)
+        return isFn(x) ? <SortFn>x : genSortFnFromStr<ARR, CMD>(<SortStringCMD<ARR, CMD>>x)
       } catch (err) {
         throw new Error(`[ERR] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`)
       }

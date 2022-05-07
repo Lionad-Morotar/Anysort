@@ -8,6 +8,13 @@ type BuildInPluginNamesWithoutArg = Exclude<BuildInPluginNames, BuildInPluginNam
 
 type Is<T extends true> = T
 type Not<T extends false> = T
+type And<X, Y> = X extends true ? Y extends true ? true : false : false
+type IsNever<T> = [T] extends [never] ? true : false
+type Equal<X, Y> =
+  And<IsNever<X>, IsNever<Y>> extends false
+  ? (<T>() => T extends X ? 1 : 2) extends
+    (<T>() => T extends Y ? 1 : 2) ? true : false
+  : true
 
 /* String */
 
@@ -24,50 +31,100 @@ type Split_test = [
   Split<'a.b.c-1--2()'>,
 ]
 
+/* objects */
+
+export type GetPath<
+  T extends object,
+  K extends keyof T = keyof T
+> =
+  K extends string | number
+  ? T[K] extends any[]
+  ? `${K}` | `${K}.${GetPath<T[K]>}` | `${K}[${GetPath<T[K]>}]`
+  : T[K] extends object
+  ? `${K}` | `${K}.${GetPath<T[K]>}`
+  : `${K}`
+  : ''
+
+export type ObjectKeyPaths<T extends unknown[], Res = never> =
+  T extends [infer Head, ...infer Tail]
+  ? ObjectKeyPaths<Tail, Res | GetPath<Head & object>>
+  : Res
+// TODO remove useless property,
+// kile "a.toString" | "a.toLocaleString" | "a.pop" | "a.push" | ...
+// type test_ObjectKeyPaths = ObjectKeyPaths<[{a:unknown[]},{b:{c:{d:2}}}]>
+
+/* union */
+
+type UnionToIntersection<U> =
+  (U extends U ? ((k: (x: U) => void) => void) : never) extends
+  ((k: infer I) => void) ? I : never
+
+type UnionLast<U> = UnionToIntersection<U> extends ((x: infer R) => void) ? R : never
+
+export type UnionToTupleSafe<T> =
+  [T] extends [never]
+  ? []
+  : [T] extends [unknown[]]
+  ? [T] extends [(infer R)[]]
+  ? [...UnionToTupleSafe<Exclude<R, UnionLast<R>>>, UnionLast<R>]
+  : T
+  : [...UnionToTupleSafe<Exclude<T, UnionLast<T>>>, UnionLast<T>]
+
 /* AnySort */
 
-type AddParen<U> = U extends any ? `${U & string}()` : never
-type AddParen_test = AddParen<'1'|'2'>
+export type isPathAvailable<
+  ARR extends unknown[],
+  Path extends string,
+  ARRSafe extends unknown[] = UnionToTupleSafe<ARR>,
+  PosiblePath = ObjectKeyPaths<ARRSafe>
+> =
+  Path extends PosiblePath
+  ? true
+  : false
 
-type isEveryCMDValid<T extends unknown[]> =
-  T extends [infer P, ...infer R]
+type isEveryCMDValid<ARR extends unknown[], CMD extends unknown[]> =
+  CMD extends [infer P, ...infer R]
     ? P extends ''
       ? false
       : P extends `${infer Name}()`
         ? Name extends BuildInPluginNamesWithoutArg
-          ? isEveryCMDValid<R>
+          ? isEveryCMDValid<ARR, R>
           : false
         : P extends `${infer Name}(${infer Arg})`
           ? Name extends BuildInPluginNamesWithArgMaybe
-            ? isEveryCMDValid<R>
+            ? isEveryCMDValid<ARR, R>
             : false
           // not a build-in-plugin,
           // it's properties such as "a.b.c",
-          // so return true as default
-          : isEveryCMDValid<R>
+          // so check if every item in arr has "a.b.c"
+          : isPathAvailable<ARR, P & string> extends true
+            ? isEveryCMDValid<ARR, R>
+            : false
     : true
-type isEveryCMDValid_test = [
-  Is<isEveryCMDValid<['reverse()']>>,
-  Not<isEveryCMDValid<['reverse(arg)']>>,
-  Is<isEveryCMDValid<Split<'reverse()-i()'>>>,
-  Not<isEveryCMDValid<Split<'unknownPlugin()'>>>,
-  Is<isEveryCMDValid<Split<'a'>>>,
-  Is<isEveryCMDValid<Split<'a-reverse()-i()'>>>,
-  Not<isEveryCMDValid<Split<'a-reverse(arg)'>>>,
-  Is<isEveryCMDValid<Split<'a-is(arg)'>>>,
-  Not<isEveryCMDValid<Split<'a--is(1)'>>>,
-]
 
-export type isValidCMD<S, SS extends string[] = Split<S>> =
+export type validOut<
+  ARR extends unknown[],
+  S,
+  SS extends string[] = Split<S>
+> =
   S extends isStringLiteral<S>
   ? S extends ''
     ? never
-    : isEveryCMDValid<SS> extends true ? S : never
+    : isEveryCMDValid<ARR, SS> extends true ? S : never
   : never
-type isValidCMD_test1 = isValidCMD<'a.b'>                             // a.b
-type isValidCMD_test2 = isValidCMD<'a.b-reverse()-reverse()'>         // a.b-reverse()-reverse()
-type isValidCMD_test3 = isValidCMD<'a.b-unknownPlugin()-reverse()'>   // never
-type isValidCMD_test4 = isValidCMD<'a.b-reverse(arg)'>                // never
-type isValidCMD_test5 = isValidCMD<'a.b-is(3)'>                       // a.b-is(3)
-type isValidCMD_test6 = isValidCMD<'a.b--is(3)'>                      // never
-type isValidCMD_test7 = isValidCMD<'date--reverse()'>                 // never
+
+// * for test
+// type posts = ({
+//   tag: string[];
+//   status: string;
+//   created: {
+//       date: Date;
+//       hour: number;
+//   };
+// } | {
+//   tag?: undefined;
+//   status?: undefined;
+//   created?: undefined;
+// })[]
+// type test1 = validOut<posts, 'tag-reverse()'>
+// type test2 = validOut<posts, 'tag-b()'>

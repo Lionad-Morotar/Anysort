@@ -10,7 +10,7 @@ const test_type = anysort(post, 'tag.length')
 
 console.log(test_type)
 
-function getPosts () {
+export function getPosts () {
   return [
     {
       tag: ['mp3'],
@@ -43,6 +43,10 @@ function getPosts () {
         date: new Date('2021-01-02'),
         hour: 23
       }
-    }
+    },
+    /* illegal objects */
+    {},
+    null,
+    undefined
   ]
 }

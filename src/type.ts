@@ -1,7 +1,7 @@
 import Sort from './sort'
 
 import type { BuildInPluginNames } from './build-in-plugins'
-import type { isValidCMD } from './type-utils'
+import type { validOut } from './type-utils'
 
 export type SortableValue = unknown
 export type SortVal = 1 | 0 | -1
@@ -16,9 +16,11 @@ type ResultPlugin = (sort: Sort) => Sort
 export type SortPlugin = MappingPlugin | ResultPlugin
 export type Plugins = Readonly<Record<BuildInPluginNames, SortPlugin>>
 
-export type SortStringCMD<CMD> = CMD extends isValidCMD<CMD> ? CMD : never
-export type SortCMD<CMD> = CMD extends isValidCMD<CMD>
-  ? (SortStringCMD<CMD> | SortFn)
+export type SortStringCMD<ARR extends unknown[], CMD> =
+  CMD extends validOut<ARR, CMD> ? CMD : never
+export type SortCMD<ARR extends unknown[], CMD> =
+  CMD extends validOut<ARR, CMD>
+  ? (SortStringCMD<ARR, CMD> | SortFn)
   : never
 
 export type AnysortConfiguration = {
@@ -53,8 +55,8 @@ export type AnysortConfiguration = {
 }
 
 type AnysortFactory = {
-  <ARR extends any[], CMD>(arr:ARR, args: SortCMD<CMD>[]): ARR;
-  <ARR extends any[], CMD>(arr: ARR, ...args: SortCMD<CMD>[]): ARR;
+  <ARR extends unknown[], CMD>(arr:ARR, args: SortCMD<ARR, CMD>[]): ARR;
+  <ARR extends unknown[], CMD>(arr: ARR, ...args: SortCMD<ARR, CMD>[]): ARR;
 }
 
 export type Anysort = AnysortFactory & {
