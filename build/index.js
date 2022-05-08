@@ -280,44 +280,40 @@
         const pathStore = [];
         return (proxy = new Proxy(arr, {
             get(target, prop) {
-                if (prop === config.patched) {
-                    return true;
+                switch (prop) {
+                    case config.patched:
+                        return true;
+                    case 'apply':
+                        return (...args) => factory(target, ...args);
+                    case 'sort':
+                        return (arg) => factory(target, arg);
+                    default:
+                        if (Object.prototype.hasOwnProperty.call(plugins, prop)) {
+                            // TODO check typeof arg
+                            return (arg = '') => {
+                                const cmdName = [pathStore.splice(0, pathStore.length).join('.'), prop].join('-');
+                                const cmd = `${cmdName}(${String(arg)})`;
+                                return factory(target, cmd);
+                            };
+                        }
+                        if (prop in target) {
+                            return target[prop];
+                        }
+                        if (prop.includes('_')) {
+                            return (arg = '') => {
+                                const cmdName = [pathStore.splice(0, pathStore.length).join('.'), prop].join('-');
+                                const cmd = `${cmdName.replace('_', '()-')}(${String(arg)})`;
+                                return factory(target, cmd);
+                            };
+                        }
+                        pathStore.push(prop);
+                        return proxy;
                 }
-                if (prop === 'apply') {
-                    return (...args) => factory(target, ...args);
-                }
-                if (prop === 'sort') {
-                    return (arg) => factory(target, arg);
-                }
-                if (Object.prototype.hasOwnProperty.call(plugins, prop)) {
-                    // TODO check typeof arg
-                    return (arg = '') => {
-                        const cmdName = [pathStore.splice(0, pathStore.length).join('.'), prop].join('-');
-                        const cmd = `${cmdName}(${String(arg)})`;
-                        return factory(target, cmd);
-                    };
-                }
-                if (prop in target) {
-                    return target[prop];
-                }
-                if (prop.includes('_')) {
-                    return (arg = '') => {
-                        const cmdName = [pathStore.splice(0, pathStore.length).join('.'), prop].join('-');
-                        const cmd = `${cmdName.replace('_', '()-')}(${String(arg)})`;
-                        return factory(target, cmd);
-                    };
-                }
-                pathStore.push(prop);
-                return proxy;
             }
         }));
     }
     /**
      * main
-     * @exam 3 ways to use anysort
-     *       1. anysort(arr: any[], args: SortCMD[]) => any[];
-     *       2. anysort(arr: any[], ...args: SortCMD[]) => any[];
-     *       3. anysort(arr: any[]) => any[]
      */
     function genFactory() {
         const factory = (arr, ...cmds) => {
@@ -343,7 +339,7 @@
                         throw new Error(`[ERR] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`);
                     }
                 });
-            const flat = fns => (a, b) => fns.reduce((sortResult, fn) => (sortResult || fn(a, b)), 0);
+            const flat = fns => ((a, b) => fns.reduce((sortResult, fn) => (sortResult || fn(a, b)), 0));
             const flattenCMDs = flat(sortFns);
             let result = arr.sort(flattenCMDs);
             if (config.autoWrap) {

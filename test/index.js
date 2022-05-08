@@ -72,12 +72,10 @@ describe('Test Anysort APIs', function () {
   let arraySort
   for (let i = 1;;i++) {
 
-    // Test the three mdethods of calling anysort
+    // two ways of calling anysort
     if (i === 1)
-      arraySort = (arr, args) => args ? anysort(arr, args) : anysort(arr)
-    else if (i === 2)
       arraySort = (arr, args) => args ? anysort(arr, ...args) : anysort(arr)
-    else if (i === 3)
+    else if (i === 2)
       arraySort = (arr, args) => anysort.wrap(arr).apply(args)
     else
       break

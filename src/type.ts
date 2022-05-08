@@ -8,9 +8,7 @@ type PS2 = PluginNamesWithArgMaybe
 type PS3 = PluginNamesWithoutArg
 
 export type SortableValue = unknown
-export type SortVal = 1 | 0 | -1
-// eslint-disable-next-line no-unused-vars
-export type SortFn = (a: SortableValue, b: SortableValue) => SortVal | undefined
+export type SortVal = number
 
 export type ComparableValue = string | number | boolean | null
 export type SortableTypeEnum = 'string' | 'number' | 'boolean' | 'symbol' | 'function' | 'void' | 'date'
@@ -19,23 +17,17 @@ type MappingPlugin = (sort: Sort, arg?: string) => Sort
 type ResultPlugin = (sort: Sort) => Sort
 export type SortPlugin = MappingPlugin | ResultPlugin
 
-export type SortStringCMD<
-  PS1, PS2, PS3,
-  ARR extends unknown[],
-  CMD
-> =
+export type SortStringCMD<PS1, PS2, PS3, ARR extends unknown[], CMD> =
   CMD extends validOut<PS1, PS2, PS3, ARR, CMD> ? CMD : never
 
-export type SortCMD<
-  PS1,
-  PS2,
-  PS3,
-  ARR extends unknown[],
-  CMD
-> =
-  CMD extends validOut<PS1, PS2, PS3, ARR, CMD>
-  ? (SortStringCMD<PS1, PS2, PS3, ARR, CMD> | SortFn)
+export type SortFn<ARR extends SortableValue[] = unknown[]> =
+  [ARR] extends [(infer Item)[]]
+  ? (a: Item, b: Item) => SortVal | undefined
   : never
+
+export type SortCMD<PS1, PS2, PS3, ARR extends unknown[], CMD> =
+  SortStringCMD<PS1, PS2, PS3, ARR, CMD> |
+  SortFn<ARR>
 
 export type AnysortConfiguration = {
   // delimeter for SortCMD
@@ -68,18 +60,17 @@ export type AnysortConfiguration = {
   >;
 }
 
-type AnysortFactory<PS1, PS2, PS3> = {
-  <ARR extends unknown[], CMD>(arr: ARR, args: SortCMD<PS1, PS2, PS3, ARR, CMD>[]): ARR;
-  <ARR extends unknown[], CMD>(arr: ARR, ...args: SortCMD<PS1, PS2, PS3, ARR, CMD>[]): ARR;
-}
-
 export type ExtsPluginsLiteralTypes<T> = { [K in keyof T]: T[K] }
 export type ExtsPluginsCallMaybeWithArg<T> = { [K in keyof ExtsPluginsLiteralTypes<T> as RequiredArguments<ExtsPluginsLiteralTypes<T>[K]> extends (_: any) => any ? never : K]: any }
 export type ExtsPluginNames<T> = Exclude<keyof T, never>
 export type ExtsPluginNamesWithArgMaybe<T> = Exclude<keyof ExtsPluginsCallMaybeWithArg<T>, never>
 export type ExtsPluginNamesWithoutArg<T> = Exclude<ExtsPluginNames<T>, ExtsPluginNamesWithArgMaybe<T>>
 
-export type Anysort<PS1, PS2, PS3> = AnysortFactory<PS1, PS2, PS3> & {
+export type AnySortWrapper<ARR> = ARR
+
+export type Anysort<PS1, PS2, PS3> = {
+
+  <ARR extends unknown[], CMD>(arr: ARR, ...args: SortCMD<PS1, PS2, PS3, ARR, CMD>[]): AnySortWrapper<ARR>;
 
   // install plugins for Sort
   extends: <U extends Record<string, SortPlugin>>(exts: U) =>

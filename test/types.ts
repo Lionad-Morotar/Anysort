@@ -153,9 +153,19 @@ const test_anysort_extend_11 = anysortWithCustomPlugins_2(numberArr, 'unknownPlu
 
 
 
+
 /*******************************************************************************
  * test cases for factory function
  ******************************************************************************/
+
+anysort(numberArr, function (a, b) { return a - b })
+anysort(stringArr, function (a, b) { return a.length - b.length })
+anysort(arr, function (a, b) { return Math.random() - 0.5 })
+
+// TODO
+// anysort(numberArr).sort(function (a, b) { return a - b })
+// anysort(stringArr).sort(function (a, b) { return a.length - b.length })
+// anysort(arr).sort(function (a, b) { return Math.random() - 0.5 })
 
 const test_anysort_1 = anysort(numberArr, 'reverse()')
 const test_anysort_2 = anysort(stringArr, 'reverse()')
