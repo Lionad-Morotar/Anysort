@@ -1,6 +1,6 @@
 import Sort from './sort';
 import type { BuildInPlugins } from './build-in-plugins';
-import type { DontCare, Equal, ObjectVals, UnionToTupleSafe, RequiredArguments, isValidStringCMD } from './type-utils';
+import type { DontCare, Equal, ObjectVals, UnionToTupleSafe, RequiredArguments, isValidStringCMD, AnySortInvoke } from './type-utils';
 export declare type SortableValue = unknown;
 export declare type SortVal = number;
 export declare type ComparableValue = string | number | boolean | null;
@@ -19,7 +19,7 @@ export declare type AnysortConfiguration = {
     readonly patched: string;
     autoWrap: boolean;
     autoSort: boolean;
-    orders: Partial<Record<SortableTypeEnum, number> & {
+    orders: Partial<Record<SortableTypeEnum, number>> & Required<{
         rest: number;
         object: number;
     }>;
@@ -34,9 +34,11 @@ export declare type PluginNames<T> = Exclude<keyof T, never>;
 export declare type PluginNamesWithArg<T> = Exclude<keyof PluginsCallWithArg<T>, never>;
 export declare type PluginNamesWithoutArg<T> = Exclude<keyof PluginsCallWithoutArg<T>, never>;
 export declare type PluginNamesWithArgMaybe<T> = Exclude<Exclude<keyof T, PluginNamesWithArg<T>>, PluginNamesWithoutArg<T>>;
-export declare type AnySortWrapper<ARR> = ARR;
+export declare type AnySortWrapper<Plugins, ARR extends unknown[]> = ARR & {
+    apply<CMD>(...args: SortCMD<Plugins, ARR, CMD>[]): AnySortWrapper<Plugins, ARR>;
+} & AnySortInvoke<Plugins, ARR>;
 export declare type Anysort<Plugins> = {
-    <ARR extends unknown[], CMD>(arr: ARR, ...args: SortCMD<Plugins, ARR, CMD>[]): AnySortWrapper<ARR>;
+    <ARR extends unknown[], CMD>(arr: ARR, ...args: SortCMD<Plugins, ARR, CMD>[]): AnySortWrapper<Plugins, ARR>;
     extends: <U>(exts: isSortPluginObjects<U>) => Anysort<{
         [K in keyof U]: U[K];
     } & Plugins>;

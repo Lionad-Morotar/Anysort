@@ -1,4 +1,4 @@
-import type { SortPlugin, PluginNamesWithArg, PluginNamesWithoutArg, PluginNamesWithArgMaybe } from './type';
+import type { SortPlugin, PluginNamesWithArg, PluginNamesWithoutArg, PluginNamesWithArgMaybe, AnySortWrapper } from './type';
 export declare type DontCare<T extends unknown = unknown> = any;
 declare type And<X, Y> = X extends true ? Y extends true ? true : false : false;
 export declare type IsAny<T> = (() => any extends 1 ? 1 : 2) extends (() => T extends 1 ? 1 : 2) ? true : false;
@@ -18,6 +18,7 @@ export declare type UnionToTupleSafe<T> = [
 ] extends [never] ? [] : [T] extends [unknown[]] ? [T] extends [(infer R)[]] ? [...UnionToTupleSafe<Exclude<R, UnionLast<R>>>, UnionLast<R>] : T : [...UnionToTupleSafe<Exclude<T, UnionLast<T>>>, UnionLast<T>];
 export declare type Union1th<U> = U extends any ? U extends [infer First] ? First : never : never;
 export declare type Union2th<U> = U extends any ? U extends [infer First, infer Second] ? Second : never : never;
+declare type GetArrItemType<ARR> = ARR extends (infer Item)[] ? Item : never;
 export declare type Nths<Num extends number, ARR extends unknown[] = [], One extends unknown[] = never, Idx extends 1[] = [], Res extends unknown[] = []> = [
     One
 ] extends [never] ? ARR extends [infer ARRHead, ...infer ARRTail] ? ARRHead extends unknown[] ? Nths<Num, ARRTail, ARRHead, [], Res> : never : Res : Idx['length'] extends Num ? One extends [infer OneHead, ...infer OneTail] ? Nths<Num, ARR, never, [], [...Res, OneHead]> : never : One extends [infer OneHead, ...infer OneTail] ? Nths<Num, ARR, OneTail, [...Idx, 1], [...Res]> : never;
@@ -27,4 +28,14 @@ declare type isEveryCMDValid<Plugins, ARR extends unknown[], CMD extends unknown
 export declare type isValidStringCMD<Plugins, ARR extends unknown[], S, SS extends string[] = Split<S>> = S extends isStringLiteral<S> ? S extends '' ? never : isEveryCMDValid<Plugins, ARR, SS> extends true ? S : never : never;
 declare type isEverySortPlugin<Fns extends unknown[]> = Fns extends [infer First, ...infer Rest] ? First extends SortPlugin ? isEverySortPlugin<Rest> : false : true;
 export declare type isValidSortPlugin<OBJ, UFns extends ObjectVals<OBJ> = ObjectVals<OBJ>, Fns = UnionToTupleSafe<UFns>> = Fns extends unknown[] ? isEverySortPlugin<Fns> extends true ? OBJ : never : never;
+declare type InvokePluginCall<Plugins, ARR extends unknown[], PS2 = PluginNamesWithArg<Plugins>, PS3 = PluginNamesWithoutArg<Plugins>, PS4 = PluginNamesWithArgMaybe<Plugins>> = {
+    [K in PS2 as PS2 extends string ? K & string : never]: ((arg: string) => AnySortWrapper<Plugins, ARR>);
+} & {
+    [K in PS3 as PS3 extends string ? K & string : never]: (() => AnySortWrapper<Plugins, ARR>);
+} & {
+    [K in PS4 as PS4 extends string ? K & string : never]: ((arg?: string) => AnySortWrapper<Plugins, ARR>);
+};
+export declare type AnySortInvoke<Plugins, ARR extends unknown[], Item = GetArrItemType<ARR>> = Item extends any ? {
+    [K in keyof Item]: Item[K] extends object ? InvokePluginCall<Plugins, ARR> & AnySortInvoke<Plugins, ARR, Item[K]> : InvokePluginCall<Plugins, ARR>;
+} & InvokePluginCall<Plugins, ARR> : never;
 export {};

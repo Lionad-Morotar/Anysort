@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import type { SortPlugin, PluginNamesWithArg, PluginNamesWithoutArg, PluginNamesWithArgMaybe } from './type'
+import type { SortPlugin, PluginNamesWithArg, PluginNamesWithoutArg, PluginNamesWithArgMaybe, AnySortWrapper } from './type'
 
 // * for test
 type posts = ({
@@ -30,7 +30,11 @@ export type Equal<X, Y> =
     (<T>() => T extends Y ? 1 : 2) ? true : false
   : true
 
-/* String */
+/* number */
+
+// ...
+
+/* string */
 
 type isStringLiteral<S> = S extends string ? string extends S ? never : S : never
 
@@ -68,7 +72,7 @@ export type ObjectKeyPaths<T extends unknown[], Res = never> =
   ? ObjectKeyPaths<Tail, Res | GetPath<Head & object>>
   : Res
 // TODO remove useless property,
-// kile "a.toString" | "a.toLocaleString" | "a.pop" | "a.push" | ...
+// like "a.toString" | "a.toLocaleString" | "a.pop" | "a.push" | ...
 // type test_ObjectKeyPaths = ObjectKeyPaths<[{a:unknown[]},{b:{c:{d:2}}}]>
 
 /* union */
@@ -103,6 +107,8 @@ export type Union2th<U> =
   : never
 
 /* tuple */
+
+type GetArrItemType<ARR> = ARR extends (infer Item)[] ? Item : never
 
 export type Nths<
   Num extends number,
@@ -202,3 +208,33 @@ export type isValidSortPlugin<
   : never
   : never
 
+// TODO maybe more strict in the future,
+// for exam, anysort([{a:2}]).get('aa'),
+// arg 'aa' is a wrong argument
+type InvokePluginCall<
+  Plugins,
+  ARR extends unknown[],
+  // PS1 = PluginNames<Plugins>,
+  PS2 = PluginNamesWithArg<Plugins>,
+  PS3 = PluginNamesWithoutArg<Plugins>,
+  PS4 = PluginNamesWithArgMaybe<Plugins>,
+> = {
+  [K in PS2 as PS2 extends string ? K & string : never]: ((arg: string) => AnySortWrapper<Plugins, ARR>)
+} & {
+  [K in PS3 as PS3 extends string ? K & string : never]: (() => AnySortWrapper<Plugins, ARR>)
+} & {
+  [K in PS4 as PS4 extends string ? K & string : never]: ((arg?: string) => AnySortWrapper<Plugins, ARR>)
+}
+
+export type AnySortInvoke<
+  Plugins,
+  ARR extends unknown[],
+  Item = GetArrItemType<ARR>
+> =
+  Item extends any
+  ? {
+      [K in keyof Item]: Item[K] extends object
+        ? InvokePluginCall<Plugins, ARR> & AnySortInvoke<Plugins, ARR, Item[K]>
+        : InvokePluginCall<Plugins, ARR>
+    } & InvokePluginCall<Plugins, ARR>
+  : never

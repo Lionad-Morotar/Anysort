@@ -6,6 +6,7 @@ const config: AnysortConfiguration = {
   patched: '__ANYSORT_PATCHED__',
   autoWrap: true,
   autoSort: true,
+  // TODO restrained type number bigger than zero
   orders: {
     number: 1,
     string: 2,

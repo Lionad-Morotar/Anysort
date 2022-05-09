@@ -39,11 +39,11 @@ function wrapperProxy<
   Plugins,
   ARR extends any[],
   CMD = ''
-> (arr: ARR): AnySortWrapper<ARR> {
+> (arr: ARR): AnySortWrapper<Plugins, ARR> {
   if (arr[config.patched]) {
     throw new Error('[ANYSORT] patched arr cant be wrapped again')
   }
-  let proxy: AnySortWrapper<ARR> | null = null
+  let proxy: AnySortWrapper<Plugins, ARR> | null = null
   const pathStore: string[] = []
   return (proxy = new Proxy(arr, {
     get (target, prop: string) {
@@ -52,8 +52,6 @@ function wrapperProxy<
           return true
         case 'apply':
           return (...args: SortCMD<Plugins, ARR, CMD>[]) => (factory as Anysort<Plugins>)(target, ...args)
-        case 'sort':
-          return (arg: SortFn<ARR>) => factory(target, arg)
         default:
           if (Object.prototype.hasOwnProperty.call(plugins, prop)) {
             // TODO check typeof arg
@@ -77,14 +75,14 @@ function wrapperProxy<
           return proxy
       }
     }
-  }) as unknown as AnySortWrapper<ARR>)
+  }) as unknown as AnySortWrapper<Plugins, ARR>)
 }
 
 /**
  * main
  */
 function genFactory<Plugins> () {
-  const factory = <ARR extends unknown[], CMD> (arr: ARR, ...cmds: SortCMD<Plugins, ARR, CMD>[]): AnySortWrapper<ARR> => {
+  const factory = <ARR extends unknown[], CMD> (arr: ARR, ...cmds: SortCMD<Plugins, ARR, CMD>[]): AnySortWrapper<Plugins, ARR> => {
     const filteredCMDs = cmds
       .reduce((h, c) => (h.concat(c)), <SortCMD<Plugins, ARR, CMD>[]>[])
       .filter(Boolean)
@@ -94,7 +92,8 @@ function genFactory<Plugins> () {
       if (config.autoWrap) {
         return wrapperProxy<Plugins, ARR, CMD>(arr)
       } else {
-        return arr
+        // !FIXME fix type
+        return arr as AnySortWrapper<Plugins, ARR>
       }
     }
 
@@ -121,7 +120,8 @@ function genFactory<Plugins> () {
       }
     }
 
-    return result
+    // !FIXME fix type
+    return result as AnySortWrapper<Plugins, ARR>
   }
   return factory as Anysort<Plugins>
 }

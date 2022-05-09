@@ -451,33 +451,6 @@ describe('Test Anysort APIs', function () {
       .i().is('c').ltZ().is('b').should.eql(['b', 'D', 'c', 'a'])
   })
 
-  it('anysort(arr).sort(function)', function () {
-    const getArr = () => ['b', 'a', 'E', 'c', 'D']
-    anysort.extends({
-      ltZ: sort => sort.map(x => (x < 'Z') ? -1 : 1)
-    })
-    anysort(getArr())
-      .should.eql(['D', 'E', 'a', 'b', 'c'])
-    anysort(getArr())
-      .sort((a, b) => (a > b) ? -1 : 1).should.eql(['c', 'b', 'a', 'E', 'D'])
-    anysort(getArr())
-      .sort((a, b) => (a > b) ? -1 : 1).is('b').should.eql(['b', 'c', 'a', 'E', 'D'])
-    anysort(getArr())
-      .ltZ().is('c').should.eql(['c', 'D', 'E', 'a', 'b'])
-    anysort(getArr())
-      .ltZ_reverse().is('c').should.eql(['c', 'a', 'b', 'D', 'E'])
-    // * wrong usage
-    // anysort(getArr())
-    //   .ltZ().reverse().is('c').should.eql(['c', 'a', 'b', 'D', 'E'])
-    anysort(getArr())
-      .sort((a, b) => (a > 'Z') ? -1 : 1)
-      .should.eql(['c', 'b', 'a', 'D', 'E'])
-    anysort(getArr())
-      .sort((a, b) => (a > 'Z') ? -1 : 1)
-      .sort((a, b) => (a === 'a') ? -1 : 1)
-      .should.eql(['a', 'c', 'b', 'D', 'E'])
-  })
-
   it('anysort(arr).xxx: test nested objects', function () {
     const getPosts = () => [
       { foo: 'bbb', locals: { date: '2013-05-06' } },

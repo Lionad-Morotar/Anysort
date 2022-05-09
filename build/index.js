@@ -38,6 +38,7 @@
         patched: '__ANYSORT_PATCHED__',
         autoWrap: true,
         autoSort: true,
+        // TODO restrained type number bigger than zero
         orders: {
             number: 1,
             string: 2,
@@ -285,8 +286,6 @@
                         return true;
                     case 'apply':
                         return (...args) => factory(target, ...args);
-                    case 'sort':
-                        return (arg) => factory(target, arg);
                     default:
                         if (Object.prototype.hasOwnProperty.call(plugins, prop)) {
                             // TODO check typeof arg
@@ -326,6 +325,7 @@
                     return wrapperProxy(arr);
                 }
                 else {
+                    // !FIXME fix type
                     return arr;
                 }
             }
@@ -347,6 +347,7 @@
                     result = wrapperProxy(result);
                 }
             }
+            // !FIXME fix type
             return result;
         };
         return factory;
