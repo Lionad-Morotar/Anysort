@@ -1,5 +1,15 @@
 ## Changelog
 
+##### 3.1.0
+
+* 重写类型，字符串形式调用、代理调用、传入排序函数调用现在都能得到类型支持
+  - 类型测试用例见 test/types.ts
+  - 编译时导出了类型，引用地址在 build/types/index.d.ts
+  - 完善测试用例
+* 接口变更
+  - 鉴于 Anysort 的使用场景以及排序速度和 Array.prototype.sort 有很大差异，Array.prototype.sort(anysort('...')) 这种形式的调用已废弃
+  - 不再劫持 anysort(arr).sort()，调用 sort 时会返回 Array.prototype.sort
+
 ##### 3.0.0
 
 * 接口变更，使用 anysort(arr) 将会返回一个被包装的 arr 对象（以下简称为包装对象），并有能力直接通过属性调用排序插件，如：anysort(arr).has('a') 等同于 anysort(arr, 'has(a)')，也等同于 anysort(arr).apply('has(a)')
