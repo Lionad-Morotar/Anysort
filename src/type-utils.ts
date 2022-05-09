@@ -1,15 +1,30 @@
 /* eslint-disable */
 
 import Sort from './sort'
-import type { SortPlugin, SortVal } from './type'
+import type { SortPlugin, SortVal, PluginNames, PluginNamesWithArg, PluginNamesWithoutArg, PluginNamesWithArgMaybe } from './type'
+import type { BuildInPlugins } from './build-in-plugins'
+
+// * for test
+type posts = ({
+  tag: string[];
+  status: string;
+  created: {
+      date: Date;
+      hour: number;
+  };
+} | {
+  tag?: undefined;
+  status?: undefined;
+  created?: undefined;
+})[]
 
 /* Logic */
-
+export type DontCare<T extends unknown = unknown> = any
 type Is<T extends true> = T
 type Not<T extends false> = T
 type And<X, Y> = X extends true ? Y extends true ? true : false : false
 type IsNever<T> = [T] extends [never] ? true : false
-type Equal<X, Y> =
+export type Equal<X, Y> =
   And<IsNever<X>, IsNever<Y>> extends false
   ? (<T>() => T extends X ? 1 : 2) extends
     (<T>() => T extends Y ? 1 : 2) ? true : false
@@ -108,8 +123,8 @@ type test_Nths_3 = Nths<1, [[1,3],[5,7],[8,10]]>
 /* function */
 
 export type RequiredArguments<Fn> =
-  Fn extends ((...xs: infer Args) => any)
-  ? ((...xs: Required<Args>) => any)
+  Fn extends ((...xs: infer Args) => infer Return)
+  ? ((...xs: Required<Args>) => Return)
   : never
 
 /* AnySort */
@@ -125,35 +140,39 @@ export type isPathAvailable<
   : false
 
 type isEveryCMDValid<
-  PS1,
-  PS2,
-  PS3,
+  Plugins,
   ARR extends unknown[],
-  CMD extends unknown[]
+  CMD extends unknown[],
+  // PS1 = PluginNames<Plugins>,
+  PS2 = PluginNamesWithArg<Plugins>,
+  PS3 = PluginNamesWithoutArg<Plugins>,
+  PS4 = PluginNamesWithArgMaybe<Plugins>,
 > =
   CMD extends [infer P, ...infer R]
     ? P extends ''
       ? false
       : P extends `${infer Name}()`
-        ? Name extends (PS2 | PS3)
-          ? isEveryCMDValid<PS1, PS2, PS3, ARR, R>
+        ? Name extends (PS3 | PS4)
+          ? isEveryCMDValid<Plugins, ARR, R>
           : false
         : P extends `${infer Name}(${infer Arg})`
           ? Name extends PS2
-            ? isEveryCMDValid<PS1, PS2, PS3, ARR, R>
+            ? isEveryCMDValid<Plugins, ARR, R>
             : false
           // not a build-in-plugin,
           // it's properties such as "a.b.c",
           // so check if every item in arr has "a.b.c"
           : isPathAvailable<ARR, P & string> extends true
-            ? isEveryCMDValid<PS1, PS2, PS3, ARR, R>
+            ? isEveryCMDValid<Plugins, ARR, R>
             : false
     : true
+// type test1 = isEveryCMDValid<BuildInPlugins, posts, ['tag']>
+// type test2 = isEveryCMDValid<BuildInPlugins, posts, ['reverse()']>
+// type test3 = isEveryCMDValid<BuildInPlugins, posts, ['tag', 'reverse()']>
+// type test4 = isEveryCMDValid<BuildInPlugins, posts, ['tag', 'b()']>
 
 export type isValidStringCMD<
-  PS1,
-  PS2,
-  PS3,
+  Plugins,
   ARR extends unknown[],
   S,
   SS extends string[] = Split<S>
@@ -161,24 +180,12 @@ export type isValidStringCMD<
   S extends isStringLiteral<S>
   ? S extends ''
     ? never
-    : isEveryCMDValid<PS1, PS2, PS3, ARR, SS> extends true ? S : never
+    : isEveryCMDValid<Plugins, ARR, SS> extends true ? S : never
   : never
-
-// * for test
-// type posts = ({
-//   tag: string[];
-//   status: string;
-//   created: {
-//       date: Date;
-//       hour: number;
-//   };
-// } | {
-//   tag?: undefined;
-//   status?: undefined;
-//   created?: undefined;
-// })[]
-// type test1 = isValidStringCMD<posts, 'tag-reverse()'>
-// type test2 = isValidStringCMD<posts, 'tag-b()'>
+// type test1 = isValidStringCMD<BuildInPlugins, posts, 'tag'>
+// type test2 = isValidStringCMD<BuildInPlugins, posts, 'reverse()'>
+// type test3 = isValidStringCMD<BuildInPlugins, posts, 'tag-reverse()'>
+// type test4 = isValidStringCMD<BuildInPlugins, posts, 'tag-b()'>
 
 type isEverySortPlugin<Fns extends unknown[]> =
   Fns extends [infer First, ...infer Rest]

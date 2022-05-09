@@ -1,12 +1,10 @@
 /* eslint-disable */
 
 import type { Anysort } from '../build/types'
+import Sort from '../build/types/sort'
+import type { PluginNamesWithoutArg, PluginNamesWithArg, PluginNamesWithArgMaybe } from '../build/types/type'
 import type { GetPath, UnionToTupleSafe, ObjectKeyPaths, isPathAvailable, isValidStringCMD } from '../build/types/type-utils'
-import type { PluginNames, PluginNamesWithArgMaybe, PluginNamesWithoutArg } from '../build/types/build-in-plugins'
-
-type PS1 = PluginNames
-type PS2 = PluginNamesWithArgMaybe
-type PS3 = PluginNamesWithoutArg
+import type { BuildInPlugins, BuildInPluginNames, BuildInPluginNamesWithArgMaybe, BuildInPluginNamesWithoutArg } from '../build/types/build-in-plugins'
 
 import { getPosts } from './readme-example'
 
@@ -38,6 +36,29 @@ type IsNumberArr<T extends number[]> = T
 type IsStringArr<T extends string[]> = T
 
 
+
+
+/*******************************************************************************
+ * test cases for GetPath
+ ******************************************************************************/
+
+const testPluginsRaw = {
+  p1: (sort: Sort) => sort.result(res => -res),
+  p2: (sort: Sort, arg?: string) => sort.map(x => (x + arg).toLocaleString()),
+  p3: (sort: Sort, arg: string) => sort.map(x => (x + arg).toLocaleString())
+}
+type PluginsRaw = typeof testPluginsRaw
+type test_PluginNamesWithoutArg_1 = PluginNamesWithoutArg<PluginsRaw>
+type test_PluginNamesWithArg_1 = PluginNamesWithArg<PluginsRaw>
+type test_PluginNamesWithArgMaybe_1 = PluginNamesWithArgMaybe<PluginsRaw>
+
+type test_PluginNamesWithoutArg_2 = PluginNamesWithoutArg<BuildInPlugins>
+type test_PluginNamesWithArg_2 = PluginNamesWithArg<BuildInPlugins>
+type test_PluginNamesWithArgMaybe_2 = PluginNamesWithArgMaybe<BuildInPlugins>
+
+type test_PluginNamesWithoutArg_3 = PluginNamesWithoutArg<BuildInPlugins & PluginsRaw>
+type test_PluginNamesWithArg_3 = PluginNamesWithArg<BuildInPlugins & PluginsRaw>
+type test_PluginNamesWithArgMaybe_3 = PluginNamesWithArgMaybe<BuildInPlugins & PluginsRaw>
 
 
 /*******************************************************************************
@@ -80,18 +101,19 @@ type test_isPathAvailable = [
  * test cases for isValidStringCMD
  ******************************************************************************/
 
+type test = isValidStringCMD<BuildInPlugins, Posts, 'i()'>
 type test_isValidStringCMD = [
-  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, ''>, never>>,
-  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date'>, 'created.date'>>,
-  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date-reverse()'>, 'created.date-reverse()'>>,
-  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date-notBuildInPlugin()'>, never>>,
-  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date-notBuildInPlugin()-reverse()'>, never>>,
-  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date-reverse()-reverse()'>, 'created.date-reverse()-reverse()'>>,
-  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date-is(20220324)'>, 'created.date-is(20220324)'>>,
-  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date-is()'>, 'created.date-is()'>>,
-  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date-reverse(20220324)'>, never>>,
-  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date--reverse()'>, never>>,
-  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date--'>, never>>,
+  Expect<Equal<isValidStringCMD<BuildInPlugins, Posts, ''>, never>>,
+  Expect<Equal<isValidStringCMD<BuildInPlugins, Posts, 'created.date'>, 'created.date'>>,
+  Expect<Equal<isValidStringCMD<BuildInPlugins, Posts, 'created.date-reverse()'>, 'created.date-reverse()'>>,
+  Expect<Equal<isValidStringCMD<BuildInPlugins, Posts, 'created.date-notBuildInPlugin()'>, never>>,
+  Expect<Equal<isValidStringCMD<BuildInPlugins, Posts, 'created.date-notBuildInPlugin()-reverse()'>, never>>,
+  Expect<Equal<isValidStringCMD<BuildInPlugins, Posts, 'created.date-reverse()-reverse()'>, 'created.date-reverse()-reverse()'>>,
+  Expect<Equal<isValidStringCMD<BuildInPlugins, Posts, 'created.date-is(20220324)'>, 'created.date-is(20220324)'>>,
+  Expect<Equal<isValidStringCMD<BuildInPlugins, Posts, 'created.date-is()'>, never>>,
+  Expect<Equal<isValidStringCMD<BuildInPlugins, Posts, 'created.date-reverse(20220324)'>, never>>,
+  Expect<Equal<isValidStringCMD<BuildInPlugins, Posts, 'created.date--reverse()'>, never>>,
+  Expect<Equal<isValidStringCMD<BuildInPlugins, Posts, 'created.date--'>, never>>,
 ]
 
 

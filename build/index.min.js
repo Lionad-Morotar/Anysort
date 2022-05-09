@@ -204,7 +204,7 @@
                 throw new Error('[ANYSORT] "has" plugin need a string as arg');
             }
         }),
-        not: (sort, arg) => {
+        not: (sort, arg = '') => {
             if (arg !== '') {
                 return sort.map(x => x !== arg);
             }
