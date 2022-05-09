@@ -261,4 +261,6 @@ anysort(postsArr).i()
 anysort(postsArr).tag()
 anysort(postsArr).tag.has('editing')
 anysort(postsArr).created.date.reverse()
+// @ts-expect-error
+anysort(postsArr).created.date.reverse(123)
 anysort(postsArr).created.date.has('editing').reverse()

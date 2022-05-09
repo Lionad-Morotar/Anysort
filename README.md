@@ -2,7 +2,7 @@
 
 <center>
   <img src="./statics/LOGO.jpg" style="width: 100%" />
-  <p><strong>Anysort：灵活、符合直觉的多属性排序方法。</strong></p>
+  <p><strong>Anysort：符合直觉的多属性排序方法，类型完备</strong></p>
 </center>
 
 ## Install
@@ -99,6 +99,23 @@ anysort(articles)
   .map(print)
 ```
 
+* Full typed, even in call-with-string-mode, **AMAZING**!
+
+```js
+// @ts-expect-error
+anysort(articles).tag.hass('it')
+// @ts-expect-error
+anysort(articles, 'created.date-unknownPlugin()')
+// OK!
+anysort(articles).created.date.reverse()
+// OK!
+anysort(articles, 'created.date-reverse()')
+// @ts-expect-error
+anysort(articles).created.date.reverse(123)
+// @ts-expect-error
+anysort(articles, 'created.date-reverse(123)')
+```
+
 * Intuitive
 
 ```js
@@ -121,12 +138,11 @@ anysort(articles).created.date.reverse()
 anysort(articles, 'created.date-reverse()')
 ```
 
-* <del>WIP: With the power of TypeScript's type system</del>
+* Full tested, logic and type
 
-* <del>WIP: Full tested</del>
+* <del>WIP: Full API document</del>, help wanted
 
-* <del>WIP: Full API document</del>
-
+* <del>WIP: Benchmark</del>, help wanted
 
 ## Full API Doc
 
