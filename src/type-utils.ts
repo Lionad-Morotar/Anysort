@@ -1,6 +1,7 @@
 /* eslint-disable */
 
-import type { PluginNames, PluginNamesWithArgMaybe, PluginNamesWithoutArg } from './build-in-plugins'
+import Sort from './sort'
+import type { SortPlugin, SortVal } from './type'
 
 /* Logic */
 
@@ -26,6 +27,11 @@ type Split<S, Delim extends string = '-', Res extends string[] = []> =
     : Res
 
 /* objects */
+
+export type ObjectEntries<T, U extends keyof T = keyof T> =
+  U extends U
+  ? [ U, T[U] extends infer R | undefined ? R : never ]
+  : never
 
 export type GetPath<
   T extends object,
@@ -63,6 +69,41 @@ export type UnionToTupleSafe<T> =
   ? [...UnionToTupleSafe<Exclude<R, UnionLast<R>>>, UnionLast<R>]
   : T
   : [...UnionToTupleSafe<Exclude<T, UnionLast<T>>>, UnionLast<T>]
+
+export type Union2th<U> =
+  U extends any
+  ? U extends [infer First, infer Second]
+    ? Second
+    : never
+  : never
+type test_Union2th_1 = Union2th<[1,3]|[5,7]|[8]>
+type test_Union2th_2 = Union2th<[1,3]|[5,7]|[8,10]>
+
+/* tuple */
+
+export type Nths<
+  Num extends number,
+  ARR extends unknown[] = [],
+  One extends unknown[] = never,
+  Idx extends 1[] = [],
+  Res extends unknown[] = []
+> =
+  [One] extends [never]
+  ? ARR extends [infer ARRHead, ...infer ARRTail]
+    ? ARRHead extends unknown[]
+      ? Nths<Num, ARRTail, ARRHead, [], Res>
+      : never
+    : Res
+  : Idx['length'] extends Num
+    ? One extends [infer OneHead, ...infer OneTail]
+      ? Nths<Num, ARR, never, [], [...Res, OneHead]>
+      : never
+    : One extends [infer OneHead, ...infer OneTail]
+      ? Nths<Num, ARR, OneTail, [...Idx, 1], [...Res,]>
+      : never
+type test_Nths_1 = Nths<0, [[1,3],[5,7],[8]]>
+type test_Nths_2 = Nths<1, [[1,3],[5,7],[8]]>
+type test_Nths_3 = Nths<1, [[1,3],[5,7],[8,10]]>
 
 /* function */
 
@@ -109,7 +150,7 @@ type isEveryCMDValid<
             : false
     : true
 
-export type validOut<
+export type isValidStringCMD<
   PS1,
   PS2,
   PS3,
@@ -136,5 +177,32 @@ export type validOut<
 //   status?: undefined;
 //   created?: undefined;
 // })[]
-// type test1 = validOut<posts, 'tag-reverse()'>
-// type test2 = validOut<posts, 'tag-b()'>
+// type test1 = isValidStringCMD<posts, 'tag-reverse()'>
+// type test2 = isValidStringCMD<posts, 'tag-b()'>
+
+type isEverySortPlugin<Fns extends unknown[]> =
+  Fns extends [infer First, ...infer Rest]
+  ? First extends SortPlugin
+    ? isEverySortPlugin<Rest>
+    : false
+  : true
+
+export type isValidSortPlugin<
+  OBJ,
+  UFns extends Union2th<ObjectEntries<OBJ>> = Union2th<ObjectEntries<OBJ>>,
+  Fns = UnionToTupleSafe<UFns>
+> =
+  Fns extends unknown[]
+  ? isEverySortPlugin<Fns> extends true
+  ? OBJ
+  : never
+  : never
+type test_isValidSortPlugin_1 = isValidSortPlugin<{s:number,s2:{s3:string}}>
+const exts = {
+  p1: (sort: Sort) => sort.result(res => -res),
+  p2: (sort: Sort, arg?: string) => sort.map(x => (x + arg).toLocaleString()),
+  // p3: (sort: Sort, arg: string) => sort.map(x => (x + arg).toLocaleString()),
+}
+type Exts = typeof exts
+type test_isValidSortPlugin_2 = isValidSortPlugin<Exts>
+

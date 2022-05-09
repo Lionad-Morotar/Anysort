@@ -1,6 +1,6 @@
 import Sort from './sort';
 import type { PluginNames, PluginNamesWithArgMaybe, PluginNamesWithoutArg } from './build-in-plugins';
-import type { RequiredArguments, validOut } from './type-utils';
+import type { RequiredArguments, isValidStringCMD } from './type-utils';
 declare type PS1 = PluginNames;
 declare type PS2 = PluginNamesWithArgMaybe;
 declare type PS3 = PluginNamesWithoutArg;
@@ -11,7 +11,7 @@ export declare type SortableTypeEnum = 'string' | 'number' | 'boolean' | 'symbol
 declare type MappingPlugin = (sort: Sort, arg?: string) => Sort;
 declare type ResultPlugin = (sort: Sort) => Sort;
 export declare type SortPlugin = MappingPlugin | ResultPlugin;
-export declare type SortStringCMD<PS1, PS2, PS3, ARR extends unknown[], CMD> = CMD extends validOut<PS1, PS2, PS3, ARR, CMD> ? CMD : never;
+export declare type SortStringCMD<PS1, PS2, PS3, ARR extends unknown[], CMD> = CMD extends isValidStringCMD<PS1, PS2, PS3, ARR, CMD> ? CMD : never;
 export declare type SortFn<ARR extends SortableValue[] = unknown[]> = [
     ARR
 ] extends [(infer Item)[]] ? (a: Item, b: Item) => SortVal | undefined : never;

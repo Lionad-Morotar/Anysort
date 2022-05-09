@@ -103,7 +103,8 @@ export type PluginNamesWithoutArg = Exclude<PluginNames, PluginNamesWithArgMaybe
 
 type Plugins = Readonly<Record<PluginNames, SortPlugin>>
 
-export type MappingFn = (x: unknown) => ComparableValue
+// TODO maybe better types next line
+export type MappingFn = (x: any) => ComparableValue
 export type ResultFn = (x: SortVal) => SortVal
 
 export default plugins as Plugins

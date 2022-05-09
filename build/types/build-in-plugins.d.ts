@@ -18,7 +18,7 @@ declare type PluginsCallMaybeWithArg = ExtsPluginsCallMaybeWithArg<typeof plugin
 export declare type PluginNames = Exclude<keyof PluginsLiteralTypes, never>;
 export declare type PluginNamesWithArgMaybe = Exclude<keyof PluginsCallMaybeWithArg, never>;
 export declare type PluginNamesWithoutArg = Exclude<PluginNames, PluginNamesWithArgMaybe>;
-export declare type MappingFn = (x: unknown) => ComparableValue;
+export declare type MappingFn = (x: any) => ComparableValue;
 export declare type ResultFn = (x: SortVal) => SortVal;
 declare const _default: Readonly<Record<PluginNames, SortPlugin>>;
 export default _default;

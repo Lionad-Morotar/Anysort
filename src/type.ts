@@ -1,7 +1,7 @@
 import Sort from './sort'
 
 import type { PluginNames, PluginNamesWithArgMaybe, PluginNamesWithoutArg } from './build-in-plugins'
-import type { RequiredArguments, validOut } from './type-utils'
+import type { RequiredArguments, isValidStringCMD } from './type-utils'
 
 type PS1 = PluginNames
 type PS2 = PluginNamesWithArgMaybe
@@ -18,7 +18,7 @@ type ResultPlugin = (sort: Sort) => Sort
 export type SortPlugin = MappingPlugin | ResultPlugin
 
 export type SortStringCMD<PS1, PS2, PS3, ARR extends unknown[], CMD> =
-  CMD extends validOut<PS1, PS2, PS3, ARR, CMD> ? CMD : never
+  CMD extends isValidStringCMD<PS1, PS2, PS3, ARR, CMD> ? CMD : never
 
 export type SortFn<ARR extends SortableValue[] = unknown[]> =
   [ARR] extends [(infer Item)[]]
@@ -70,15 +70,16 @@ export type AnySortWrapper<ARR> = ARR
 
 export type Anysort<PS1, PS2, PS3> = {
 
-  <ARR extends unknown[], CMD>(arr: ARR, ...args: SortCMD<PS1, PS2, PS3, ARR, CMD>[]): AnySortWrapper<ARR>;
+  // [CALL]
+  <ARR extends unknown[], CMD>(arr: ARR, ...args: SortCMD<PS1, PS2, PS3, ARR, CMD>[]): AnySortWrapper<ARR>
 
   // install plugins for Sort
   extends: <U extends Record<string, SortPlugin>>(exts: U) =>
     Anysort<PS1 | ExtsPluginNames<U>, PS2 | ExtsPluginNamesWithArgMaybe<U>, PS3 | ExtsPluginNamesWithoutArg<U>>
 
   /** internal fns */
-  wrap: <ARR extends any[]>(arr: ARR) => ARR;
-  config: AnysortConfiguration;
+  wrap: <ARR extends any[]>(arr: ARR) => ARR
+  config: AnysortConfiguration
 
 }
 

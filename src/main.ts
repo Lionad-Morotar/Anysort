@@ -137,7 +137,7 @@ function genFactory<
 const factory = genFactory<PS1, PS2, PS3>()
 
 // install plugins
-const extendPlugs = <PluginName extends string>(exts: Record<PluginName, SortPlugin>) => {
+const extendPlugs = <U extends Record<string, SortPlugin>>(exts: U) => {
   type ExtsPluginsLiteralTypes = { [K in keyof typeof exts]: typeof exts[K] }
   type ExtsPluginsCallMaybeWithArg = { [K in keyof ExtsPluginsLiteralTypes as RequiredArguments<ExtsPluginsLiteralTypes[K]> extends (_: any) => any ? never : K]: any }
   type ExtsPluginNames = Exclude<keyof typeof exts, never>

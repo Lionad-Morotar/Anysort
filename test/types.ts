@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import type { Anysort } from '../build/types'
-import type { GetPath, UnionToTupleSafe, ObjectKeyPaths, isPathAvailable, validOut } from '../build/types/type-utils'
+import type { GetPath, UnionToTupleSafe, ObjectKeyPaths, isPathAvailable, isValidStringCMD } from '../build/types/type-utils'
 import type { PluginNames, PluginNamesWithArgMaybe, PluginNamesWithoutArg } from '../build/types/build-in-plugins'
 
 type PS1 = PluginNames
@@ -77,21 +77,21 @@ type test_isPathAvailable = [
 
 
 /*******************************************************************************
- * test cases for validOut
+ * test cases for isValidStringCMD
  ******************************************************************************/
 
-type test_validOut = [
-  Expect<Equal<validOut<PS1, PS2, PS3, Posts, ''>, never>>,
-  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date'>, 'created.date'>>,
-  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-reverse()'>, 'created.date-reverse()'>>,
-  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-notBuildInPlugin()'>, never>>,
-  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-notBuildInPlugin()-reverse()'>, never>>,
-  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-reverse()-reverse()'>, 'created.date-reverse()-reverse()'>>,
-  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-is(20220324)'>, 'created.date-is(20220324)'>>,
-  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-is()'>, 'created.date-is()'>>,
-  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date-reverse(20220324)'>, never>>,
-  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date--reverse()'>, never>>,
-  Expect<Equal<validOut<PS1, PS2, PS3, Posts, 'created.date--'>, never>>,
+type test_isValidStringCMD = [
+  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, ''>, never>>,
+  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date'>, 'created.date'>>,
+  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date-reverse()'>, 'created.date-reverse()'>>,
+  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date-notBuildInPlugin()'>, never>>,
+  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date-notBuildInPlugin()-reverse()'>, never>>,
+  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date-reverse()-reverse()'>, 'created.date-reverse()-reverse()'>>,
+  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date-is(20220324)'>, 'created.date-is(20220324)'>>,
+  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date-is()'>, 'created.date-is()'>>,
+  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date-reverse(20220324)'>, never>>,
+  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date--reverse()'>, never>>,
+  Expect<Equal<isValidStringCMD<PS1, PS2, PS3, Posts, 'created.date--'>, never>>,
 ]
 
 
@@ -123,12 +123,14 @@ const wrappedArr = anysort(arr)
 const test_anysort_extend_1 = anysort(numberArr, 'customPlugin()')
 
 const anysortWithCustomPlugins_wrong = anysort.extends({
+  // @ts-expect-error incorrect return types
+  wrongPlugin1: (sort, x1) => x1.toLocaleString(),
   // @ts-expect-error incorrect counts of arguments
-  wrongPlugin: (sort, x1, x2) => x1.toLocaleString(),
+  wrongPlugin2: (sort, x1, x2) => sort.map(x => x.toLocaleString()),
 })
 
 const anysortWithCustomPlugins = anysort.extends({
-  customPluginWithoutArg_1: (sort) => sort.map(x => (x || '').toLowerCase()),
+  customPluginWithoutArg_1: sort => sort.map(x => (x || '').toLowerCase()),
   customPluginWithArgMaybe_1: (sort, arg = '') => sort.map(x => x === arg),
 })
 const test_anysort_extend_2 = anysortWithCustomPlugins(numberArr, 'customPluginWithoutArg_1()')
