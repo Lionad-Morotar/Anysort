@@ -1,7 +1,7 @@
 {
   "name": "anysort",
   "description": "Powerful array sorting, with zero dependencies.",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "homepage": "https://github.com/Lionad-Morotar/anysort",
   "license": "MIT",
   "main": "build/index.min.js",
