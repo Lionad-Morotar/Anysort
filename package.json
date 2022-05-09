@@ -14,7 +14,7 @@
     "build:all": "npm run build:types | npm run build",
     "test": "cross-env NODE_ENV=production mocha ./test/index",
     "watch:test": "npm-watch test",
-    "preversion": "npm run build && npm test",
+    "preversion": "npm run build && npm run build:types && npm test",
     "version": "git add -A build",
     "postversion": "git push && git push --tags"
   },
