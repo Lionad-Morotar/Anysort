@@ -5,8 +5,10 @@ import type {
   SortVal,
   SortPlugin,
   ComparableValue,
-  ExtsPluginsLiteralTypes,
-  ExtsPluginsCallMaybeWithArg
+  PluginNames,
+  PluginNamesWithArg,
+  PluginNamesWithoutArg,
+  PluginNamesWithArgMaybe
 } from './type'
 
 // TODO reduce compiled code size
@@ -55,7 +57,7 @@ const plugins = {
       throw new Error('[ANYSORT] "has" plugin need a string as arg')
     }
   }),
-  not: (sort: Sort, arg: string) => {
+  not: (sort: Sort, arg = '') => {
     if (arg !== '') {
       return sort.map(x => x !== arg)
     } else {
@@ -93,18 +95,16 @@ const plugins = {
 
 }
 
-type PluginsLiteralTypes = ExtsPluginsLiteralTypes<typeof plugins>
-type PluginsCallMaybeWithArg = ExtsPluginsCallMaybeWithArg<typeof plugins>
-// use Exclude<> to delay the type check,
-// which make coding tips in VS Code readable
-export type PluginNames = Exclude<keyof PluginsLiteralTypes, never>
-export type PluginNamesWithArgMaybe = Exclude<keyof PluginsCallMaybeWithArg, never>
-export type PluginNamesWithoutArg = Exclude<PluginNames, PluginNamesWithArgMaybe>
+export type BuildInPlugins = typeof plugins
+export type BuildInPluginNames = PluginNames<BuildInPlugins>
+export type BuildInPluginNamesWithoutArg = PluginNamesWithoutArg<BuildInPlugins>
+export type BuildInPluginNamesWithArg = PluginNamesWithArg<BuildInPlugins>
+export type BuildInPluginNamesWithArgMaybe = PluginNamesWithArgMaybe<BuildInPlugins>
 
-type Plugins = Readonly<Record<PluginNames, SortPlugin>>
+type ReadonlyBuildInPlugins = Readonly<Record<keyof BuildInPlugins, SortPlugin>>
 
 // TODO maybe better types next line
 export type MappingFn = (x: any) => ComparableValue
 export type ResultFn = (x: SortVal) => SortVal
 
-export default plugins as Plugins
+export default plugins as ReadonlyBuildInPlugins
