@@ -99,23 +99,6 @@ anysort(articles)
   .map(print)
 ```
 
-* Full typed, even in call-with-string-mode, **AMAZING**!
-
-```js
-// @ts-expect-error
-anysort(articles).tag.hass('it')
-// @ts-expect-error
-anysort(articles, 'created.date-unknownPlugin()')
-// OK!
-anysort(articles).created.date.reverse()
-// OK!
-anysort(articles, 'created.date-reverse()')
-// @ts-expect-error
-anysort(articles).created.date.reverse(123)
-// @ts-expect-error
-anysort(articles, 'created.date-reverse(123)')
-```
-
 * Intuitive
 
 ```js
@@ -136,6 +119,23 @@ anysort(articles).created.date.reverse()
 
 // or
 anysort(articles, 'created.date-reverse()')
+```
+
+* Full typed, even in call-with-string-mode, **AMAZING**!
+
+```js
+// @ts-expect-error
+anysort(articles).tag.hass('it')
+// @ts-expect-error
+anysort(articles, 'created.date-unknownPlugin()')
+// OK!
+anysort(articles).created.date.reverse()
+// OK!
+anysort(articles, 'created.date-reverse()')
+// @ts-expect-error
+anysort(articles).created.date.reverse(123)
+// @ts-expect-error
+anysort(articles, 'created.date-reverse(123)')
 ```
 
 * Full tested, logic and type
