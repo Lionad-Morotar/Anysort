@@ -156,7 +156,7 @@ type isEveryCMDValid<
           ? isEveryCMDValid<Plugins, ARR, R>
           : false
         : P extends `${infer Name}(${infer Arg})`
-          ? Name extends PS2
+          ? Name extends (PS2 | PS4)
             ? isEveryCMDValid<Plugins, ARR, R>
             : false
           // not a build-in-plugin,

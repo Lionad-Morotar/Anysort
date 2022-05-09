@@ -21,8 +21,9 @@ export type SortFn<ARR extends SortableValue[] = unknown[]> =
   : never
 
 export type SortCMD<Plugins, ARR extends unknown[], CMD> =
-  SortFn<ARR> |
-  SortStringCMD<Plugins, ARR, CMD>
+  CMD extends string
+  ? SortStringCMD<Plugins, ARR, CMD>
+  : SortFn<ARR>
 
 export type AnysortConfiguration = {
   // delimeter for SortCMD
@@ -77,7 +78,11 @@ export type Anysort<Plugins> = {
   <ARR extends unknown[], CMD>(arr: ARR, ...args: SortCMD<Plugins, ARR, CMD>[]): AnySortWrapper<ARR>
 
   // install plugins for Sort
-  extends: <U extends Record<string, SortPlugin>>(exts: U) => Anysort<BuildInPlugins & U>
+  extends: <
+    ExtNames extends string,
+    ExtPlugins extends SortPlugin,
+    U extends Record<ExtNames, ExtPlugins>
+  >(exts: U) => Anysort<{ [K in keyof U]: U[K] } & Plugins>
 
   /** internal fns */
   wrap: <ARR extends any[]>(arr: ARR) => ARR

@@ -128,9 +128,10 @@ function genFactory<Plugins> () {
 const factory = genFactory<BuildInPlugins>()
 
 // install plugins
-const extendPlugs = <U extends Record<string, SortPlugin>>(exts: U) => {
+const extendPlugs = (exts: Record<string, SortPlugin>) => {
   Object.entries(exts).map(([k, v]) => plugins[k] = v)
-  return factory
+  type ExtPlugins = { [K in keyof typeof exts]: typeof exts[K] }
+  return factory as Anysort<ExtPlugins & BuildInPlugins>
 }
 
 /**

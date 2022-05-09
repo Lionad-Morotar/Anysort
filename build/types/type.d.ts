@@ -12,7 +12,7 @@ export declare type SortStringCMD<Plugins, ARR extends unknown[], CMD> = CMD ext
 export declare type SortFn<ARR extends SortableValue[] = unknown[]> = [
     ARR
 ] extends [(infer Item)[]] ? (a: Item, b: Item) => SortVal | undefined : never;
-export declare type SortCMD<Plugins, ARR extends unknown[], CMD> = SortFn<ARR> | SortStringCMD<Plugins, ARR, CMD>;
+export declare type SortCMD<Plugins, ARR extends unknown[], CMD> = CMD extends string ? SortStringCMD<Plugins, ARR, CMD> : SortFn<ARR>;
 export declare type AnysortConfiguration = {
     delim: string;
     readonly patched: string;
@@ -36,7 +36,9 @@ export declare type PluginNamesWithArgMaybe<T> = Exclude<Exclude<keyof T, Plugin
 export declare type AnySortWrapper<ARR> = ARR;
 export declare type Anysort<Plugins> = {
     <ARR extends unknown[], CMD>(arr: ARR, ...args: SortCMD<Plugins, ARR, CMD>[]): AnySortWrapper<ARR>;
-    extends: <U extends Record<string, SortPlugin>>(exts: U) => Anysort<BuildInPlugins & U>;
+    extends: <ExtNames extends string, ExtPlugins extends SortPlugin, U extends Record<ExtNames, ExtPlugins>>(exts: U) => Anysort<{
+        [K in keyof U]: U[K];
+    } & Plugins>;
     /** internal fns */
     wrap: <ARR extends any[]>(arr: ARR) => ARR;
     config: AnysortConfiguration;
