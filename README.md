@@ -172,6 +172,13 @@ npm run build
 
 See [TODO.MD](./TODO.md)，help wanted!
 
+## Related Projects
+
+* [sort-by](https://github.com/kvnneff/sort-by)
+* [array-sort](https://github.com/jonschlinkert/array-sort)
+* [sort-on](https://github.com/sindresorhus/sort-on)
+* [...](https://github.com/search?q=property+sort&type=Repositories)
+
 ## License
 
 Copyright © 2021, [Lionad-Morotar](https://github.com/Lionad-Morotar).
