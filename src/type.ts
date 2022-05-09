@@ -1,6 +1,8 @@
+/* eslint-disable */
+
 import Sort from './sort'
 import type { BuildInPlugins } from './build-in-plugins'
-import type { DontCare, Equal, RequiredArguments, isValidStringCMD } from './type-utils'
+import type { DontCare, Equal, ObjectVals, UnionToTupleSafe, RequiredArguments, isValidStringCMD } from './type-utils'
 
 export type SortableValue = unknown
 export type SortVal = number
@@ -11,6 +13,20 @@ export type SortableTypeEnum = 'string' | 'number' | 'boolean' | 'symbol' | 'fun
 type MappingPlugin = (sort: Sort, arg?: string) => Sort
 type ResultPlugin = (sort: Sort) => Sort
 export type SortPlugin = MappingPlugin | ResultPlugin
+export type isSortPluginObjects<Obj, Fns = UnionToTupleSafe<ObjectVals<Obj>>> =
+  Fns extends [infer Fn, ...infer Tail]
+  ? Fn extends
+    | ((sort: Sort, arg?: string) => Sort)
+    | ((sort: Sort, arg: string) => Sort)
+    ? Fn extends ((x: infer SortType, y: infer StringType) => infer ReturnType)
+      ? Equal<Sort, SortType> extends true
+      ? Equal<Sort, ReturnType> extends true
+      ? Obj
+      : false
+      : false
+      : never
+    : never
+  : never
 
 export type SortStringCMD<Plugins, ARR extends unknown[], CMD> =
   CMD extends isValidStringCMD<Plugins, ARR, CMD> ? CMD : never
@@ -78,11 +94,7 @@ export type Anysort<Plugins> = {
   <ARR extends unknown[], CMD>(arr: ARR, ...args: SortCMD<Plugins, ARR, CMD>[]): AnySortWrapper<ARR>
 
   // install plugins for Sort
-  extends: <
-    ExtNames extends string,
-    ExtPlugins extends SortPlugin,
-    U extends Record<ExtNames, ExtPlugins>
-  >(exts: U) => Anysort<{ [K in keyof U]: U[K] } & Plugins>
+  extends: <U>(exts: isSortPluginObjects<U>) => Anysort<{ [K in keyof U]: U[K] } & Plugins>
 
   /** internal fns */
   wrap: <ARR extends any[]>(arr: ARR) => ARR

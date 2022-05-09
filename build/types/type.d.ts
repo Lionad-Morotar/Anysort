@@ -1,6 +1,6 @@
 import Sort from './sort';
 import type { BuildInPlugins } from './build-in-plugins';
-import type { DontCare, Equal, RequiredArguments, isValidStringCMD } from './type-utils';
+import type { DontCare, Equal, ObjectVals, UnionToTupleSafe, RequiredArguments, isValidStringCMD } from './type-utils';
 export declare type SortableValue = unknown;
 export declare type SortVal = number;
 export declare type ComparableValue = string | number | boolean | null;
@@ -8,6 +8,7 @@ export declare type SortableTypeEnum = 'string' | 'number' | 'boolean' | 'symbol
 declare type MappingPlugin = (sort: Sort, arg?: string) => Sort;
 declare type ResultPlugin = (sort: Sort) => Sort;
 export declare type SortPlugin = MappingPlugin | ResultPlugin;
+export declare type isSortPluginObjects<Obj, Fns = UnionToTupleSafe<ObjectVals<Obj>>> = Fns extends [infer Fn, ...infer Tail] ? Fn extends ((sort: Sort, arg?: string) => Sort) | ((sort: Sort, arg: string) => Sort) ? Fn extends ((x: infer SortType, y: infer StringType) => infer ReturnType) ? Equal<Sort, SortType> extends true ? Equal<Sort, ReturnType> extends true ? Obj : false : false : never : never : never;
 export declare type SortStringCMD<Plugins, ARR extends unknown[], CMD> = CMD extends isValidStringCMD<Plugins, ARR, CMD> ? CMD : never;
 export declare type SortFn<ARR extends SortableValue[] = unknown[]> = [
     ARR
@@ -36,7 +37,7 @@ export declare type PluginNamesWithArgMaybe<T> = Exclude<Exclude<keyof T, Plugin
 export declare type AnySortWrapper<ARR> = ARR;
 export declare type Anysort<Plugins> = {
     <ARR extends unknown[], CMD>(arr: ARR, ...args: SortCMD<Plugins, ARR, CMD>[]): AnySortWrapper<ARR>;
-    extends: <ExtNames extends string, ExtPlugins extends SortPlugin, U extends Record<ExtNames, ExtPlugins>>(exts: U) => Anysort<{
+    extends: <U>(exts: isSortPluginObjects<U>) => Anysort<{
         [K in keyof U]: U[K];
     } & Plugins>;
     /** internal fns */

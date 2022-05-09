@@ -44,8 +44,11 @@ type IsStringArr<T extends string[]> = T
 
 const testPluginsRaw = {
   p1: (sort: Sort) => sort.result(res => -res),
-  p2: (sort: Sort, arg?: string) => sort.map(x => (x + arg).toLocaleString()),
-  p3: (sort: Sort, arg: string) => sort.map(x => (x + arg).toLocaleString())
+  p2: (sort: Sort, arg = '') => sort.map(x => (x + arg).toLocaleString()),
+  p3: (sort: Sort, arg: string) => sort.map(x => (x + arg).toLocaleString()),
+  p4: (sort: Sort) => sort.result(res => -res),
+  p5: (sort: Sort, arg?: string) => sort.map(x => (x + arg).toLocaleString()),
+  p6: (sort: Sort, arg: string) => sort.map(x => (x + arg).toLocaleString()),
 }
 type PluginsRaw = typeof testPluginsRaw
 type test_PluginNamesWithoutArg_1 = PluginNamesWithoutArg<PluginsRaw>
@@ -59,6 +62,8 @@ type test_PluginNamesWithArgMaybe_2 = PluginNamesWithArgMaybe<BuildInPlugins>
 type test_PluginNamesWithoutArg_3 = PluginNamesWithoutArg<BuildInPlugins & PluginsRaw>
 type test_PluginNamesWithArg_3 = PluginNamesWithArg<BuildInPlugins & PluginsRaw>
 type test_PluginNamesWithArgMaybe_3 = PluginNamesWithArgMaybe<BuildInPlugins & PluginsRaw>
+
+
 
 
 /*******************************************************************************
@@ -145,18 +150,19 @@ const wrappedArr = anysort(arr)
 const test_anysort_extend_ = anysort(numberArr, 'customPlugin()')
 
 const anysortWithCustomPlugins_wrong = anysort.extends({
-  // // @ts-expect-error no types
-  // wrongPlugin1: sort => sort.map((x: string) => (x || '').toLowerCase()),
+  // @ts-expect-error incorrect sort types
+  wrongPlugin1: (sort: any) => sort.map((x: string) => (x || '').toLowerCase()),
   // @ts-expect-error incorrect return types
-  wrongPlugin2: (sort, x1) => x1.toLocaleString(),
+  wrongPlugin2: (sort: Sort, x1: string) => x1.toLocaleString(),
   // @ts-expect-error incorrect counts of arguments
-  wrongPlugin3: (sort, x1, x2) => sort.map(x => x.toLocaleString()),
+  wrongPlugin3: (sort: Sort, x1: string, x2: string) => sort.map(x => x.toLocaleString()),
 })
 
 const anysortWithCustomPlugins_1 = anysort.extends({
   customPluginWithoutArg_1: (sort: Sort) => sort.map(x => (x || '').toLowerCase()),
   customPluginWithArg_1: (sort: Sort, arg: string) => sort.map(x => x === arg),
-  customPluginWithArgMaybe_1: (sort: Sort, arg = '') => sort.map(x => x === arg),
+  customPluginWithArgMaybe_1: (sort: Sort, arg?: string) => sort.map(x => x === arg),
+  // customPluginWithArgMaybe_1: (sort: Sort, arg = '') => sort.map(x => x === arg),
 })
 const test_anysort_extend_1 = [
   anysortWithCustomPlugins_1(numberArr, 'customPluginWithoutArg_1()'),
@@ -172,7 +178,7 @@ const test_anysort_extend_1 = [
 const anysortWithCustomPlugins_2 = anysortWithCustomPlugins_1.extends({
   customPluginWithoutArg_2: (sort: Sort) => sort.map(x => (x || '').toLowerCase()),
   customPluginWithArg_2: (sort: Sort, arg: string) => sort.map(x => x === arg),
-  customPluginWithArgMaybe_2: (sort: Sort, arg = '') => sort.map(x => x === arg),
+  customPluginWithArgMaybe_2: (sort: Sort, arg?: string) => sort.map(x => x === arg),
 })
 const test_anysort_extend_2 = [
   anysortWithCustomPlugins_2(numberArr, 'customPluginWithoutArg_2()'),

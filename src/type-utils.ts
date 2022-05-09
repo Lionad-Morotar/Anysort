@@ -1,8 +1,6 @@
 /* eslint-disable */
 
-import Sort from './sort'
-import type { SortPlugin, SortVal, PluginNames, PluginNamesWithArg, PluginNamesWithoutArg, PluginNamesWithArgMaybe } from './type'
-import type { BuildInPlugins } from './build-in-plugins'
+import type { SortPlugin, PluginNamesWithArg, PluginNamesWithoutArg, PluginNamesWithArgMaybe } from './type'
 
 // * for test
 type posts = ({
@@ -19,10 +17,12 @@ type posts = ({
 })[]
 
 /* Logic */
+
 export type DontCare<T extends unknown = unknown> = any
 type Is<T extends true> = T
 type Not<T extends false> = T
 type And<X, Y> = X extends true ? Y extends true ? true : false : false
+export type IsAny<T> = (() => any extends 1 ? 1 : 2) extends (() => T extends 1 ? 1 : 2) ? true : false
 type IsNever<T> = [T] extends [never] ? true : false
 export type Equal<X, Y> =
   And<IsNever<X>, IsNever<Y>> extends false
@@ -47,6 +47,9 @@ export type ObjectEntries<T, U extends keyof T = keyof T> =
   U extends U
   ? [ U, T[U] extends infer R | undefined ? R : never ]
   : never
+
+export type ObjectKeys<T> = Union1th<ObjectEntries<T>>
+export type ObjectVals<T> = Union2th<ObjectEntries<T>>
 
 export type GetPath<
   T extends object,
@@ -85,14 +88,19 @@ export type UnionToTupleSafe<T> =
   : T
   : [...UnionToTupleSafe<Exclude<T, UnionLast<T>>>, UnionLast<T>]
 
+export type Union1th<U> =
+  U extends any
+  ? U extends [infer First]
+    ? First
+    : never
+  : never
+
 export type Union2th<U> =
   U extends any
   ? U extends [infer First, infer Second]
     ? Second
     : never
   : never
-type test_Union2th_1 = Union2th<[1,3]|[5,7]|[8]>
-type test_Union2th_2 = Union2th<[1,3]|[5,7]|[8,10]>
 
 /* tuple */
 
@@ -116,9 +124,6 @@ export type Nths<
     : One extends [infer OneHead, ...infer OneTail]
       ? Nths<Num, ARR, OneTail, [...Idx, 1], [...Res,]>
       : never
-type test_Nths_1 = Nths<0, [[1,3],[5,7],[8]]>
-type test_Nths_2 = Nths<1, [[1,3],[5,7],[8]]>
-type test_Nths_3 = Nths<1, [[1,3],[5,7],[8,10]]>
 
 /* function */
 
@@ -166,10 +171,6 @@ type isEveryCMDValid<
             ? isEveryCMDValid<Plugins, ARR, R>
             : false
     : true
-// type test1 = isEveryCMDValid<BuildInPlugins, posts, ['tag']>
-// type test2 = isEveryCMDValid<BuildInPlugins, posts, ['reverse()']>
-// type test3 = isEveryCMDValid<BuildInPlugins, posts, ['tag', 'reverse()']>
-// type test4 = isEveryCMDValid<BuildInPlugins, posts, ['tag', 'b()']>
 
 export type isValidStringCMD<
   Plugins,
@@ -182,10 +183,6 @@ export type isValidStringCMD<
     ? never
     : isEveryCMDValid<Plugins, ARR, SS> extends true ? S : never
   : never
-// type test1 = isValidStringCMD<BuildInPlugins, posts, 'tag'>
-// type test2 = isValidStringCMD<BuildInPlugins, posts, 'reverse()'>
-// type test3 = isValidStringCMD<BuildInPlugins, posts, 'tag-reverse()'>
-// type test4 = isValidStringCMD<BuildInPlugins, posts, 'tag-b()'>
 
 type isEverySortPlugin<Fns extends unknown[]> =
   Fns extends [infer First, ...infer Rest]
@@ -196,7 +193,7 @@ type isEverySortPlugin<Fns extends unknown[]> =
 
 export type isValidSortPlugin<
   OBJ,
-  UFns extends Union2th<ObjectEntries<OBJ>> = Union2th<ObjectEntries<OBJ>>,
+  UFns extends ObjectVals<OBJ> = ObjectVals<OBJ>,
   Fns = UnionToTupleSafe<UFns>
 > =
   Fns extends unknown[]
@@ -204,12 +201,4 @@ export type isValidSortPlugin<
   ? OBJ
   : never
   : never
-type test_isValidSortPlugin_1 = isValidSortPlugin<{s:number,s2:{s3:string}}>
-const exts = {
-  p1: (sort: Sort) => sort.result(res => -res),
-  p2: (sort: Sort, arg?: string) => sort.map(x => (x + arg).toLocaleString()),
-  // p3: (sort: Sort, arg: string) => sort.map(x => (x + arg).toLocaleString()),
-}
-type Exts = typeof exts
-type test_isValidSortPlugin_2 = isValidSortPlugin<Exts>
 

@@ -3,7 +3,7 @@ import plugins from './build-in-plugins'
 import config from './config'
 import { isFn, notNull } from './utils'
 
-import type { Anysort, AnySortWrapper, SortVal, SortFn, SortStringCMD, SortCMD, SortPlugin } from './type'
+import type { Anysort, AnySortWrapper, SortVal, SortFn, SortStringCMD, SortCMD, isSortPluginObjects } from './type'
 import type { BuildInPlugins } from './build-in-plugins'
 
 /**
@@ -128,7 +128,7 @@ function genFactory<Plugins> () {
 const factory = genFactory<BuildInPlugins>()
 
 // install plugins
-const extendPlugs = (exts: Record<string, SortPlugin>) => {
+const extendPlugs = <U>(exts: isSortPluginObjects<U>) => {
   Object.entries(exts).map(([k, v]) => plugins[k] = v)
   type ExtPlugins = { [K in keyof typeof exts]: typeof exts[K] }
   return factory as Anysort<ExtPlugins & BuildInPlugins>
