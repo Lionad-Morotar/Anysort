@@ -1,7 +1,7 @@
 # Anysort
 
 <p align="center">
-  <img src="./statics/LOGO.jpg" style="width: 30%" />
+  <img src="./statics/LOGO.jpg" />
 </p>
 
 <p align="center">
