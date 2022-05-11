@@ -1,5 +1,5 @@
 {
-  "name": "@lionad/anysort",
+  "name": "anysort-typed",
   "description": "Flexible and Full Typed multi-properties sorter for nested objects",
   "version": "3.1.0",
   "homepage": "https://github.com/Lionad-Morotar/anysort",

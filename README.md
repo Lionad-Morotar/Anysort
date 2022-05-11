@@ -22,7 +22,7 @@
 
 ```sh
 # install newest anysort through github
-npm install --save https://github.com/Lionad-Morotar/anysort
+npm install --save anysort-typed
 ```
 
 ## Usage
