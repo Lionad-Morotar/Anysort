@@ -1,8 +1,12 @@
 {
   "name": "anysort",
-  "description": "Powerful array sorting, with zero dependencies.",
+  "description": "Flexible and Full Typed multi-properties sorter for nested objects",
   "version": "3.1.0",
   "homepage": "https://github.com/Lionad-Morotar/anysort",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lionad-Morotar/anysort.git"
+  },
   "license": "MIT",
   "main": "build/index.min.js",
   "types": "build/types/index.d.ts",
