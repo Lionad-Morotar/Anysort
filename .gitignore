@@ -6,7 +6,7 @@
 test/actual
 actual
 coverage
-.nyc*
+.nyc_output
 
 # npm
 node_modules

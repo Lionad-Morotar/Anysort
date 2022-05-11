@@ -69,3 +69,5 @@ function getPosts () {
     }
   ]
 }
+
+module.exports = {}

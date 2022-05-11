@@ -7,7 +7,7 @@ require('mocha')
 require('should')
 
 const assert = require('assert')
-const anysort = require('../build/index.min.js')
+const anysort = require('../build/index.cjs.js')
 
 /**
  * Test Anysort Types
@@ -55,7 +55,6 @@ describe('Test Anysort Configuration', function () {
     const getArr = () => ['d', { a: 0 }, 3, 'b', d5, '', null, d1, 'zoo', null, { 1: 1 }, undefined, 'a', 'd', { c: 3 }, 1, 0, 'z']
 
     anysort.config.orders = { string: 1, number: 2, rest: 3, void: 4 }
-    console.log(anysort(getArr()))
     anysort(getArr()).should.eql(['', 'a', 'b', 'd', 'd', 'z', 'zoo', 0, 1, 3, { a: 0 }, d1, d5, { 1: 1 }, { c: 3 }, null, null, undefined])
 
     anysort.config.orders = backupOrders
@@ -122,19 +121,19 @@ describe('Test Anysort APIs', function () {
         })
 
         it('arrays of functions by name', function () {
+          const getFnName = x => x.name
           const arr = [
             function name_c() {},
             () => {},
             function name_a() {},
             function name_b() {},
           ]
-          console.log(arraySort(arr))
-          arraySort(arr).should.eql([
+          arraySort(arr).map(getFnName).should.eql([
             () => {},
             function name_a() {},
             function name_b() {},
             function name_c() {},
-          ])
+          ].map(getFnName))
         })
 
         it('do nothing with objects if no plugins in use', function () {

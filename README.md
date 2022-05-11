@@ -1,9 +1,20 @@
 # Anysort
 
-<center>
-  <img src="./statics/LOGO.jpg" style="width: 100%" />
-  <p><strong>Anysort：符合直觉的多属性排序方法，类型完备</strong></p>
-</center>
+<p align="center">
+  <img src="./statics/LOGO.jpg" style="width: 30%" />
+</p>
+
+<p align="center">
+  <strong>Anysort：符合直觉的多属性排序方法，类型完备</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Lionad-Morotar/anysort/blob/main/LICENSE">
+    <img alt="MIT License" src="https://img.shields.io/github/license/Lionad-Morotar/anysort" />
+  </a>
+</p>
+
+<p></p>
 
 ## Install
 

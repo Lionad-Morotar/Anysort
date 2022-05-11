@@ -12,7 +12,7 @@
     "prebuild:types": "rimraf build/types",
     "build:types": "tsc",
     "build:all": "npm run build:types | npm run build",
-    "test": "cross-env NODE_ENV=production mocha ./test/index",
+    "test": "cross-env NODE_ENV=production nyc mocha ./test/index",
     "watch:test": "npm-watch test",
     "preversion": "npm run build && npm run build:types && npm test",
     "version": "git add -A build",
@@ -29,6 +29,18 @@
       "quiet": true
     }
   },
+  "nyc": {
+    "extension": [
+      ".js"
+    ],
+    "exclude": [
+      "test/"
+    ],
+    "reporter": [
+      "text",
+      "html"
+    ]
+  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.3",
     "@rollup/plugin-node-resolve": "^13.2.0",
@@ -44,6 +56,7 @@
     "eslint-plugin-promise": "^5.2.0",
     "mocha": "^2.5.3",
     "npm-watch": "^0.7.0",
+    "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.38.5",
     "rollup-plugin-uglify": "^6.0.4",
@@ -58,7 +71,7 @@
     "nested",
     "object",
     "order",
-    "properties",
+    "multy-properties",
     "property",
     "sort",
     "sorting",

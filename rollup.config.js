@@ -6,7 +6,7 @@ const path = require('path')
 
 const getPath = _path => path.resolve(__dirname, _path)
 const input = path.join(__dirname, './src/index.ts')
-const ouput = path.join(__dirname, './build/index')
+const output = path.join(__dirname, './build/index')
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -20,13 +20,25 @@ export default {
     })
   ],
   external: [/node_modules/],
-  output: {
-    name: 'module',
-    file: ouput + (isDev ? '.js' : '.min.js'),
-    format: 'umd',
-    sourcemap: true,
-    globals: {
-      tslib: 'tslib'
+  output: [
+    {
+      name: 'module',
+      file: output + (isDev ? '.js' : '.min.js'),
+      format: 'umd',
+      sourcemap: true,
+      globals: {
+        tslib: 'tslib'
+      }
+    },
+    {
+      name: 'module',
+      file: output + '.cjs.js',
+      format: 'cjs',
+      exports: 'auto',
+      sourcemap: false,
+      globals: {
+        tslib: 'tslib'
+      }
     }
-  }
+  ]
 }
