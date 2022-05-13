@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>Anysort：符合直觉的多属性排序方法，类型完备</strong>
+  <strong>Anysort：符合直觉、类型完备的多属性排序方法</strong>
 </p>
 
 <p align="center">
@@ -27,7 +27,7 @@ npm install --save anysort-typed
 
 ## Usage
 
-简明的使用说明。
+Short instruction。
 
 ```js
 const posts = getPosts()
@@ -151,7 +151,9 @@ anysort(articles).created.date.reverse(123)
 anysort(articles, 'created.date-reverse(123)')
 ```
 
-* Full tested, logic and type
+* Zero dependencies
+
+* Well tested, logic and type
 
 * <del>WIP: Full API document</del>, help wanted
 
