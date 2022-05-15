@@ -208,6 +208,7 @@ export type isValidSortPlugin<
   : never
   : never
 
+// FIXME a.length.reverse()
 // TODO maybe more strict in the future,
 // for exam, anysort([{a:2}]).get('aa'),
 // arg 'aa' is a wrong argument
