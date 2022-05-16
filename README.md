@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Coverage-86%25-83A603.svg?prefix=![](https://img.shields.io/badge/Coverage-98%25-83A603.svg?prefix=$coverage$)">
+  <img src="https://img.shields.io/badge/Coverage-98%25-83A603.svg?prefix=$coverage$">
   <span>&nbsp;</span>
   <a href="https://github.com/Lionad-Morotar/anysort/blob/main/LICENSE">
     <img alt="MIT License" src="https://img.shields.io/github/license/Lionad-Morotar/anysort" />
