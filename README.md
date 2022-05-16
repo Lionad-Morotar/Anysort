@@ -21,7 +21,6 @@
 ## Install
 
 ```sh
-# install newest anysort through github
 npm install --save anysort-typed
 ```
 
