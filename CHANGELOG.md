@@ -1,5 +1,9 @@
 ## Changelog
 
+##### 3.2.0
+
+* fix type error: `anysort(['1']).length.reverse()`
+
 ##### 3.1.0
 
 * 重写类型，字符串形式调用、代理调用、传入排序函数调用现在都能得到类型支持
