@@ -161,7 +161,7 @@
                 return sort.map(x => x === arg);
             }
             else {
-                throw new Error('[ANYSORT] "is" plugin need a string as arg');
+                throw new Error('[ANYSORT] "is" plugin needs an arg');
             }
         },
         nth: (sort, arg) => {
@@ -176,7 +176,7 @@
                 });
             }
             else {
-                throw new Error('[ANYSORT] "nth" plugin need a string as arg');
+                throw new Error('[ANYSORT] "nth" plugin need an arg');
             }
         },
         all: (sort, arg) => sort.map(x => {
@@ -189,7 +189,7 @@
                     throw new Error('[ANYSORT] "all" plugin only works on string or array');
             }
             else {
-                throw new Error('[ANYSORT] "all" plugin need a string as arg');
+                throw new Error('[ANYSORT] "all" plugin need an arg');
             }
         }),
         has: (sort, arg) => sort.map(x => {
@@ -202,7 +202,7 @@
                     throw new Error('[ANYSORT] "has" plugin only works on string or array');
             }
             else {
-                throw new Error('[ANYSORT] "has" plugin need a string as arg');
+                throw new Error('[ANYSORT] "has" plugin need an arg');
             }
         }),
         not: (sort, arg = '') => {
@@ -260,7 +260,7 @@
             .map(action => {
             // if match with parens, it's a plugin, such as is(a)),
             // else it's a object path such as 'a.b'
-            const matchRes = action.match(/([^(]+)(\(([^)]*)\))?/);
+            const matchRes = action.match(/^([^(]+)(\(([^)]*)\))?$/);
             if (matchRes) {
                 const [, name, callable, fnArg] = matchRes;
                 callable
@@ -336,7 +336,7 @@
                         return isFn(x) ? x : genSortFnFromStr(x);
                     }
                     catch (err) {
-                        throw new Error(`[ERR] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`);
+                        throw err || new Error(`[ANYSORT] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`);
                     }
                 });
             const flat = fns => ((a, b) => fns.reduce((sortResult, fn) => (sortResult || fn(a, b)), 0));
@@ -347,7 +347,6 @@
                     result = wrapperProxy(result);
                 }
             }
-            // !FIXME fix type
             return result;
         };
         return factory;

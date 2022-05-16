@@ -103,7 +103,7 @@ function genFactory<Plugins> () {
         try {
           return isFn(x) ? <SortFn<ARR>>x : genSortFnFromStr<Plugins, ARR, CMD>(<SortStringCMD<Plugins, ARR, CMD>>x)
         } catch (err) {
-          throw new Error(`[ERR] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`)
+          throw err || new Error(`[ANYSORT] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`)
         }
       })
 
@@ -120,7 +120,6 @@ function genFactory<Plugins> () {
       }
     }
 
-    // !FIXME fix type
     return result as AnySortWrapper<Plugins, ARR>
   }
   return factory as Anysort<Plugins>

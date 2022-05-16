@@ -25,7 +25,7 @@ const plugins = {
     if (arg !== '') {
       return sort.map(x => x === arg)
     } else {
-      throw new Error('[ANYSORT] "is" plugin need a string as arg')
+      throw new Error('[ANYSORT] "is" plugin needs an arg')
     }
   },
   nth: (sort: Sort, arg: string) => {
@@ -36,7 +36,7 @@ const plugins = {
         else throw new Error('[ANYSORT] "nth" plugin only works on string or array')
       })
     } else {
-      throw new Error('[ANYSORT] "nth" plugin need a string as arg')
+      throw new Error('[ANYSORT] "nth" plugin need an arg')
     }
   },
   all: (sort: Sort, arg: string) => sort.map(x => {
@@ -45,7 +45,7 @@ const plugins = {
       if (typeof x === 'string') return x === arg
       else throw new Error('[ANYSORT] "all" plugin only works on string or array')
     } else {
-      throw new Error('[ANYSORT] "all" plugin need a string as arg')
+      throw new Error('[ANYSORT] "all" plugin need an arg')
     }
   }),
   has: (sort: Sort, arg: string) => sort.map(x => {
@@ -54,7 +54,7 @@ const plugins = {
       if (typeof x === 'string') return x.includes(arg)
       else throw new Error('[ANYSORT] "has" plugin only works on string or array')
     } else {
-      throw new Error('[ANYSORT] "has" plugin need a string as arg')
+      throw new Error('[ANYSORT] "has" plugin need an arg')
     }
   }),
   not: (sort: Sort, arg = '') => {

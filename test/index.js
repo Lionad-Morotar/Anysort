@@ -516,3 +516,67 @@ describe('Test Anysort APIs', function () {
   })
 
 })
+
+/**
+ * Test Error Catch
+ */
+
+describe('Expected Error', function () {
+
+  it('error: illegal command', function () {
+    ;(function b1() {
+      anysort([1,2,3], '()is-(a)')
+    }).should.throw(/\[ANYSORT\]/)
+  })
+
+  it('error: build-in plugin errors', function () {
+
+    ;(function b1() {
+      anysort([1,2,3]).i()
+    }).should.throw(/\[ANYSORT\]/)
+
+    ;(function b2() {
+      anysort([1,2,3]).is()
+    }).should.throw(/\[ANYSORT\]/)
+
+    ;(function b3() {
+      anysort([1,2,3]).nth()
+    }).should.throw(/\[ANYSORT\]/)
+
+    ;(function b4() {
+      anysort([{},{}]).nth(1)
+    }).should.throw(/\[ANYSORT\]/)
+
+    ;(function b5() {
+      anysort([1,2,3]).all()
+    }).should.throw(/\[ANYSORT\]/)
+
+    ;(function b6() {
+      anysort([{},{}]).all('1')
+    }).should.throw(/\[ANYSORT\]/)
+
+    ;(function b7() {
+      anysort([1,2,3]).has()
+    }).should.throw(/\[ANYSORT\]/)
+
+    ;(function b8() {
+      anysort([{},{}]).has('1')
+    }).should.throw(/\[ANYSORT\]/)
+
+    ;(function b9() {
+      anysort([{},{}]).len(1)
+    }).should.throw(/\[ANYSORT\]/)
+
+    ;(function b10() {
+      anysort([1,2,3]).get()
+    }).should.throw(/\[ANYSORT\]/)
+
+  })
+
+  it('error: wrapper patched arr again', function () {
+    ;(function b1() {
+      anysort.wrap(anysort([1,2,3]))
+    }).should.throw(/\[ANYSORT\]/)
+  })
+
+})
