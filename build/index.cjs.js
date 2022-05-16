@@ -1,6 +1,7 @@
 'use strict';
 
 const isDev = () => process.env.NODE_ENV === 'development';
+// istanbul ignore next
 const warn = (msg) => isDev() && console.log(`[WARN] ${msg}`);
 const strObj = (obj) => JSON.stringify(obj);
 const isVoid = (x) => x == undefined;
@@ -14,6 +15,7 @@ const notNull = (x) => !!x;
  */
 const walk = (pathsStore) => (x) => {
     const paths = pathsStore instanceof Array
+        // istanbul ignore next
         ? pathsStore.slice(0, pathsStore.length)
         : pathsStore.split('.');
     let val = x;
@@ -81,7 +83,7 @@ const sortBySameType = (type, a, b) => {
 };
 const sortByDiffType = (oa, ob) => {
     const minus = oa - ob;
-    return minus === 0 ? 0 : (minus > 0 ? 1 : -1);
+    return minus < 0 ? -1 : 1;
 };
 const sortByTypeOrder = (a, b) => {
     const typeA = getType(a);
@@ -294,6 +296,7 @@ function wrapperProxy(arr) {
                     if (prop in target) {
                         return target[prop];
                     }
+                    // being considered for deprecation
                     if (prop.includes('_')) {
                         return (arg = '') => {
                             const cmdName = [pathStore.splice(0, pathStore.length).join('.'), prop].join('-');
@@ -328,12 +331,9 @@ function genFactory() {
         const sortFns = isEmptyCMDs
             ? [new Sort().seal()]
             : filteredCMDs.map((x, i) => {
-                try {
-                    return isFn(x) ? x : genSortFnFromStr(x);
-                }
-                catch (err) {
-                    throw err || new Error(`[ANYSORT] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`);
-                }
+                return isFn(x)
+                    ? x
+                    : genSortFnFromStr(x);
             });
         const flat = fns => ((a, b) => fns.reduce((sortResult, fn) => (sortResult || fn(a, b)), 0));
         const flattenCMDs = flat(sortFns);

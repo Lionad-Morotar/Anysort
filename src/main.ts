@@ -64,6 +64,7 @@ function wrapperProxy<
           if (prop in target) {
             return target[prop]
           }
+          // being considered for deprecation
           if (prop.includes('_')) {
             return (arg: string = '') => {
               const cmdName = [pathStore.splice(0, pathStore.length).join('.'), prop].join('-')
@@ -100,11 +101,9 @@ function genFactory<Plugins> () {
     const sortFns = isEmptyCMDs
       ? [new Sort().seal()]
       : filteredCMDs.map((x: SortCMD<Plugins, ARR, CMD>, i: number) => {
-        try {
-          return isFn(x) ? <SortFn<ARR>>x : genSortFnFromStr<Plugins, ARR, CMD>(<SortStringCMD<Plugins, ARR, CMD>>x)
-        } catch (err) {
-          throw err || new Error(`[ANYSORT] Error on generate sort function, Index ${i + 1}th: ${x}, error: ${err}`)
-        }
+        return isFn(x)
+          ? <SortFn<ARR>>x
+          : genSortFnFromStr<Plugins, ARR, CMD>(<SortStringCMD<Plugins, ARR, CMD>>x)
       })
 
     const flat:

@@ -318,12 +318,16 @@ describe('Test Anysort APIs', function () {
         it('plugin: not', function () {
           const arr = ['a', 'b', 'c', 'D']
           arraySort(arr, ['not(c)']).should.eql(['a', 'b', 'D', 'c'])
+          arraySort(arr, ['not()']).should.eql(arr)
         })
 
         it('plugin: len', function () {
           const getArrStrings = () => ['alpha', 'google', 'zoo', 'oowps']
           arraySort(getArrStrings(), ['len()']).should.eql(['zoo', 'alpha', 'oowps', 'google'])
           arraySort(getArrStrings(), ['len(3)']).should.eql(['zoo', 'alpha', 'google', 'oowps'])
+          const getArrArrs = () => [[1,1], [1,1,1], [1], [1,1,1,1]]
+          arraySort(getArrArrs(), ['len()']).should.eql([[1], [1,1], [1,1,1], [1,1,1,1]])
+          arraySort(getArrArrs(), ['len(4)']).should.eql([[1,1,1,1], [1,1], [1,1,1], [1]])
         })
 
         it('plugin: get', function () {
@@ -348,6 +352,11 @@ describe('Test Anysort APIs', function () {
             { locals: { date: '2015-04-12' } },
             { foo: null, locals: {} }
           ])
+        })
+
+        it('plugin: rand', function () {
+          const arr = ['a', 'b', 'c', 'D']
+          arraySort(arr, ['rand()']).length.should.eql(arr.length)
         })
 
       })
@@ -418,9 +427,13 @@ describe('Test Anysort APIs', function () {
     anysort.config.autoSort = false
     anysort(['alpha', 'google', 'zoo', 'oowps'])
       .has('oo').should.eql(['google', 'zoo', 'oowps', 'alpha'])
+    anysort(['alpha', 'google', 'zoo', 'oowps'])
+      .should.eql(['alpha', 'google', 'zoo', 'oowps'])
     anysort.config.autoSort = true
     anysort(['alpha', 'google', 'zoo', 'oowps'])
       .has('oo').should.eql(['google', 'oowps', 'zoo', 'alpha'])
+    anysort(['alpha', 'google', 'zoo', 'oowps'])
+      .should.eql(['alpha', 'google', 'oowps', 'zoo'])
   })
 
   it('anysort(arr).plugin(arg).plugin(arg)', function () {
@@ -513,6 +526,21 @@ describe('Test Anysort APIs', function () {
         { locals: { date: '2015-04-12' } },
         { foo: null, locals: {} }
       ])
+    anysort(getPosts())
+      .locals.date.result()
+      .foo.result()
+      .foo.is('ccc')
+      .reverse_reverse()
+      .should.eql([
+        { foo: 'ccc', locals: { date: '2014-01-02' } },
+        { foo: 'aab', locals: { date: null } },
+        { foo: 'aac', locals: { date: '2014-02-02' } },
+        { foo: 'bbb', locals: { date: '2013-05-06' } },
+        { foo: 'ddd', locals: { date: '2014-01-09' } },
+        { locals: { date: '2015-01-02' } },
+        { locals: { date: '2015-04-12' } },
+        { foo: null, locals: {} }
+      ])
   })
 
 })
@@ -521,7 +549,7 @@ describe('Test Anysort APIs', function () {
  * Test Error Catch
  */
 
-describe('Expected Error', function () {
+ describe('Expected Error', function () {
 
   it('error: illegal command', function () {
     ;(function b1() {
@@ -564,19 +592,46 @@ describe('Expected Error', function () {
     }).should.throw(/\[ANYSORT\]/)
 
     ;(function b9() {
+      anysort([{},{}]).len()
+    }).should.throw(/\[ANYSORT\]/)
+
+    ;(function b9() {
       anysort([{},{}]).len(1)
     }).should.throw(/\[ANYSORT\]/)
 
-    ;(function b10() {
+    ;(function b11() {
       anysort([1,2,3]).get()
     }).should.throw(/\[ANYSORT\]/)
 
+  })
+
+  it('error: custom plugin errors', function () {
+    ;(function b1() {
+      anysort.extends({
+        aaa: sort => { throw new Error('asdf') }
+      })
+      anysort([1,2,3]).aaa()
+    }).should.throw(/asdf/)
   })
 
   it('error: wrapper patched arr again', function () {
     ;(function b1() {
       anysort.wrap(anysort([1,2,3]))
     }).should.throw(/\[ANYSORT\]/)
+  })
+
+})
+
+/**
+ * Test Error Catch
+ */
+
+ describe('Warn (increase code coverage for if-else sentences)', function () {
+
+  it('uncomparable type', function () {
+    const a1 = { [Symbol.toStringTag]: 'a1', a1: 'a1' }
+    const a2 = { [Symbol.toStringTag]: 'a2', a2: 'a2' }
+    anysort([a1,a2]).should.eql([a1, a2])
   })
 
 })

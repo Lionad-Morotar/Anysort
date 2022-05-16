@@ -1,6 +1,7 @@
 import type { SortableTypeEnum, SortableValue } from './type'
 
 export const isDev = () => process.env.NODE_ENV === 'development'
+// istanbul ignore next
 export const warn = (msg: String) => isDev() && console.log(`[WARN] ${msg}`)
 export const strObj = (obj: Object) => JSON.stringify(obj)
 
@@ -18,6 +19,7 @@ export const notNull = (x: any) => !!x
  */
 export const walk = (pathsStore: String | String[]) => (x: any) => {
   const paths = pathsStore instanceof Array
+    // istanbul ignore next
     ? pathsStore.slice(0, pathsStore.length)
     : pathsStore.split('.')
   let val = x

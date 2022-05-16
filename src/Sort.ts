@@ -45,7 +45,7 @@ const sortByDiffType:
   (oa: number, ob: number) => SortVal =
   (oa, ob) => {
     const minus = oa - ob
-    return minus === 0 ? 0 : (minus > 0 ? 1 : -1)
+    return minus < 0 ? -1 : 1
   }
 
 const sortByTypeOrder: SortFn =
