@@ -22,7 +22,7 @@ function genSortFnFromStr<
     .map(action => {
       // if match with parens, it's a plugin, such as is(a)),
       // else it's a object path such as 'a.b'
-      const matchRes = action.match(/([^(]+)(\(([^)]*)\))?/)
+      const matchRes = action.match(/^([^(]+)(\(([^)]*)\))?$/)
       if (matchRes) {
         const [, name, callable, fnArg] = matchRes
         callable
