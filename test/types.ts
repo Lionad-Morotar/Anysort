@@ -252,8 +252,14 @@ const test_anysort_apply_5 = anysort(postsArr).apply('created.date-reverse(123)'
 const test_anysort_apply_6 = anysort(postsArr).apply('created.date-is()')
 // @ts-expect-error
 const test_anysort_apply_7 = anysort(postsArr).apply('created.date-unknownPlugin()')
+const test_anysort_apply_8 = anysort(postsArr).apply('created.date-reverse()')
+// @ts-expect-error
+const test_anysort_apply_9 = anysort(postsArr).apply('created.length-reverse()')
+// @ts-expect-error
+const test_anysort_apply_10 = anysort(postsArr).apply('created.date.length-reverse()')
 
 anysort(['c', 'b', 'd', 'a']).has('123')
+anysort(['1']).length.reverse()
 // @ts-expect-error
 anysort(['c', 'b', 'd', 'a']).unknown('123')
 anysort(postsArr).i()
@@ -263,4 +269,8 @@ anysort(postsArr).tag.has('editing')
 anysort(postsArr).created.date.reverse()
 // @ts-expect-error
 anysort(postsArr).created.date.reverse(123)
+anysort(postsArr).created.date.has('editing')
 anysort(postsArr).created.date.has('editing').reverse()
+anysort(postsArr).tag.length.reverse()
+// @ts-expect-error
+anysort(postsArr).created.length.reverse()

@@ -1,8 +1,9 @@
 /* eslint-disable */
 
+import { BuildInPlugins } from './build-in-plugins';
 import type { SortPlugin, PluginNamesWithArg, PluginNamesWithoutArg, PluginNamesWithArgMaybe, AnySortWrapper } from './type'
 
-// * for test
+// * for debug
 type posts = ({
   tag: string[];
   status: string;
@@ -154,7 +155,6 @@ type isEveryCMDValid<
   Plugins,
   ARR extends unknown[],
   CMD extends unknown[],
-  // PS1 = PluginNames<Plugins>,
   PS2 = PluginNamesWithArg<Plugins>,
   PS3 = PluginNamesWithoutArg<Plugins>,
   PS4 = PluginNamesWithArgMaybe<Plugins>,
@@ -208,14 +208,12 @@ export type isValidSortPlugin<
   : never
   : never
 
-// FIXME a.length.reverse()
 // TODO maybe more strict in the future,
 // for exam, anysort([{a:2}]).get('aa'),
 // arg 'aa' is a wrong argument
 type InvokePluginCall<
   Plugins,
   ARR extends unknown[],
-  // PS1 = PluginNames<Plugins>,
   PS2 = PluginNamesWithArg<Plugins>,
   PS3 = PluginNamesWithoutArg<Plugins>,
   PS4 = PluginNamesWithArgMaybe<Plugins>,
@@ -230,12 +228,18 @@ type InvokePluginCall<
 export type AnySortInvoke<
   Plugins,
   ARR extends unknown[],
-  Item = GetArrItemType<ARR>
+  Item = GetArrItemType<ARR>,
+  PluginCalls = InvokePluginCall<Plugins, ARR>
 > =
   Item extends any
   ? {
-      [K in keyof Item]: Item[K] extends object
-        ? InvokePluginCall<Plugins, ARR> & AnySortInvoke<Plugins, ARR, Item[K]>
-        : InvokePluginCall<Plugins, ARR>
-    } & InvokePluginCall<Plugins, ARR>
+      [K in keyof Item]:
+        Item[K] extends object
+        ? PluginCalls & AnySortInvoke<Plugins, ARR, Item[K]>
+        : PluginCalls
+    } & (
+      Item extends (any[] | string)
+      ? PluginCalls & { length: PluginCalls }
+      : PluginCalls
+    )
   : never

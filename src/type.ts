@@ -89,17 +89,10 @@ export type AnySortWrapper<Plugins, ARR extends unknown[]> = ARR & {
 } & AnySortInvoke<Plugins, ARR>
 
 export type Anysort<Plugins> = {
-
-  // [CALL]
   <ARR extends unknown[], CMD>(arr: ARR, ...args: SortCMD<Plugins, ARR, CMD>[]): AnySortWrapper<Plugins, ARR>
-
-  // install plugins for Sort
   extends: <U>(exts: isSortPluginObjects<U>) => Anysort<{ [K in keyof U]: U[K] } & Plugins>
-
-  /** internal fns */
   wrap: <ARR extends any[]>(arr: ARR) => ARR
   config: AnysortConfiguration
-
 }
 
 export type BuildInAnysort = Anysort<BuildInPlugins>

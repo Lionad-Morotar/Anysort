@@ -7,8 +7,8 @@ export declare type Equal<X, Y> = And<IsNever<X>, IsNever<Y>> extends false ? (<
 declare type isStringLiteral<S> = S extends string ? string extends S ? never : S : never;
 declare type Split<S, Delim extends string = '-', Res extends string[] = []> = S extends `${infer L}${Delim}${infer R}` ? Split<R, Delim, [...Res, L]> : S extends isStringLiteral<S> ? [...Res, S] : Res;
 export declare type ObjectEntries<T, U extends keyof T = keyof T> = U extends U ? [U, T[U] extends infer R | undefined ? R : never] : never;
-export declare type ObjectKeys<T> = Union1th<ObjectEntries<T>>;
-export declare type ObjectVals<T> = Union2th<ObjectEntries<T>>;
+export declare type ObjectKeys<T> = Tuple1th<ObjectEntries<T>>;
+export declare type ObjectVals<T> = Tuple2th<ObjectEntries<T>>;
 export declare type GetPath<T extends object, K extends keyof T = keyof T> = K extends string | number ? T[K] extends any[] ? `${K}` | `${K}.${GetPath<T[K]>}` | `${K}[${GetPath<T[K]>}]` : T[K] extends object ? `${K}` | `${K}.${GetPath<T[K]>}` : `${K}` : '';
 export declare type ObjectKeyPaths<T extends unknown[], Res = never> = T extends [infer Head, ...infer Tail] ? ObjectKeyPaths<Tail, Res | GetPath<Head & object>> : Res;
 declare type UnionToIntersection<U> = (U extends U ? ((k: (x: U) => void) => void) : never) extends ((k: infer I) => void) ? I : never;
@@ -16,12 +16,12 @@ declare type UnionLast<U> = UnionToIntersection<U> extends ((x: infer R) => void
 export declare type UnionToTupleSafe<T> = [
     T
 ] extends [never] ? [] : [T] extends [unknown[]] ? [T] extends [(infer R)[]] ? [...UnionToTupleSafe<Exclude<R, UnionLast<R>>>, UnionLast<R>] : T : [...UnionToTupleSafe<Exclude<T, UnionLast<T>>>, UnionLast<T>];
-export declare type Union1th<U> = U extends any ? U extends [infer First] ? First : never : never;
-export declare type Union2th<U> = U extends any ? U extends [infer First, infer Second] ? Second : never : never;
 declare type GetArrItemType<ARR> = ARR extends (infer Item)[] ? Item : never;
 export declare type Nths<Num extends number, ARR extends unknown[] = [], One extends unknown[] = never, Idx extends 1[] = [], Res extends unknown[] = []> = [
     One
 ] extends [never] ? ARR extends [infer ARRHead, ...infer ARRTail] ? ARRHead extends unknown[] ? Nths<Num, ARRTail, ARRHead, [], Res> : never : Res : Idx['length'] extends Num ? One extends [infer OneHead, ...infer OneTail] ? Nths<Num, ARR, never, [], [...Res, OneHead]> : never : One extends [infer OneHead, ...infer OneTail] ? Nths<Num, ARR, OneTail, [...Idx, 1], [...Res]> : never;
+export declare type Tuple1th<U> = U extends any ? U extends [infer First] ? First : never : never;
+export declare type Tuple2th<U> = U extends any ? U extends [infer First, infer Second] ? Second : never : never;
 export declare type RequiredArguments<Fn> = Fn extends ((...xs: infer Args) => infer Return) ? ((...xs: Required<Args>) => Return) : never;
 export declare type isPathAvailable<ARR extends unknown[], Path extends string, ARRSafe extends unknown[] = UnionToTupleSafe<ARR>, PosiblePath = ObjectKeyPaths<ARRSafe>> = Path extends PosiblePath ? true : false;
 declare type isEveryCMDValid<Plugins, ARR extends unknown[], CMD extends unknown[], PS2 = PluginNamesWithArg<Plugins>, PS3 = PluginNamesWithoutArg<Plugins>, PS4 = PluginNamesWithArgMaybe<Plugins>> = CMD extends [infer P, ...infer R] ? P extends '' ? false : P extends `${infer Name}()` ? Name extends (PS3 | PS4) ? isEveryCMDValid<Plugins, ARR, R> : false : P extends `${infer Name}(${infer Arg})` ? Name extends (PS2 | PS4) ? isEveryCMDValid<Plugins, ARR, R> : false : isPathAvailable<ARR, P & string> extends true ? isEveryCMDValid<Plugins, ARR, R> : false : true;
@@ -35,7 +35,9 @@ declare type InvokePluginCall<Plugins, ARR extends unknown[], PS2 = PluginNamesW
 } & {
     [K in PS4 as PS4 extends string ? K & string : never]: ((arg?: string) => AnySortWrapper<Plugins, ARR>);
 };
-export declare type AnySortInvoke<Plugins, ARR extends unknown[], Item = GetArrItemType<ARR>> = Item extends any ? {
-    [K in keyof Item]: Item[K] extends object ? InvokePluginCall<Plugins, ARR> & AnySortInvoke<Plugins, ARR, Item[K]> : InvokePluginCall<Plugins, ARR>;
-} & InvokePluginCall<Plugins, ARR> : never;
+export declare type AnySortInvoke<Plugins, ARR extends unknown[], Item = GetArrItemType<ARR>, PluginCalls = InvokePluginCall<Plugins, ARR>> = Item extends any ? {
+    [K in keyof Item]: Item[K] extends object ? PluginCalls & AnySortInvoke<Plugins, ARR, Item[K]> : PluginCalls;
+} & (Item extends (any[] | string) ? PluginCalls & {
+    length: PluginCalls;
+} : PluginCalls) : never;
 export {};

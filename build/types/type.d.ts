@@ -42,7 +42,6 @@ export declare type Anysort<Plugins> = {
     extends: <U>(exts: isSortPluginObjects<U>) => Anysort<{
         [K in keyof U]: U[K];
     } & Plugins>;
-    /** internal fns */
     wrap: <ARR extends any[]>(arr: ARR) => ARR;
     config: AnysortConfiguration;
 };
