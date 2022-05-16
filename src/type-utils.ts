@@ -52,8 +52,8 @@ export type ObjectEntries<T, U extends keyof T = keyof T> =
   ? [ U, T[U] extends infer R | undefined ? R : never ]
   : never
 
-export type ObjectKeys<T> = Union1th<ObjectEntries<T>>
-export type ObjectVals<T> = Union2th<ObjectEntries<T>>
+export type ObjectKeys<T> = Tuple1th<ObjectEntries<T>>
+export type ObjectVals<T> = Tuple2th<ObjectEntries<T>>
 
 export type GetPath<
   T extends object,
@@ -92,20 +92,6 @@ export type UnionToTupleSafe<T> =
   : T
   : [...UnionToTupleSafe<Exclude<T, UnionLast<T>>>, UnionLast<T>]
 
-export type Union1th<U> =
-  U extends any
-  ? U extends [infer First]
-    ? First
-    : never
-  : never
-
-export type Union2th<U> =
-  U extends any
-  ? U extends [infer First, infer Second]
-    ? Second
-    : never
-  : never
-
 /* tuple */
 
 type GetArrItemType<ARR> = ARR extends (infer Item)[] ? Item : never
@@ -130,6 +116,20 @@ export type Nths<
     : One extends [infer OneHead, ...infer OneTail]
       ? Nths<Num, ARR, OneTail, [...Idx, 1], [...Res,]>
       : never
+
+export type Tuple1th<U> =
+  U extends any
+  ? U extends [infer First]
+    ? First
+    : never
+  : never
+
+export type Tuple2th<U> =
+  U extends any
+  ? U extends [infer First, infer Second]
+    ? Second
+    : never
+  : never
 
 /* function */
 
