@@ -179,9 +179,7 @@ npm run build
 
 ## How this work
 
-请直接阅读源码吧！
-
-以前我写过一篇文章说明 Anysort 是如何工作的，但它的内容已经很旧，不再适合阅读：<del>[《一文学废排序》](https://juejin.cn/post/6916229848126111751)</del>
+[《🌐 Anysort：灵活、优雅的多属性排序》](https://zhuanlan.zhihu.com/p/515016977)
 
 ## Pull & Request
 
