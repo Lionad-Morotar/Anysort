@@ -18,6 +18,14 @@
 
 <p></p>
 
+## Why Anysort
+
+A picture is worth a thousand words.
+
+<p align="center">
+  <img src="./statics/simple-usage.png">
+</p>
+
 ## Install
 
 ```sh
