@@ -32,6 +32,66 @@ A picture is worth a thousand words.
 npm install --save anysort-typed
 ```
 
+## Why Anysort
+
+* Anysort can sort with multi-attributes
+
+```js
+// select articles which has 'it' tag, put ahead,
+// then move articles which status is 'editing' at the begining
+anysort(articles)
+  .tag.has('it')
+  .status.is('editing')
+  .map(print)
+```
+
+* Intuitive
+
+```js
+// Array.prototype.sort: what hell the result is!
+[].sort.apply([0, '0', 1, 'd', '1', '0', 0, ''])
+// ['', 0, '0', '0', 0, 1, '1', 'd']
+
+// Anysort：the result is intuitive
+anysort([0, '0', 1, undefined, 'd', '1', '0', null, 0, '', undefined])
+// [0, 0, 1, '', '0', '0', '1', 'd']
+```
+
+* Flexible API
+
+```js
+// proxy chain api
+anysort(articles).created.date.reverse()
+
+// or
+anysort(articles, 'created.date-reverse()')
+```
+
+* Full typed, even in call-with-string-mode, **AMAZING**!
+
+```js
+// @ts-expect-error
+anysort(articles).tag.hass('it')
+// @ts-expect-error
+anysort(articles, 'created.date-unknownPlugin()')
+// OK!
+anysort(articles).created.date.reverse()
+// OK!
+anysort(articles, 'created.date-reverse()')
+// @ts-expect-error
+anysort(articles).created.date.reverse(123)
+// @ts-expect-error
+anysort(articles, 'created.date-reverse(123)')
+```
+
+* Zero dependencies（minifized + gzip ≈ 3KB）
+
+* Well tested, logic and type
+
+* <del>WIP: Full API document</del>, help wanted
+
+* <del>WIP: Benchmark</del>, help wanted
+
 ## Usage
 
 Short instruction。
@@ -105,66 +165,6 @@ function getPosts () {
   ]
 }
 ```
-
-## Why Anysort
-
-* Anysort can sort with multi-attributes
-
-```js
-// select articles which has 'it' tag, put ahead,
-// then move articles which status is 'editing' at the begining
-anysort(articles)
-  .tag.has('it')
-  .status.is('editing')
-  .map(print)
-```
-
-* Intuitive
-
-```js
-// Array.prototype.sort: what hell the result is!
-[].sort.apply([0, '0', 1, 'd', '1', '0', 0, ''])
-// ['', 0, '0', '0', 0, 1, '1', 'd']
-
-// Anysort：the result is intuitive
-anysort([0, '0', 1, undefined, 'd', '1', '0', null, 0, '', undefined])
-// [0, 0, 1, '', '0', '0', '1', 'd']
-```
-
-* Flexible API
-
-```js
-// proxy chain api
-anysort(articles).created.date.reverse()
-
-// or
-anysort(articles, 'created.date-reverse()')
-```
-
-* Full typed, even in call-with-string-mode, **AMAZING**!
-
-```js
-// @ts-expect-error
-anysort(articles).tag.hass('it')
-// @ts-expect-error
-anysort(articles, 'created.date-unknownPlugin()')
-// OK!
-anysort(articles).created.date.reverse()
-// OK!
-anysort(articles, 'created.date-reverse()')
-// @ts-expect-error
-anysort(articles).created.date.reverse(123)
-// @ts-expect-error
-anysort(articles, 'created.date-reverse(123)')
-```
-
-* Zero dependencies
-
-* Well tested, logic and type
-
-* <del>WIP: Full API document</del>, help wanted
-
-* <del>WIP: Benchmark</del>, help wanted
 
 ## Full API Doc
 
