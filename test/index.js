@@ -7,6 +7,8 @@ require('mocha')
 require('should')
 
 const assert = require('assert')
+// const anysort = require('../build/index.cjs.min.js')
+// * use index.cjs.js to support line-coverage data
 const anysort = require('../build/index.cjs.js')
 
 /**
