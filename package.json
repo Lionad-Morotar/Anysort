@@ -1,7 +1,7 @@
 {
   "name": "anysort-typed",
   "description": "Flexible and Full Typed multi-properties sorter for nested objects",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "homepage": "https://github.com/Lionad-Morotar/anysort",
   "repository": {
     "type": "git",
