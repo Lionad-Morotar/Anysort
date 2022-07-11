@@ -26,6 +26,8 @@ A picture is worth a thousand words.
   <img src="./statics/simple-usage.png">
 </p>
 
+project moved from [Lionad-Morotar/anysort-old](https://github.com/Lionad-Morotar/any-sort-old)
+
 ## Install
 
 ```sh
