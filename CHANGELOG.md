@@ -1,5 +1,14 @@
 ## Changelog
 
+##### 3.4.0 in comming
+
+* chore: add esm artifacts
+* chore: move building tool chains to vite
+
+##### 3.3.0
+
+* chore: add minified cjs artifacts `index.min.js`
+
 ##### 3.2.0
 
 * fix type error: `anysort(['1']).length.reverse()`
@@ -11,7 +20,7 @@
   - 编译时导出了类型，引用地址在 build/types/index.d.ts
   - 完善测试用例
 * 接口变更
-  - 鉴于 Anysort 的使用场景以及排序速度和 Array.prototype.sort 有很大差异，Array.prototype.sort(anysort('...')) 这种形式的调用已废弃
+  - 鉴于 Anysort 和原生 sort 的使用场景不同（排序速度有较大差距），arrayInstance.sort(anysort('...')) 这种形式的调用被废弃
   - 不再劫持 anysort(arr).sort()，调用 sort 时会返回 Array.prototype.sort
 
 ##### 3.0.0
