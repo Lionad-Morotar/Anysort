@@ -21,7 +21,7 @@ specifiers:
   rollup: ^2.38.5
   rollup-plugin-minize: ^2.1.0
   rollup-plugin-uglify: ^6.0.4
-  should: ^8.4.0
+  should: ^13.0.0
   tslib: ^2.1.0
   typescript: ^4.6.3
 
@@ -46,7 +46,7 @@ devDependencies:
   rollup: 2.70.2
   rollup-plugin-minize: registry.npmmirror.com/rollup-plugin-minize/2.1.0_rollup@2.70.2
   rollup-plugin-uglify: 6.0.4_rollup@2.70.2
-  should: 8.4.0
+  should: 13.2.3
   tslib: 2.3.1
   typescript: 4.6.3
 
@@ -2735,28 +2735,42 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /should-equal/0.8.0:
-    resolution: {integrity: sha1-o/BXMv9FusG3ukEvhAiFaBlkEpk=}
+  /should-equal/2.0.0:
+    resolution: {integrity: sha512-ZP36TMrK9euEuWQYBig9W55WPC7uo37qzAEmbjHz4gfyuXrEUgF8cUvQVO+w+d3OMfPvSRQJ22lSm8MQJ43LTA==}
     dependencies:
-      should-type: 0.2.0
+      should-type: 1.4.0
     dev: true
 
-  /should-format/0.3.2:
-    resolution: {integrity: sha1-pZgx4Bot3uFJkRvHFIvlyAMZ4f8=}
+  /should-format/3.0.3:
+    resolution: {integrity: sha512-hZ58adtulAk0gKtua7QxevgUaXTTXxIi8t41L3zo9AHvjXO1/7sdLECuHeIN2SRtYXpNkmhoUP2pdeWgricQ+Q==}
     dependencies:
-      should-type: 0.2.0
+      should-type: 1.4.0
+      should-type-adaptors: 1.1.0
     dev: true
 
-  /should-type/0.2.0:
-    resolution: {integrity: sha1-ZwfvlVKdmJ3MCY/gdTqx+RNrt/Y=}
+  /should-type-adaptors/1.1.0:
+    resolution: {integrity: sha512-JA4hdoLnN+kebEp2Vs8eBe9g7uy0zbRo+RMcU0EsNy+R+k049Ki+N5tT5Jagst2g7EAja+euFuoXFCa8vIklfA==}
+    dependencies:
+      should-type: 1.4.0
+      should-util: 1.0.1
     dev: true
 
-  /should/8.4.0:
-    resolution: {integrity: sha1-XmCInT5kS73Tl6MM00+tKPz5C8A=}
+  /should-type/1.4.0:
+    resolution: {integrity: sha512-MdAsTu3n25yDbIe1NeN69G4n6mUnJGtSJHygX3+oN0ZbO3DTiATnf7XnYJdGT42JCXurTb1JI0qOBR65shvhPQ==}
+    dev: true
+
+  /should-util/1.0.1:
+    resolution: {integrity: sha512-oXF8tfxx5cDk8r2kYqlkUJzZpDBqVY/II2WhvU0n9Y3XYvAYRmeaf1PvvIvTgPnv4KJ+ES5M0PyDq5Jp+Ygy2g==}
+    dev: true
+
+  /should/13.2.3:
+    resolution: {integrity: sha512-ggLesLtu2xp+ZxI+ysJTmNjh2U0TsC+rQ/pfED9bUZZ4DKefP27D+7YJVVTvKsmjLpIi9jAa7itwDGkDDmt1GQ==}
     dependencies:
-      should-equal: 0.8.0
-      should-format: 0.3.2
-      should-type: 0.2.0
+      should-equal: 2.0.0
+      should-format: 3.0.3
+      should-type: 1.4.0
+      should-type-adaptors: 1.1.0
+      should-util: 1.0.1
     dev: true
 
   /side-channel/1.0.4:

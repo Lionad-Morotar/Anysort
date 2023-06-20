@@ -72,7 +72,7 @@
     "rollup": "^2.38.5",
     "rollup-plugin-minize": "^2.1.0",
     "rollup-plugin-uglify": "^6.0.4",
-    "should": "^8.4.0",
+    "should": "^13.0.0",
     "tslib": "^2.1.0",
     "typescript": "^4.6.3"
   },
