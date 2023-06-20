@@ -74,7 +74,7 @@
     "rollup-plugin-uglify": "^6.0.4",
     "should": "^8.4.0",
     "tslib": "^2.1.0",
-    "typescript": "^4.6.3"
+    "typescript": "^5.0.0"
   },
   "keywords": [
     "any",
