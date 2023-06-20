@@ -18,7 +18,7 @@ specifiers:
   npm-watch: ^0.11.0
   nyc: ^15.1.0
   rimraf: ^3.0.2
-  rollup: ^2.38.5
+  rollup: ^3.0.0
   rollup-plugin-minize: ^2.1.0
   rollup-plugin-uglify: ^6.0.4
   should: ^8.4.0
@@ -26,9 +26,9 @@ specifiers:
   typescript: ^4.6.3
 
 devDependencies:
-  '@rollup/plugin-commonjs': 21.0.3_rollup@2.70.2
-  '@rollup/plugin-node-resolve': 13.2.0_rollup@2.70.2
-  '@rollup/plugin-typescript': 8.3.2_eaab4980cb5a437133211ecd98513266
+  '@rollup/plugin-commonjs': 21.0.3_rollup@3.25.1
+  '@rollup/plugin-node-resolve': 13.2.0_rollup@3.25.1
+  '@rollup/plugin-typescript': 8.3.2_96bfb884929c3c5149c08e48fdfb8834
   '@types/node': 17.0.24
   '@typescript-eslint/eslint-plugin': 5.19.0_edcb20b406075febffd90857e23671f0
   '@typescript-eslint/parser': 5.19.0_eslint@7.32.0+typescript@4.6.3
@@ -43,9 +43,9 @@ devDependencies:
   npm-watch: 0.11.0
   nyc: 15.1.0
   rimraf: 3.0.2
-  rollup: 2.70.2
-  rollup-plugin-minize: registry.npmmirror.com/rollup-plugin-minize/2.1.0_rollup@2.70.2
-  rollup-plugin-uglify: 6.0.4_rollup@2.70.2
+  rollup: 3.25.1
+  rollup-plugin-minize: registry.npmmirror.com/rollup-plugin-minize/2.1.0_rollup@3.25.1
+  rollup-plugin-uglify: 6.0.4_rollup@3.25.1
   should: 8.4.0
   tslib: 2.3.1
   typescript: 4.6.3
@@ -324,38 +324,38 @@ packages:
       fastq: 1.13.0
     dev: true
 
-  /@rollup/plugin-commonjs/21.0.3_rollup@2.70.2:
+  /@rollup/plugin-commonjs/21.0.3_rollup@3.25.1:
     resolution: {integrity: sha512-ThGfwyvcLc6cfP/MWxA5ACF+LZCvsuhUq7V5134Az1oQWsiC7lNpLT4mJI86WQunK7BYmpUiHmMk2Op6OAHs0g==}
     engines: {node: '>= 8.0.0'}
     peerDependencies:
       rollup: ^2.38.3
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.70.2
+      '@rollup/pluginutils': 3.1.0_rollup@3.25.1
       commondir: 1.0.1
       estree-walker: 2.0.2
       glob: 7.2.0
       is-reference: 1.2.1
       magic-string: 0.25.9
       resolve: 1.22.0
-      rollup: 2.70.2
+      rollup: 3.25.1
     dev: true
 
-  /@rollup/plugin-node-resolve/13.2.0_rollup@2.70.2:
+  /@rollup/plugin-node-resolve/13.2.0_rollup@3.25.1:
     resolution: {integrity: sha512-GuUIUyIKq7EjQxB51XSn6zPHYo+cILQQBYOGYvFFNxws2OVOqCBShAoof2hFrV8bAZzZGDBDQ8m2iUt8SLOUkg==}
     engines: {node: '>= 10.0.0'}
     peerDependencies:
       rollup: ^2.42.0
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.70.2
+      '@rollup/pluginutils': 3.1.0_rollup@3.25.1
       '@types/resolve': 1.17.1
       builtin-modules: 3.2.0
       deepmerge: 4.2.2
       is-module: 1.0.0
       resolve: 1.22.0
-      rollup: 2.70.2
+      rollup: 3.25.1
     dev: true
 
-  /@rollup/plugin-typescript/8.3.2_eaab4980cb5a437133211ecd98513266:
+  /@rollup/plugin-typescript/8.3.2_96bfb884929c3c5149c08e48fdfb8834:
     resolution: {integrity: sha512-MtgyR5LNHZr3GyN0tM7gNO9D0CS+Y+vflS4v/PHmrX17JCkHUYKvQ5jN5o3cz1YKllM3duXUqu3yOHwMPUxhDg==}
     engines: {node: '>=8.0.0'}
     peerDependencies:
@@ -363,14 +363,14 @@ packages:
       tslib: '*'
       typescript: '>=3.7.0'
     dependencies:
-      '@rollup/pluginutils': 3.1.0_rollup@2.70.2
+      '@rollup/pluginutils': 3.1.0_rollup@3.25.1
       resolve: 1.22.0
-      rollup: 2.70.2
+      rollup: 3.25.1
       tslib: 2.3.1
       typescript: 4.6.3
     dev: true
 
-  /@rollup/pluginutils/3.1.0_rollup@2.70.2:
+  /@rollup/pluginutils/3.1.0_rollup@3.25.1:
     resolution: {integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==}
     engines: {node: '>= 8.0.0'}
     peerDependencies:
@@ -379,7 +379,7 @@ packages:
       '@types/estree': 0.0.39
       estree-walker: 1.0.1
       picomatch: 2.3.1
-      rollup: 2.70.2
+      rollup: 3.25.1
     dev: true
 
   /@sindresorhus/is/0.14.0:
@@ -2660,21 +2660,21 @@ packages:
       glob: 7.2.0
     dev: true
 
-  /rollup-plugin-uglify/6.0.4_rollup@2.70.2:
+  /rollup-plugin-uglify/6.0.4_rollup@3.25.1:
     resolution: {integrity: sha512-ddgqkH02klveu34TF0JqygPwZnsbhHVI6t8+hGTcYHngPkQb5MIHI0XiztXIN/d6V9j+efwHAqEL7LspSxQXGw==}
     peerDependencies:
       rollup: '>=0.66.0 <2'
     dependencies:
       '@babel/code-frame': 7.16.7
       jest-worker: 24.9.0
-      rollup: 2.70.2
+      rollup: 3.25.1
       serialize-javascript: 2.1.2
       uglify-js: 3.15.4
     dev: true
 
-  /rollup/2.70.2:
-    resolution: {integrity: sha512-EitogNZnfku65I1DD5Mxe8JYRUCy0hkK5X84IlDtUs+O6JRMpRciXTzyCUuX11b5L5pvjH+OmFXiQ3XjabcXgg==}
-    engines: {node: '>=10.0.0'}
+  /rollup/3.25.1:
+    resolution: {integrity: sha512-tywOR+rwIt5m2ZAWSe5AIJcTat8vGlnPFAv15ycCrw33t6iFsXZ6mzHVFh2psSjxQPmI+xgzMZZizUAukBI4aQ==}
+    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
     hasBin: true
     optionalDependencies:
       fsevents: 2.3.2
@@ -3282,7 +3282,7 @@ packages:
     version: 2.20.3
     dev: true
 
-  registry.npmmirror.com/rollup-plugin-minize/2.1.0_rollup@2.70.2:
+  registry.npmmirror.com/rollup-plugin-minize/2.1.0_rollup@3.25.1:
     resolution: {integrity: sha512-olHaVAH+ZNvvPTN5tbQ5igisJrf9/9Vrwev9nWRFyY2KoWFmGmzwK7ZB0mqGCXxukRkZJVhuy6hU/UJ/Kt9xIA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/rollup-plugin-minize/-/rollup-plugin-minize-2.1.0.tgz}
     id: registry.npmmirror.com/rollup-plugin-minize/2.1.0
     name: rollup-plugin-minize
@@ -3290,7 +3290,7 @@ packages:
     peerDependencies:
       rollup: ^2.33.2
     dependencies:
-      rollup: 2.70.2
+      rollup: 3.25.1
       terser: registry.npmmirror.com/terser/5.14.1
     dev: true
 
