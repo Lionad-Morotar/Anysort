@@ -10,7 +10,7 @@ specifiers:
   coverage-badge-creator: ^1.0.11
   cross-env: ^7.0.3
   eslint: ^7.32.0
-  eslint-config-standard: ^16.0.3
+  eslint-config-standard: ^17.0.0
   eslint-plugin-import: ^2.25.4
   eslint-plugin-node: ^11.1.0
   eslint-plugin-promise: ^5.2.0
@@ -35,7 +35,7 @@ devDependencies:
   coverage-badge-creator: 1.0.11
   cross-env: 7.0.3
   eslint: 7.32.0
-  eslint-config-standard: 16.0.3_b34912069e885f2a9370bfe10b54509c
+  eslint-config-standard: 17.1.0_a67a19384ef1d796c51b43feff65e992
   eslint-plugin-import: 2.26.0_1a77b905327e175a7a21669ae8abc2e3
   eslint-plugin-node: 11.1.0_eslint@7.32.0
   eslint-plugin-promise: 5.2.0_eslint@7.32.0
@@ -1155,17 +1155,17 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /eslint-config-standard/16.0.3_b34912069e885f2a9370bfe10b54509c:
-    resolution: {integrity: sha512-x4fmJL5hGqNJKGHSjnLdgA6U6h1YW/G2dW9fA+cyVur4SK6lyue8+UgNKWlZtUDTXvgKDD/Oa3GQjmB5kjtVvg==}
+  /eslint-config-standard/17.1.0_a67a19384ef1d796c51b43feff65e992:
+    resolution: {integrity: sha512-IwHwmaBNtDK4zDHQukFDW5u/aTb8+meQWZvNFWkiGmbWjD6bqyuSSBxxXKkCftCUzc1zwCH2m/baCNDLGmuO5Q==}
+    engines: {node: '>=12.0.0'}
     peerDependencies:
-      eslint: ^7.12.1
-      eslint-plugin-import: ^2.22.1
-      eslint-plugin-node: ^11.1.0
-      eslint-plugin-promise: ^4.2.1 || ^5.0.0
+      eslint: ^8.0.1
+      eslint-plugin-import: ^2.25.2
+      eslint-plugin-n: '^15.0.0 || ^16.0.0 '
+      eslint-plugin-promise: ^6.0.0
     dependencies:
       eslint: 7.32.0
       eslint-plugin-import: 2.26.0_1a77b905327e175a7a21669ae8abc2e3
-      eslint-plugin-node: 11.1.0_eslint@7.32.0
       eslint-plugin-promise: 5.2.0_eslint@7.32.0
     dev: true
 
