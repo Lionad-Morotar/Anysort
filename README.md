@@ -188,7 +188,7 @@ npm run build
 
 ## How this work
 
-[《🌐 Anysort：灵活、优雅的多属性排序》](https://zhuanlan.zhihu.com/p/515016977)
+[《🌐 Anysort：灵活、优雅的多属性排序》](https://www.lionad.art/articles/anysort-2th.html)
 
 ## Pull & Request
 
