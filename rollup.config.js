@@ -33,22 +33,23 @@ export default {
   output: [
     {
       name: 'module',
-      file: output + (isPro ? '.min.js' : '.js'),
+      file: output + (isPro ? '.umd.min.js' : '.umd.js'),
       format: 'umd',
-      sourcemap: true,
-      globals: {
-        tslib: 'tslib'
-      }
+      sourcemap: true
     },
     {
       name: 'module',
       file: output + (isPro ? '.cjs.min.js' : '.cjs.js'),
       format: 'cjs',
       exports: 'auto',
-      sourcemap: false,
-      globals: {
-        tslib: 'tslib'
-      }
+      sourcemap: true
+    },
+    {
+      name: 'module',
+      file: output + (isPro ? '.esm.min.js' : '.esm.js'),
+      format: 'esm',
+      exports: 'auto',
+      sourcemap: true
     }
   ]
 }

@@ -8,11 +8,19 @@
     "url": "git+https://github.com/Lionad-Morotar/anysort.git"
   },
   "license": "MIT",
-  "main": "build/index.min.js",
-  "types": "build/types/index.d.ts",
+  "main": "build/index.esm.min.js",
+  "types": "types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./build/index.esm.min.js",
+      "require": "./build/index.cjs.min.js"
+    },
+    "./types": "./types/index.d.ts",
+    "./*": "./*"
+  },
   "scripts": {
-    "prebuild": "rimraf build/index.*",
-    "build": "cross-env NODE_ENV=production rollup -c && cross-env NODE_ENV=development rollup -c",
+    "prebuild": "rimraf build",
+    "build": "cross-env NODE_ENV=production rollup -c",
     "prebuild:types": "rimraf build/types",
     "build:types": "tsc",
     "build:all": "npm run build:types | npm run build",

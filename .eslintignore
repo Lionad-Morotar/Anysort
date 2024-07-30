@@ -1,2 +1,5 @@
 build/
 codecov/
+package.json
+tsconfig.json
+types
