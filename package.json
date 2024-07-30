@@ -17,6 +17,7 @@
     "build:types": "tsc",
     "build:all": "npm run build:types | npm run build",
     "test": "cross-env NODE_ENV=production nyc mocha ./test/index",
+    "eslint": "eslint . --ext .vue,.js,.cjs,.mjs,.ts,.json --fix --ignore-pattern .eslintignore",
     "coverage:badge": "coverage-badge-creator",
     "watch:test": "npm-watch test",
     "preversion": "npm run build && npm run build:types && npm test",
