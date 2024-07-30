@@ -13,7 +13,8 @@
   "exports": {
     ".": {
       "import": "./build/index.esm.min.js",
-      "require": "./build/index.cjs.min.js"
+      "require": "./build/index.cjs.min.js",
+      "types": "./types/index.d.ts"
     },
     "./types": "./types/index.d.ts",
     "./*": "./*"
@@ -92,7 +93,7 @@
     "nested",
     "object",
     "order",
-    "multy-properties",
+    "multi-properties",
     "property",
     "sort",
     "sorting",
