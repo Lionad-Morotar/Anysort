@@ -17,7 +17,7 @@ const config: AnysortConfiguration = {
     rest: 7,
     // if no 'void' provided,
     // undefined value will be ignored in sort,
-    // null value will be treated as normal unrecognized value
+    // null value will be treated as normal unrecognized value (-> rest)
     void: 8
   }
 }

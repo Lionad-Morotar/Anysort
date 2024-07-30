@@ -67,15 +67,15 @@ const sortByTypeOrder: SortFn =
     }
   }
 
-type PLMaping = (map: MappingFn) => (fn: SortFn) => SortFn
+type PLMapping = (map: MappingFn) => (fn: SortFn) => SortFn
 type PLResult = (change: ResultFn) => (fn: SortFn) => SortFn
 
-const maping: PLMaping = map => fn => (a, b) => fn(map(a), map(b))
+const mapping: PLMapping = map => fn => (a, b) => fn(map(a), map(b))
 const result: PLResult = change => fn => (a, b) => change(fn(a, b) as SortVal)
 
-export default class Sort {
+class Sort {
   pipeline: (
-    | { _type: 'maping', _value: MappingFn }
+    | { _type: 'mapping', _value: MappingFn }
     | { _type: 'result', _value: ResultFn }
   )[]
 
@@ -95,12 +95,12 @@ export default class Sort {
    * array.sort((a, b) => map(a) - map(b))
    */
   map (_value: MappingFn): Sort {
-    this.pipeline.push({ _value, _type: 'maping' })
+    this.pipeline.push({ _value, _type: 'mapping' })
     return this
   }
 
   /**
-   * becareful, the result plugin should be
+   * be careful, the result plugin should be
    * the last one in this.pipeline
    */
   result (_value: ResultFn): Sort {
@@ -112,9 +112,11 @@ export default class Sort {
     let targetSortFn = sortByTypeOrder
     this.pipeline.reverse().map(current => {
       const { _type, _value } = current
-      if (_type === 'maping') targetSortFn = maping(_value)(targetSortFn)
+      if (_type === 'mapping') targetSortFn = mapping(_value)(targetSortFn)
       if (_type === 'result') targetSortFn = result(_value)(targetSortFn)
     })
     return targetSortFn
   }
 }
+
+export default Sort

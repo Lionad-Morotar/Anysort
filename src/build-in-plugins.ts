@@ -1,5 +1,5 @@
-import Sort from './sort'
 import { walk } from './utils'
+import type Sort from './sort'
 
 import type {
   SortVal,

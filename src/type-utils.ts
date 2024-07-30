@@ -97,7 +97,7 @@ export type UnionToTupleSafe<T> =
 
 type GetArrItemType<ARR> = ARR extends (infer Item)[] ? Item : never
 
-export type Nths<
+export type NThs<
   Num extends number,
   ARR extends unknown[] = [],
   One extends unknown[] = never,
@@ -107,15 +107,15 @@ export type Nths<
   [One] extends [never]
   ? ARR extends [infer ARRHead, ...infer ARRTail]
     ? ARRHead extends unknown[]
-      ? Nths<Num, ARRTail, ARRHead, [], Res>
+      ? NThs<Num, ARRTail, ARRHead, [], Res>
       : never
     : Res
   : Idx['length'] extends Num
     ? One extends [infer OneHead, ...infer OneTail]
-      ? Nths<Num, ARR, never, [], [...Res, OneHead]>
+      ? NThs<Num, ARR, never, [], [...Res, OneHead]>
       : never
     : One extends [infer OneHead, ...infer OneTail]
-      ? Nths<Num, ARR, OneTail, [...Idx, 1], [...Res,]>
+      ? NThs<Num, ARR, OneTail, [...Idx, 1], [...Res,]>
       : never
 
 export type Tuple1th<U> =
@@ -145,9 +145,9 @@ export type isPathAvailable<
   ARR extends unknown[],
   Path extends string,
   ARRSafe extends unknown[] = UnionToTupleSafe<ARR>,
-  PosiblePath = ObjectKeyPaths<ARRSafe>
+  PossiblePath = ObjectKeyPaths<ARRSafe>
 > =
-  Path extends PosiblePath
+  Path extends PossiblePath
   ? true
   : false
 
