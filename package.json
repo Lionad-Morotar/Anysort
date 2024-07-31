@@ -25,10 +25,7 @@
     "test": "cross-env NODE_ENV=production nyc mocha ./test/index",
     "eslint": "eslint . --ext .vue,.js,.cjs,.mjs,.ts,.json --fix --ignore-pattern .eslintignore",
     "coverage:badge": "coverage-badge-creator",
-    "watch:test": "npm-watch test",
-    "preversion": "npm run build && npm run build:types && npm test",
-    "version": "git add -A build",
-    "postversion": "git push && git push --tags"
+    "watch:test": "npm-watch test"
   },
   "watch": {
     "test": {
