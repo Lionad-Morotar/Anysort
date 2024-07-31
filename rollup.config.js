@@ -39,7 +39,15 @@ export default {
     },
     {
       name: 'module',
-      file: output + (isPro ? '.cjs.min.js' : '.cjs.js'),
+      file: output + '.cjs.min.js',
+      format: 'cjs',
+      exports: 'auto',
+      sourcemap: true
+    },
+    // * coverage test
+    {
+      name: 'module',
+      file: output + '.cjs.js',
       format: 'cjs',
       exports: 'auto',
       sourcemap: true

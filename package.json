@@ -21,7 +21,7 @@
   },
   "scripts": {
     "prebuild": "rimraf build",
-    "build": "cross-env NODE_ENV=production rollup -c",
+    "build": "cross-env NODE_ENV=production rollup -c && mv -f build/*.d.ts types",
     "prebuild:types": "rimraf build/types",
     "build:types": "tsc",
     "build:all": "npm run build:types | npm run build",
