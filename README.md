@@ -96,7 +96,7 @@ anysort(articles, 'created.date-reverse(123)')
 
 ## Usage
 
-Short instruction。
+### Brief
 
 ```js
 const posts = getPosts()
@@ -166,6 +166,12 @@ function getPosts () {
     }
   ]
 }
+```
+
+### In Vue3
+
+```vue
+// TODO
 ```
 
 ## Full API Doc

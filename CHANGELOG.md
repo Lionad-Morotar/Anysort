@@ -1,9 +1,10 @@
 ## Changelog
 
-##### 3.4.0 in comming
+##### 3.4.0 in wip
 
 * chore: add esm artifacts
 * chore: move building tool chains to vite
+* feat: add `asc` and `desc` build-in plugins, example: `anysort(arr, 'date-desc()')`
 
 ##### 3.3.0
 

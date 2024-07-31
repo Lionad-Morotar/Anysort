@@ -1,4 +1,4 @@
-import Sort from './sort';
+import type Sort from './sort';
 import type { SortVal, SortPlugin, ComparableValue, PluginNames, PluginNamesWithArg, PluginNamesWithoutArg, PluginNamesWithArgMaybe } from './type';
 declare const plugins: {
     i: (sort: Sort) => Sort;
@@ -9,16 +9,18 @@ declare const plugins: {
     not: (sort: Sort, arg?: string) => Sort;
     len: (sort: Sort, arg: string) => Sort;
     get: (sort: Sort, arg: string) => Sort;
+    asc: (sort: Sort) => Sort;
+    desc: (sort: Sort) => Sort;
     reverse: (sort: Sort) => Sort;
     rand: (sort: Sort) => Sort;
     result: (sort: Sort) => Sort;
 };
-export declare type BuildInPlugins = typeof plugins;
-export declare type BuildInPluginNames = PluginNames<BuildInPlugins>;
-export declare type BuildInPluginNamesWithoutArg = PluginNamesWithoutArg<BuildInPlugins>;
-export declare type BuildInPluginNamesWithArg = PluginNamesWithArg<BuildInPlugins>;
-export declare type BuildInPluginNamesWithArgMaybe = PluginNamesWithArgMaybe<BuildInPlugins>;
-export declare type MappingFn = (x: any) => ComparableValue;
-export declare type ResultFn = (x: SortVal) => SortVal;
-declare const _default: Readonly<Record<"i" | "is" | "nth" | "all" | "has" | "not" | "len" | "get" | "reverse" | "rand" | "result", SortPlugin>>;
+export type BuildInPlugins = typeof plugins;
+export type BuildInPluginNames = PluginNames<BuildInPlugins>;
+export type BuildInPluginNamesWithoutArg = PluginNamesWithoutArg<BuildInPlugins>;
+export type BuildInPluginNamesWithArg = PluginNamesWithArg<BuildInPlugins>;
+export type BuildInPluginNamesWithArgMaybe = PluginNamesWithArgMaybe<BuildInPlugins>;
+export type MappingFn = (x: any) => ComparableValue;
+export type ResultFn = (x: SortVal) => SortVal;
+declare const _default: Readonly<Record<"i" | "is" | "nth" | "all" | "has" | "not" | "len" | "get" | "asc" | "desc" | "reverse" | "rand" | "result", SortPlugin>>;
 export default _default;

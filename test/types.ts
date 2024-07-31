@@ -1,10 +1,10 @@
 /* eslint-disable */
 
-import type { Anysort } from '../build/types'
-import Sort from '../build/types/sort'
-import type { PluginNamesWithoutArg, PluginNamesWithArg, PluginNamesWithArgMaybe } from '../build/types/type'
-import type { GetPath, UnionToTupleSafe, ObjectKeyPaths, isPathAvailable, isValidStringCMD } from '../build/types/type-utils'
-import type { BuildInPlugins } from '../build/types/build-in-plugins'
+import type { Anysort } from '../types'
+import Sort from '../types/sort'
+import type { PluginNamesWithoutArg, PluginNamesWithArg, PluginNamesWithArgMaybe } from '../types/type'
+import type { GetPath, UnionToTupleSafe, ObjectKeyPaths, isPathAvailable, isValidStringCMD } from '../types/type-utils'
+import type { BuildInPlugins } from '../types/build-in-plugins'
 
 import { getPosts } from './readme-example'
 

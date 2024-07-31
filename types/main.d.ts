@@ -9,6 +9,8 @@ declare const _default: Anysort<{
     not: (sort: Sort, arg?: string) => Sort;
     len: (sort: Sort, arg: string) => Sort;
     get: (sort: Sort, arg: string) => Sort;
+    asc: (sort: Sort) => Sort;
+    desc: (sort: Sort) => Sort;
     reverse: (sort: Sort) => Sort;
     rand: (sort: Sort) => Sort;
     result: (sort: Sort) => Sort;

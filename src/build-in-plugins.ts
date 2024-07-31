@@ -86,6 +86,8 @@ const plugins = {
 
   /* Plugins that change sort order directly */
 
+  asc: (sort: Sort) => sort.result(res => res),
+  desc: (sort: Sort) => sort.result(res => -res as SortVal),
   reverse: (sort: Sort) => sort.result(res => -res as SortVal),
   rand: (sort: Sort) => sort.result(_ => Math.random() < 0.5 ? -1 : 1),
 

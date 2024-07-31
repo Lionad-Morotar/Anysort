@@ -91,7 +91,7 @@ class Sort {
   /**
    * its not same as Array.prototype.map in js,
    * but more like map value a to value b,
-   * array.sort((a, b) => a - b) then becames:
+   * array.sort((a, b) => a - b) then becomes:
    * array.sort((a, b) => map(a) - map(b))
    */
   map (_value: MappingFn): Sort {

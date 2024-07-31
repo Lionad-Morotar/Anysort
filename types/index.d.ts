@@ -1,5 +1,5 @@
 import anysort from './main';
-export declare type Anysort = typeof anysort;
+export type Anysort = typeof anysort;
 declare const _default: import("./type").Anysort<{
     i: (sort: import("./sort").default) => import("./sort").default;
     is: (sort: import("./sort").default, arg: string) => import("./sort").default;
@@ -9,6 +9,8 @@ declare const _default: import("./type").Anysort<{
     not: (sort: import("./sort").default, arg?: string) => import("./sort").default;
     len: (sort: import("./sort").default, arg: string) => import("./sort").default;
     get: (sort: import("./sort").default, arg: string) => import("./sort").default;
+    asc: (sort: import("./sort").default) => import("./sort").default;
+    desc: (sort: import("./sort").default) => import("./sort").default;
     reverse: (sort: import("./sort").default) => import("./sort").default;
     rand: (sort: import("./sort").default) => import("./sort").default;
     result: (sort: import("./sort").default) => import("./sort").default;
