@@ -1,13 +1,12 @@
+import path from 'path'
 import common from '@rollup/plugin-commonjs'
 import node from '@rollup/plugin-node-resolve'
 import typescript from '@rollup/plugin-typescript'
-import minize from 'rollup-plugin-minize'
+import { minize } from 'rollup-plugin-minize'
 
-const path = require('path')
-
-const getPath = _path => path.resolve(__dirname, _path)
-const input = path.join(__dirname, './src/index.ts')
-const output = path.join(__dirname, './build/index')
+const getPath = _path => path.resolve(process.cwd(), _path)
+const input = path.join(process.cwd(), './src/index.ts')
+const output = path.join(process.cwd(), './build/index')
 
 const isPro = process.env.NODE_ENV === 'production'
 
