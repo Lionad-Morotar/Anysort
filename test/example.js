@@ -3,7 +3,7 @@ const anysort = require('../build/index.min.js')
 /* @see example for README.md */
 
 const posts = getPosts()
-const print = (x) => console.log(JSON.stringify(x))
+const print = x => console.log(JSON.stringify(x))
 
 // select articles being edited with IT tags,
 // sorted by date in reverse order and time in positive order
@@ -33,7 +33,7 @@ anysort(getPosts())
 // {"tag":["game","it"],"status":"editing","created":{"date":"2021-01-01T00:00:00.000Z","hour":23}}
 // {"tag":["mp3"],"status":"","created":{"date":"2019-08-01T00:00:00.000Z","hour":23}}
 
-function getPosts () {
+function getPosts() {
   return [
     {
       tag: ['mp3'],
