@@ -32,7 +32,7 @@ Anysort 的代码风格与开发约定。
 ## 提交与版本
 
 - 手动版本管理（recent commit `chore: manual versioning`），当前 `3.4.0-alpha.0`
-- CHANGELOG.md 记录版本变更
+- `CHANGELOG.md` 记录版本变更（1.4.x → 3.4.0-wip），README 底部有链接
 - 无 CI / 无自动化发布（见 [CONCERNS.md](./CONCERNS.md)）
 
 ## 测试约定

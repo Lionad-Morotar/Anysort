@@ -46,8 +46,10 @@ Anysort 的技术债务、已知问题与需要注意的脆弱点。
 - 无 Prettier，仅 ESLint
 - `codecov/` 目录疑似历史残留，当前无上传步骤
 - 覆盖率徽章为静态图片，非动态
+- 构建工具链迁移未决：`CHANGELOG.md` 3.4.0-wip 记录了 "move building tool chains to vite" 意图，但仓库当前仍是 `rollup.config.mjs`、未见 vite 配置——迁移状态不明（wip 中断或仅记录意图）
 
 ## API 设计注意
 
 - `main` 字段指向 ESM min 产物（`build/index.esm.min.js`），略不寻常（多数库 main 指 CJS）；`exports` 字段更规范
 - `extends` 安装插件是全局副作用（直接修改 `plugins` 对象），多次调用累积，无法卸载
+- `extends` 的链式调用（`anysort.extends(...).extends(...)`）被禁用：会触发 TS "类型实例化过深、且可能无限" 错误（见 `test/types.ts:183` 注释及被注释掉的测试用例），这是 Full Typed 类型递归推导的固有边界
