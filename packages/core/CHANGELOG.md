@@ -1,5 +1,13 @@
 ## Changelog
 
+##### 0.1.0
+
+- 包名从 `anysort-typed` 迁移至 `@anysort/core`（monorepo 改造）
+- 进入 0.x 打磨期：API 暂继承 3.x，1.0 前可能 breaking
+- 源码与测试整体迁移自 `anysort-typed`，行为零变化
+
+> 以下为前身 `anysort-typed`（1.x–3.x）的历史变更记录。
+
 ##### 3.4.0
 
 * chore: add esm artifacts

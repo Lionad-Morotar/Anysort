@@ -1,39 +1,22 @@
 {
-  "name": "anysort-typed",
-  "description": "Flexible and Full Typed multi-properties sorter for nested objects",
-  "version": "3.4.0",
+  "name": "anysort-monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Anysort monorepo: flexible, full-typed multi-properties sorter + Vue/Nuxt integrations",
+  "license": "MIT",
   "homepage": "https://github.com/Lionad-Morotar/anysort",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Lionad-Morotar/anysort.git"
   },
-  "license": "MIT",
-  "main": "build/index.cjs.min.js",
-  "module": "build/index.esm.min.js",
-  "types": "types/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./build/index.esm.min.js",
-      "require": "./build/index.cjs.min.js",
-      "types": "./types/index.d.ts"
-    },
-    "./types": "./types/index.d.ts",
-    "./*": "./*"
-  },
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.json",
-    "test": "vitest run",
-    "eslint": "oxlint .",
-    "coverage:badge": "coverage-badge-creator",
-    "watch:test": "vitest",
-    "prepublishOnly": "pnpm build"
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "lint": "oxlint .",
+    "typecheck": "pnpm -r run typecheck",
+    "dev:vue": "pnpm --filter playground-vue dev",
+    "dev:nuxt": "pnpm --filter playground-nuxt dev"
   },
-  "files": [
-    "build/**/*",
-    "types/**/*",
-    "README.md",
-    "statics/*"
-  ],
   "devDependencies": {
     "@types/node": "^26.1.1",
     "@vitest/coverage-v8": "^4.1.10",
@@ -43,21 +26,9 @@
     "terser": "^5.49.0",
     "tslib": "^2.8.1",
     "typescript": "^7.0.2",
+    "vite": "^8.0.0",
     "vitest": "^4.1.10"
   },
-  "keywords": [
-    "any",
-    "array",
-    "multiple",
-    "nested",
-    "object",
-    "order",
-    "multi-properties",
-    "property",
-    "sort",
-    "sorting",
-    "sorter"
-  ],
   "engines": {
     "node": ">=20.19",
     "pnpm": ">=10"

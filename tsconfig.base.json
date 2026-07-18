@@ -1,19 +1,19 @@
 {
-  "include": ["src/index.ts"],
   "compilerOptions": {
     "target": "es2022",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "outDir": "./types",
-    "rootDir": "./src",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": false,
     "noImplicitThis": false,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "@anysort/core": ["./packages/core/src/index.ts"],
+      "@anysort/core/*": ["./packages/core/src/*"],
+      "@anysort/vue": ["./packages/vue/src/index.ts"]
+    }
   }
 }
