@@ -2,6 +2,15 @@
 // 由 vitest typecheck（tsgo）驱动，作为类型回归门禁。无运行时产物。
 
 import { chain } from '../src/chain'
+import anysort from '../src/index'
+
+/* ===== 字符串命令 Full Typed：非法路径编译期报错 ===== */
+// @ts-expect-error 'name3' 不是 { name: string } 的合法路径
+anysort([{ name: 'x' }], 'name3')
+// @ts-expect-error 'age-typo()' 插件名非法
+anysort([{ age: 1 }], 'age-typo()')
+// 合法命令（路径 / 路径-插件 / 嵌套路径）OK
+anysort([{ name: 'x', age: 1, created: { date: 'd' } }], 'name', 'age-reverse()', 'created.date')
 
 /* 合法路径：沿元素 keyof 递归补全 */
 chain([{ a: { b: 1 } }]).a.b

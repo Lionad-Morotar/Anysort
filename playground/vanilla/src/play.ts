@@ -47,7 +47,8 @@ extend('evenFirst', {
   kind: 'mapping',
   apply: () => (x: unknown) => (typeof x === 'number' && x % 2 === 0 ? 0 : 1),
 })
-anysort([1, 2, 3, 4], 'evenFirst()')
+// 自定义插件字符串命令静态层不识别（SortCMD 只含内置插件，extend 运行时注册），经 IR 调用
+anysort([1, 2, 3, 4], { ops: [{ type: 'call', plugin: 'evenFirst' }] })
 
 /* ===== IR 结构校验 ===== */
 validateRule({ ops: [{ type: 'get', path: ['name'] }] })

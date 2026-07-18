@@ -28,6 +28,32 @@ export interface SortRule {
  */
 export type SortSpec = SortRule[]
 
+/**
+ * 元素类型 T 的所有对象路径联合（递归 keyof，'.' 分隔）。
+ * 如 `{ a: { b: 1 } }` → `'a' | 'a.b'`。用于字符串命令的路径校验。
+ */
+export type PathStr<T> = T extends Record<string, any>
+  ? { [K in keyof T & string]: T[K] extends Record<string, any>
+      ? K | `${K}.${PathStr<T[K]>}`
+      : K
+    }[keyof T & string]
+  : never
+
+/** 内置插件名联合（与 plugins.ts 注册表对应）。 */
+export type BuiltinPluginName = 'i' | 'is' | 'nth' | 'all' | 'has' | 'not' | 'len' | 'asc' | 'desc' | 'reverse' | 'rand'
+
+/** 插件调用形式：无参 `plugin()` 或带参 `plugin(arg)`（arg 内容不静态校验）。 */
+export type PluginCall = `${BuiltinPluginName}()` | `${BuiltinPluginName}(${string})`
+
+/**
+ * 合法字符串命令字面量联合：路径 | 插件 | 路径-插件。
+ * 让 `anysort(arr, 'name3')` 编译期报错（非法路径）。多 '-' 段命令不覆盖，请用 IR 或多次传规则。
+ */
+export type SortCMD<T> =
+  | PathStr<T>
+  | PluginCall
+  | `${PathStr<T>}-${PluginCall}`
+
 const isSortArg = (v: unknown): v is SortArg =>
   typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean' || v === null
 

@@ -26,13 +26,13 @@ export type { PluginDef, MappingPluginDef, ResultPluginDef, PluginKind } from '.
 export { extend, extendAll } from './plugins'
 
 // 主入口
-import { validateRule, type SortRule } from './ir'
+import { validateRule, type SortRule, type SortCMD } from './ir'
 import type { SortFn } from './compile'
 import { compileRule, combineFns } from './compile'
 import { parseRule } from './parse'
 
-/** anysort 接受的规则：IR 数据（SortRule）/ 字符串命令 / 自定义比较函数（命令式逃生口，不进 IR）。 */
-export type AnySortRule<T> = SortRule | string | SortFn<T>
+/** anysort 接受的规则：IR 数据（SortRule）/ 字符串命令（SortCMD<T>，路径编译期校验）/ 自定义比较函数（命令式逃生口，不进 IR）。 */
+export type AnySortRule<T> = SortRule | SortCMD<T> | SortFn<T>
 
 /**
  * 主入口：接受任意混合规则（IR / 字符串 / 比较函数），按优先级短路合并，in-place 排序。

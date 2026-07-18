@@ -1,6 +1,6 @@
 import { computed, isRef, toValue } from 'vue'
 import type { ComputedRef, MaybeRefOrGetter } from 'vue'
-import anysort from '@anysort/core'
+import anysort, { type AnySortRule } from '@anysort/core'
 
 /**
  * 排序规则：字符串命令（如 `'created.date-reverse()'`）或比较函数 `(a, b) => number`。
@@ -52,7 +52,8 @@ export function useAnysort<T>(
     // 空规则 = 保持源顺序
     if (cmds.length === 0) return copy
     // core anysort 接受 string | fn | IR，in-place 排序 copy 后即结果
-    anysort(copy, ...cmds)
+    // vue 规则来自 ref/getter（动态），无法字面量校验，cast 绕过 core 的 SortCMD 约束（运行时 parse 兜底）
+    anysort(copy, ...(cmds as unknown as AnySortRule<T>[]))
     return copy
   })
 }
