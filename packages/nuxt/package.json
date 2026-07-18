@@ -17,7 +17,7 @@
   "scripts": {
     "build": "nuxt-module-build build",
     "dev:prepare": "nuxt-module-build prepare --stub",
-    "test": "vitest run",
+    "test": "pnpm --filter playground-nuxt exec nuxt prepare && vitest run",
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
@@ -30,7 +30,8 @@
     "@nuxt/schema": "^4.4.8",
     "@nuxt/test-utils": "^4.0.3",
     "nuxt": "^4.4.8",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "happy-dom": "^20.0.11"
   },
   "keywords": [
     "nuxt",
