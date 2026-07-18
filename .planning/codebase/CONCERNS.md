@@ -28,7 +28,7 @@ Anysort monorepo 的技术债务、已知问题与脆弱点。
 
 ## 工程化缺失
 
-- 无 CI（`.github/workflows` 不活跃）
+- 无 CI（已删除失效的 CodeSee workflow，无活跃 CI）
 - 无自动化发布（手动版本 + 手动 publish，`RELEASE.md` checklist 兜底 workspace 依赖联动）
 - 无 changesets（手动分包 CHANGELOG）
 - 无 formatter（oxlint 只 lint 不格式化）
