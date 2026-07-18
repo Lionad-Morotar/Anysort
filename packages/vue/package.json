@@ -14,11 +14,17 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist/**/*", "README.md", "CHANGELOG.md", "LICENSE"],
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "vite build && tsc -p tsconfig.json",
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
     "@anysort/core": "workspace:*"
@@ -29,9 +35,24 @@
   "devDependencies": {
     "vue": "^3.5.0"
   },
-  "keywords": ["vue", "vue3", "composable", "sort", "reactive", "anysort"],
-  "engines": { "node": ">=20.19" },
+  "keywords": [
+    "vue",
+    "vue3",
+    "composable",
+    "sort",
+    "reactive",
+    "anysort"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
   "homepage": "https://github.com/Lionad-Morotar/anysort",
-  "repository": { "type": "git", "url": "git+https://github.com/Lionad-Morotar/anysort.git", "directory": "packages/vue" },
-  "publishConfig": { "access": "public" }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lionad-Morotar/anysort.git",
+    "directory": "packages/vue"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
