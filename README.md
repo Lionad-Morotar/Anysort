@@ -86,7 +86,7 @@ anysort(articles).created.date.reverse(123)
 anysort(articles, 'created.date-reverse(123)')
 ```
 
-* Zero dependencies（minified + gzip ≈ 3KB）
+* Zero dependencies（minified + gzip ≈ 1.7KB）
 
 * Well tested, logic and type
 

@@ -1,10 +1,16 @@
 ## Changelog
 
-##### 3.4.0 in wip
+##### 3.4.0
 
 * chore: add esm artifacts
-* chore: move building tool chains to vite
+* chore: move building tool chains to vite（Rollup → Vite 8 库模式 + rolldown 后端）
 * feat: add `asc` and `desc` build-in plugins, example: `anysort(arr, 'date-desc()')`
+* build: 测试 Mocha+should+nyc+npm-watch → Vitest 4（v8 coverage，直接测源码）
+* build: lint ESLint 8 eslintrc → oxlint 1.74（typescript-eslint 不兼容 TS7，换 oxc Rust parser + oxlint-tsgolint type-aware 适配 tsgo）
+* build: TypeScript 5.5 → 7.0（tsgo Go 编译器）；d.ts 由 vite-plugin-dts 改为 tsc 直接 emit（TS7 兼容）
+* fix: Proxy wrapper 对 symbol 属性的防御（现代运行时/测试内省会触发）
+* fix: 跨平台大小写敏感导入 './sort' → './Sort'
+* chore: 清理废弃依赖（rollup-plugin-uglify/minize、eslint-plugin-node、standard、should、npm-watch）
 
 ##### 3.3.0
 
