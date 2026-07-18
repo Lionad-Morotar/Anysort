@@ -10,6 +10,8 @@ Anysort 的技术债务、已知问题与需要注意的脆弱点。
 - ✅ **Proxy symbol 脆弱**：`wrapperProxy` 已加 `typeof prop !== 'string'` 防御，现代运行时/测试框架（vitest toEqual 内省等）访问 symbol 属性不再崩溃
 - ✅ **废弃依赖清理**：rollup-plugin-uglify/minize、eslint-plugin-node、eslint-config-standard、should、npm-watch、cross-env、vite-plugin-dts 全部移除
 - ✅ **TypeScript 7 升级**：5.5 → 7.0（tsgo Go 编译器）。typescript-eslint 8 不兼容 TS7（peerDep `<6.1.0` + 依赖被 tsgo 移除的 `ts.Extension` enum），改用 **oxlint 1.74**（Rust 原生 TS parser，零 `typescript` 包依赖）替代 ESLint + typescript-eslint。d.ts 由 vite-plugin-dts 改为 **tsc 直接 emit**（vite-plugin-dts 在 TS7 下经 `@typescript/typescript6` fallback 只生成不完整单文件，tsc emit 生成完整多文件）
+- ✅ **入口字段规范化**：`main` 改指 CJS（`build/index.cjs.min.js`）、新增 `module` 指 ESM（`build/index.esm.min.js`）。原 `main` 误指 ESM min 产物，仅靠 `exports` 字段兜底，对极旧工具链不正确
+- ✅ **构建产物移出 git 追踪**：`build/`、`types/` 加入 `.gitignore` 并 `git rm --cached` 移除索引；发布前由 `prepublishOnly` 钩子自动 build。产物是源码的派生物，不进版本库可消除 PR diff 噪音、不可解的 min.js merge conflict 与产物文件的 blame 污染
 
 ## 类型层既有债务（待处理）
 
@@ -42,6 +44,5 @@ Anysort 的技术债务、已知问题与需要注意的脆弱点。
 
 ## API 设计注意
 
-- `main` 字段指向 ESM min 产物（`build/index.esm.min.js`），略不寻常（多数库 main 指 CJS）；`exports` 字段更规范
 - `extends` 安装插件是全局副作用（直接修改 `plugins` 对象），多次调用累积，无法卸载
 - `extends` 的链式调用（`anysort.extends(...).extends(...)`）被禁用：会触发 TS "类型实例化过深、且可能无限" 错误（见 `test/types.ts` 注释及被注释掉的测试用例），这是 Full Typed 类型递归推导的固有边界

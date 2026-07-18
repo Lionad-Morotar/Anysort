@@ -31,11 +31,11 @@ Anysort 的代码风格与开发约定。
 
 ## 提交与版本
 
-- 手动版本管理（recent commit `chore: manual versioning`），当前 `3.4.0-alpha.0`
-- `CHANGELOG.md` 记录版本变更（1.4.x → 3.4.0-wip），README 底部有链接
+- 手动版本管理（recent commit `chore: manual versioning`），当前 `3.4.0`
+- `CHANGELOG.md` 记录版本变更，README 底部有链接
 - 无 CI / 无自动化发布（见 [CONCERNS.md](./CONCERNS.md)）
 
 ## 测试约定
 
-- 测试两种 API 等价性：字符串命令 `anysort(arr, cmds)` 与 `anysort.wrap(arr).apply(cmds)`（`test/index.js:72` 循环跑两遍同一套用例）
-- 用 `build/index.cjs.js`（非 min 版本）以便 nyc 行覆盖率统计
+- 测试两种 API 等价性：字符串命令 `anysort(arr, cmds)` 与 `anysort.wrap(arr).apply(cmds)`（`test/index.test.ts` 循环跑两遍同一套用例）
+- 测试直接 import 源码（`src/main`），不依赖 build 产物；v8 coverage 经 sourcemap 映射拿源码级行覆盖（不再需要非 min 版本供 nyc）

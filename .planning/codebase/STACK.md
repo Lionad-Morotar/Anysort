@@ -42,9 +42,10 @@ Anysort 的技术栈、构建与开发命令概览。零运行时依赖，构建
 | `eslint` | oxlint .（命名沿用，实际跑 oxlint） |
 | `coverage:badge` | 更新覆盖率徽章 |
 | `watch:test` | vitest（watch 模式） |
+| `prepublishOnly` | 发布前自动 `pnpm build`（产物不进 git，靠此钩子保证发布产物新鲜） |
 
 ## 发布
 
-- npm 包名 `anysort-typed`，`main` 指向 `build/index.esm.min.js`，`exports` 字段提供 import/require/types 三条件
-- `files` 字段发布 `build/**`、`types/**`、`README.md`、`statics/*`
+- npm 包名 `anysort-typed`：`main` 指向 CJS（`build/index.cjs.min.js`）、`module` 指向 ESM（`build/index.esm.min.js`）、`exports` 字段提供 import/require/types 三条件
+- `files` 字段发布 `build/**`、`types/**`、`README.md`、`statics/*`（产物不进 git 追踪，仅发布时由 `prepublishOnly` 生成后打包）
 - 许可证 MIT

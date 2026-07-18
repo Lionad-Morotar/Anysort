@@ -4,18 +4,16 @@ Anysort 的测试架构、覆盖策略与运行方式。
 
 ## 框架与工具
 
-- **Mocha 10**：测试框架（`test/index.js`）
-- **should**：断言库（`.should.eql(...)`）
-- **assert**：Node 原生断言（部分用例）
-- **nyc 15**：覆盖率（reporter: text + json-summary，扩展名限 `.js`，排除 `test/`）
-- 当前覆盖率 98%（README 徽章）
+- **Vitest 4**：测试框架 + runner（`test/index.test.ts`），断言用其内置 `expect`
+- **@vitest/coverage-v8**：覆盖率（reporter: text + json-summary，instrument 源码 `src/**/*.ts`，排除入口 `src/index.ts`）
+- 当前覆盖率 ≈ 97.5%（v8 源码口径，README 徽章）
 
 ## 测试结构
 
-主套件 `test/index.js` 按主题分组（describe 嵌套）：
+主套件 `test/index.test.ts` 按主题分组（describe 嵌套）：
 
 1. **Test Anysort Configuration**：`autoSort` / `autoWrap` / `orders` 开关行为
-2. **Test Anysort APIs**：核心用例，外层 `for` 循环让同一套用例跑两遍——分别验证字符串命令 API 与 `wrap().apply()` API 等价（`test/index.js:74`）
+2. **Test Anysort APIs**：核心用例，外层循环让同一套用例跑两遍——分别验证字符串命令 API 与 `wrap().apply()` API 等价
    - basic sorting functions（数字、字符、字符串、原始值混排、日期、symbol、函数名、对象、混合类型）
    - advance use cases（多属性多级排序）
    - edge cases（空数组、null/undefined 末尾、错误属性跳过、不可比较跳过）
@@ -27,21 +25,19 @@ Anysort 的测试架构、覆盖策略与运行方式。
 
 辅助测试文件：
 
-- `test/types.ts`：类型层测试（大量 `@ts-expect-error` / OK 断言），验证 Full Typed 卖点；但内部多处 `// TODO`，覆盖不完整
+- `test/types.ts`：纯编译期断言（`Expect<Equal<...>>` + `@ts-expect-error`），由 vitest typecheck（tsgo）驱动，作为 Full Typed 卖点的类型回归门禁。内部多处推导边界失效（见 [CONCERNS.md](./CONCERNS.md) 类型层既有债务），后续专项修复
 - `test/readme-example.ts`：验证 README 示例可编译运行
-- `test/example.js`：示例脚本
 
 ## 覆盖率策略
 
-- 测试 `require('../build/index.cjs.js')`（非 min 的 CJS 版本），保证 nyc 能统计行覆盖
-- `watch:test` 监听 `build/` 与 `test/` 变化自动重跑
-- 覆盖率徽章通过 `coverage:badge` 脚本生成静态图片
+- 测试直接 `import anysort from '../src/main'`（源码，非 build 产物）；v8 coverage 经 sourcemap 映射拿源码级行覆盖，无需非 min 版本
+- 覆盖率徽章通过 `coverage:badge` 脚本生成（基于 `.badge-config`）
 
 ## 运行
 
 ```sh
-pnpm test          # nyc + mocha 全量（需先 build，因为测试 require build 产物）
-pnpm watch:test    # 开发时监听重跑
+pnpm test          # vitest run（含 typecheck）
+pnpm watch:test    # vitest watch 模式，监听 test/ 与 src/ 变化自动重跑
 ```
 
-注意：测试依赖 `build/` 产物，改源码后必须先 `pnpm build` 再跑测试（或用 `watch:test` 同时监听 build 目录）。
+测试不依赖 `build/` 产物——改源码后直接跑测试即可，无需先 build。

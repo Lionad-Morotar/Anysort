@@ -19,8 +19,8 @@ anysort/
 │   ├── index.test.ts   # 主测试套件（vitest + expect，直接 import 源码）
 │   ├── types.ts        # 类型测试（vitest typecheck 驱动）
 │   └── readme-example.ts  # README 示例验证
-├── types/              # 构建产物：.d.ts 类型声明（多文件，index.d.ts 为入口）
-├── build/              # 构建产物（UMD / CJS / ESM）
+├── types/              # 构建产物：.d.ts 类型声明（多文件，index.d.ts 为入口；已 gitignore）
+├── build/              # 构建产物（UMD / CJS / ESM；已 gitignore，发布前由 prepublishOnly 生成）
 ├── statics/            # README 用图（LOGO、示例截图）
 ├── vite.config.ts      # 库模式构建配置
 ├── vitest.config.ts    # 测试 + coverage + typecheck 配置
