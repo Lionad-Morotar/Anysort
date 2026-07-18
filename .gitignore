@@ -24,6 +24,7 @@ types
 dist
 
 # misc
+.nuxtrc
 _gh_pages
 _draft
 _drafts
