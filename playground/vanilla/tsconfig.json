@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "paths": {
+      "@anysort/core": ["../../packages/core/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts"]
+}
