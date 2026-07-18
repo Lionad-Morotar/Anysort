@@ -11,9 +11,8 @@
     "skipLibCheck": true,
     "types": ["node"],
     "paths": {
-      "@anysort/core": ["./packages/core/src/index.ts"],
-      "@anysort/core/*": ["./packages/core/src/*"],
-      "@anysort/vue": ["./packages/vue/src/index.ts"]
+      "@anysort/core": ["./packages/core/types/index.d.ts"],
+      "@anysort/core/*": ["./packages/core/types/*"]
     }
   }
 }

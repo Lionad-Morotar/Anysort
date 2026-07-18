@@ -1,0 +1,37 @@
+{
+  "name": "@anysort/vue",
+  "version": "0.1.0",
+  "description": "useAnysort() composable — reactive sorting pipeline for Vue 3",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist/**/*", "README.md", "CHANGELOG.md", "LICENSE"],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@anysort/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "vue": "^3.3.0"
+  },
+  "devDependencies": {
+    "vue": "^3.5.0"
+  },
+  "keywords": ["vue", "vue3", "composable", "sort", "reactive", "anysort"],
+  "engines": { "node": ">=20.19" },
+  "homepage": "https://github.com/Lionad-Morotar/anysort",
+  "repository": { "type": "git", "url": "git+https://github.com/Lionad-Morotar/anysort.git", "directory": "packages/vue" },
+  "publishConfig": { "access": "public" }
+}
