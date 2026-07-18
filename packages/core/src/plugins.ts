@@ -105,24 +105,6 @@ export const plugins = {
   rand: { kind: 'result' as const, apply: (_arg: SortArg | undefined) => (_res: number): number => (Math.random() < 0.5 ? -1 : 1) },
 } satisfies Record<string, PluginDef>
 
-/** 自定义插件表（运行时扩展，与内置 plugins 合并查询）。 */
-const customPlugins: Record<string, PluginDef> = Object.create(null)
-
-/** 注册自定义插件，供 IR / 字符串命令 / 链式通过名字调用（扩展内置 11 个之外的能力）。 */
-export function extend (name: string, def: PluginDef): void {
-  customPlugins[name] = def
-}
-
-/** 批量注册自定义插件。 */
-export function extendAll (defs: Record<string, PluginDef>): void {
-  for (const key in defs) customPlugins[key] = defs[key]
-}
-
-/** 查表获取插件定义（内置优先，回退自定义）；未知返回 undefined，由 compile 层决定 throw 或 skip。 */
-export function getPlugin (name: string): PluginDef | undefined {
-  return (plugins as Record<string, PluginDef>)[name] ?? customPlugins[name]
-}
-
 export function isMappingPlugin (def: PluginDef): def is MappingPluginDef {
   return def.kind === 'mapping'
 }

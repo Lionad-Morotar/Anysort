@@ -42,17 +42,18 @@ export type PathStr<T> = T extends Record<string, any>
 /** 内置插件名联合（与 plugins.ts 注册表对应）。 */
 export type BuiltinPluginName = 'i' | 'is' | 'nth' | 'all' | 'has' | 'not' | 'len' | 'asc' | 'desc' | 'reverse' | 'rand'
 
-/** 插件调用形式：无参 `plugin()` 或带参 `plugin(arg)`（arg 内容不静态校验）。 */
-export type PluginCall = `${BuiltinPluginName}()` | `${BuiltinPluginName}(${string})`
+/** 插件调用形式：无参 `plugin()` 或带参 `plugin(arg)`（arg 内容不静态校验）。P 为插件名联合，默认内置。 */
+export type PluginCall<P extends string = BuiltinPluginName> = `${P}()` | `${P}(${string})`
 
 /**
  * 合法字符串命令字面量联合：路径 | 插件 | 路径-插件。
+ * P 为插件名联合（默认内置）；extend 累积的自定义插件通过 P 传入，让字符串命令认自定义插件。
  * 让 `anysort(arr, 'name3')` 编译期报错（非法路径）。多 '-' 段命令不覆盖，请用 IR 或多次传规则。
  */
-export type SortCMD<T> =
+export type SortCMD<T, P extends string = BuiltinPluginName> =
   | PathStr<T>
-  | PluginCall
-  | `${PathStr<T>}-${PluginCall}`
+  | PluginCall<P>
+  | `${PathStr<T>}-${PluginCall<P>}`
 
 const isSortArg = (v: unknown): v is SortArg =>
   typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean' || v === null

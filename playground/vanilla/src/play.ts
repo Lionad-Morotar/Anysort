@@ -9,7 +9,7 @@
  * - 取消底部「故意错误」区的注释，看 IDE 报红
  * - 改 arg 类型 / 路径 / 插件名，观察类型层反馈
  */
-import anysort, { chain, parseRule, compileSpec, compileRule, extend, validateRule, validateSpec } from '@anysort/core'
+import anysort, { chain, parseRule, compileSpec, compileRule, validateRule, validateSpec } from '@anysort/core'
 import type { SortSpec, SortRule, SortFn } from '@anysort/core'
 
 const posts = [
@@ -42,13 +42,15 @@ compileRule(parseRule('age-reverse()'))
 /* ===== 比较函数逃生口（不进 IR，与其他规则短路合并）===== */
 anysort([...posts], 'name', (a, b) => a.age - b.age)
 
-/* ===== 自定义插件 ===== */
-extend('evenFirst', {
-  kind: 'mapping',
-  apply: () => (x: unknown) => (typeof x === 'number' && x % 2 === 0 ? 0 : 1),
+/* ===== 自定义插件：anysort.extend 返回新实例，类型认自定义插件 ===== */
+const mysort = anysort.extend({
+  evenFirst: { kind: 'mapping', apply: () => (x: unknown) => (typeof x === 'number' && x % 2 === 0 ? 0 : 1) },
 })
-// 自定义插件字符串命令静态层不识别（SortCMD 只含内置插件，extend 运行时注册），经 IR 调用
-anysort([1, 2, 3, 4], { ops: [{ type: 'call', plugin: 'evenFirst' }] })
+// mysort 的字符串命令认 'evenFirst'（SortCMD<_, BuiltinPluginName | 'evenFirst'>）
+mysort([1, 2, 3, 4], 'evenFirst()')
+// mysort 的链式也认（ChainPluginCalls 含 evenFirst）
+mysort.chain([1, 2, 3, 4]).evenFirst().run()
+void mysort
 
 /* ===== IR 结构校验 ===== */
 validateRule({ ops: [{ type: 'get', path: ['name'] }] })

@@ -1,5 +1,5 @@
 import type { SortArg, SortRule, SortSpec } from './ir'
-import { getPlugin, isMappingPlugin } from './plugins'
+import { plugins as builtinPlugins, isMappingPlugin, type PluginDef } from './plugins'
 import { walk } from './utils'
 
 /**
@@ -19,6 +19,8 @@ export type SortFn<T = unknown> = (a: T, b: T) => number
 
 export interface CompileOptions {
   loose?: boolean
+  /** 插件 map（默认内置 11 个）；createAnysort/extend 传入累积的自定义插件 */
+  plugins?: Record<string, PluginDef>
 }
 
 /**
@@ -49,6 +51,7 @@ export function compileRule<T> (rule: SortRule, opts?: CompileOptions): SortFn<T
   // 空 ops = 无操作 = 保持原序（与空 spec 语义一致，避免退化为「按原始值排序」导致对象数组不稳定）
   if (rule.ops.length === 0) return () => 0
   const loose = opts?.loose ?? false
+  const pluginMap = opts?.plugins ?? builtinPlugins
   const mappings: Array<(v: unknown) => SortArg> = []
   let resultFn: ((res: number) => number) | null = null
 
@@ -57,7 +60,7 @@ export function compileRule<T> (rule: SortRule, opts?: CompileOptions): SortFn<T
       mappings.push((v: unknown) => walk(op.path)(v) as SortArg)
       continue
     }
-    const def = getPlugin(op.plugin)
+    const def = pluginMap[op.plugin]
     if (!def) {
       if (loose) continue
       throw new Error(`[anysort] unknown plugin "${op.plugin}"`)

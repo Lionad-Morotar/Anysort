@@ -89,4 +89,39 @@ describe('anysort — 主入口', () => {
       expect(() => anysort([1, 2], { wrong: true } as never)).toThrow(/\[anysort\]/)
     })
   })
+
+  describe('anysort.extend — 自定义插件（类型累积 + 不可变）', () => {
+    it('returns a new anysort instance (not mutating the global anysort)', () => {
+      const mysort = anysort.extend({
+        evenFirst: { kind: 'mapping', apply: () => (x: unknown) => (typeof x === 'number' && x % 2 === 0 ? 0 : 1) },
+      })
+      expect(typeof mysort).toBe('function')
+      expect(mysort).not.toBe(anysort)
+    })
+    it('mysort consumes custom plugin via string command', () => {
+      const mysort = anysort.extend({
+        evenFirst: { kind: 'mapping', apply: () => (x: unknown) => (typeof x === 'number' && x % 2 === 0 ? 0 : 1) },
+      })
+      expect(mysort([1, 2, 3, 4], 'evenFirst()')).toEqual([2, 4, 1, 3])
+    })
+    it('mysort preserves built-in plugins (P | Q accumulation)', () => {
+      const mysort = anysort.extend({
+        evenFirst: { kind: 'mapping', apply: () => (x: unknown) => (typeof x === 'number' && x % 2 === 0 ? 0 : 1) },
+      })
+      expect(mysort([1, 2, 3], 'reverse()')).toEqual([3, 2, 1])
+    })
+    it('extend is chainable (P | Q | R)', () => {
+      const id = () => (r: number) => r
+      const my1 = anysort.extend({ a: { kind: 'result', apply: id } })
+      const my2 = my1.extend({ b: { kind: 'result', apply: id } })
+      expect(my2([1, 2], 'a()')).toEqual([1, 2])
+      expect(my2([1, 2], 'b()')).toEqual([1, 2])
+    })
+    it('mysort.chain also recognizes custom plugin', () => {
+      const mysort = anysort.extend({
+        evenFirst: { kind: 'mapping', apply: () => (x: unknown) => (typeof x === 'number' && x % 2 === 0 ? 0 : 1) },
+      })
+      expect(mysort.chain([1, 2, 3, 4]).evenFirst().run()).toEqual([2, 4, 1, 3])
+    })
+  })
 })

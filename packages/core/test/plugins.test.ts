@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { plugins, getPlugin, isMappingPlugin, isResultPlugin, extend, extendAll } from '../src/plugins'
-import { compileSpec } from '../src/compile'
+import { plugins, isMappingPlugin, isResultPlugin } from '../src/plugins'
 
 describe('plugins — declarative registry', () => {
   describe('registry shape', () => {
@@ -9,12 +8,9 @@ describe('plugins — declarative registry', () => {
         ['all', 'asc', 'desc', 'has', 'i', 'is', 'len', 'not', 'nth', 'rand', 'reverse'],
       )
     })
-    it('getPlugin returns def for known name', () => {
-      expect(getPlugin('reverse')?.kind).toBe('result')
-      expect(getPlugin('i')?.kind).toBe('mapping')
-    })
-    it('getPlugin returns undefined for unknown name', () => {
-      expect(getPlugin('nope')).toBeUndefined()
+    it('reverse is result kind, i is mapping kind', () => {
+      expect(plugins.reverse.kind).toBe('result')
+      expect(plugins.i.kind).toBe('mapping')
     })
     it('isMappingPlugin / isResultPlugin discriminate kind', () => {
       expect(isMappingPlugin(plugins.i)).toBe(true)
@@ -97,38 +93,5 @@ describe('plugins — declarative registry', () => {
         expect(v === -1 || v === 1).toBe(true)
       }
     })
-  })
-})
-
-describe('extend — custom plugin registration', () => {
-  it('extend registers a mapping plugin callable by name', () => {
-    extend('lowercase_test', {
-      kind: 'mapping',
-      apply: () => (x: unknown): string => (typeof x === 'string' ? x.toLowerCase() : ''),
-    })
-    const def = getPlugin('lowercase_test')
-    expect(def?.kind).toBe('mapping')
-    if (!def || !isMappingPlugin(def)) throw new Error('expected mapping plugin')
-    expect(def.apply(undefined)('ABC')).toBe('abc')
-  })
-  it('extendAll registers multiple plugins at once', () => {
-    extendAll({
-      ltZ_test: { kind: 'mapping', apply: () => (x: unknown) => (typeof x === 'string' && x < 'Z' ? -1 : 1) },
-    })
-    expect(getPlugin('ltZ_test')).toBeDefined()
-  })
-  it('custom plugin is consumed by compile via IR', () => {
-    // evenFirst：偶数映射为 0（排前），奇数为 1
-    extend('evenFirst_test', {
-      kind: 'mapping',
-      apply: () => (x: unknown) => (typeof x === 'number' && x % 2 === 0 ? 0 : 1),
-    })
-    const sorted = [1, 2, 3, 4].sort(compileSpec([{ ops: [{ type: 'call', plugin: 'evenFirst_test' }] }]))
-    expect(sorted).toEqual([2, 4, 1, 3])
-  })
-  it('built-in plugins take precedence over custom with same name', () => {
-    extend('reverse', { kind: 'result', apply: () => (res: number) => res * 100 })
-    // 内置 reverse 优先：desc 取反，不是 *100
-    expect(plugins.reverse.apply(undefined)(1)).toBe(-1)
   })
 })
