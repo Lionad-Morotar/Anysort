@@ -10,6 +10,14 @@
 
 Anysort 是一个 pnpm monorepo，提供框架无关的排序核心与 Vue/Nuxt 集成层。
 
+## Why Anysort
+
+A picture is worth a thousand words.
+
+<p align="center">
+  <img src="./packages/core/statics/simple-usage.png">
+</p>
+
 ## Packages
 
 | 包 | 说明 |
