@@ -1,14 +1,12 @@
 /* eslint-disable */
 
-import type { Anysort } from '../types'
-import Sort from '../types/sort'
-import type { PluginNamesWithoutArg, PluginNamesWithArg, PluginNamesWithArgMaybe } from '../types/type'
-import type { GetPath, UnionToTupleSafe, ObjectKeyPaths, isPathAvailable, isValidStringCMD } from '../types/type-utils'
-import type { BuildInPlugins } from '../types/build-in-plugins'
+import anysort from '../src/main'
+import Sort from '../src/Sort'
+import type { PluginNamesWithoutArg, PluginNamesWithArg, PluginNamesWithArgMaybe } from '../src/type'
+import type { GetPath, UnionToTupleSafe, ObjectKeyPaths, isPathAvailable, isValidStringCMD } from '../src/type-utils'
+import type { BuildInPlugins } from '../src/build-in-plugins'
 
 import { getPosts } from './readme-example'
-
-const anysort: Anysort = require('../build/index')
 /* *
  * test whether types imported correctly,
  * because my VS Code halted sometimes when importing complex types

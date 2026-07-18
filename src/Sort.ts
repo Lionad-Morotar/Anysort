@@ -18,9 +18,9 @@ const getCompareValue: Record<
   void: _ => null,
   number: Number,
   string: String,
-  symbol: (x: Symbol): string => x.toString(),
+  symbol: (x: symbol): string => x.toString(),
   date: (x: Date): number => +x,
-  function: (x: Function) => x.name,
+  function: (x: (...args: any[]) => any) => x.name,
   // The priority of true is greater than false
   boolean: (x: SortableValue): boolean => !x
 }

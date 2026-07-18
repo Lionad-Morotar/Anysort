@@ -1,6 +1,6 @@
-/* eslint-disable */
+ 
 
-import Sort from './sort'
+import Sort from './Sort'
 import type { BuildInPlugins } from './build-in-plugins'
 import type { DontCare, Equal, ObjectVals, UnionToTupleSafe, RequiredArguments, isValidStringCMD, AnySortInvoke } from './type-utils'
 

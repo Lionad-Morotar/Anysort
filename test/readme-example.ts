@@ -1,8 +1,6 @@
-/* eslint-disable */
+ 
 
-import { Anysort } from '../build/types'
-
-const anysort: Anysort = require('../build/index')
+import anysort from '../src/main'
 
 const post = getPosts()
 

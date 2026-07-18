@@ -2,8 +2,8 @@ import type { SortableTypeEnum, SortableValue } from './type'
 
 export const isDev = () => process.env.NODE_ENV === 'development'
 // istanbul ignore next
-export const warn = (msg: String) => isDev() && console.log(`[WARN] ${msg}`)
-export const strObj = (obj: Object) => JSON.stringify(obj)
+export const warn = (msg: string) => isDev() && console.log(`[WARN] ${msg}`)
+export const strObj = (obj: object) => JSON.stringify(obj)
 
 export const isVoid = (x: SortableValue): boolean => x == undefined
 export const isVoidType = (x: SortableTypeEnum): boolean => x === 'void'
@@ -17,7 +17,7 @@ export const notNull = (x: any) => !!x
  *    1. walk('a.b')({a:{b:3}}) returns 3
  *    2. walk(['a','b'])({a:{b:3}}) returns 3
  */
-export const walk = (pathsStore: String | String[]) => (x: any) => {
+export const walk = (pathsStore: string | string[]) => (x: any) => {
   const paths = pathsStore instanceof Array
     // istanbul ignore next
     ? pathsStore.slice(0, pathsStore.length)

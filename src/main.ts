@@ -1,4 +1,4 @@
-import Sort from './sort'
+import Sort from './Sort'
 import plugins from './build-in-plugins'
 import config from './config'
 import { isFn, notNull } from './utils'
@@ -25,9 +25,11 @@ function genSortFnFromStr<
       const matchRes = action.match(/^([^(]+)(\(([^)]*)\))?$/)
       if (matchRes) {
         const [, name, callable, fnArg] = matchRes
-        callable
-          ? sort.register(plugins[name], fnArg)
-          : sort.register(plugins.get, name)
+        if (callable) {
+          sort.register(plugins[name], fnArg)
+        } else {
+          sort.register(plugins.get, name)
+        }
       } else {
         throw new Error(`[ANYSORT] illegal command: ${ss}`)
       }
@@ -47,6 +49,11 @@ function wrapperProxy<
   const pathStore: string[] = []
   return (proxy = new Proxy(arr, {
     get (target, prop: string) {
+      // Proxy 的 prop 可能是 symbol（Symbol.toStringTag / util.inspect.custom 等），
+      // 现代运行时与测试框架会内省这些；非 string 直接回退 target，避免下方 prop.includes 崩溃
+      if (typeof prop !== 'string') {
+        return target[prop]
+      }
       switch (prop) {
         case config.patched:
           return true

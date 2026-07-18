@@ -1,15 +1,9 @@
-// @ts-ignore
-/* eslint-disable */
+ 
 
 // TODO test extends
 
-require('mocha')
-require('should')
-
-const assert = require('assert')
-// const anysort = require('../build/index.cjs.min.js')
-// * use index.cjs.js to support line-coverage data
-const anysort = require('../build/index.cjs.js')
+import { describe, it, expect } from 'vitest'
+import anysort from '../src/main'
 
 /**
  * Test Anysort Types
@@ -29,12 +23,12 @@ describe('Test Anysort Configuration', function () {
     const getArr = () => [3, 5, 0, 2, -9, 6, 1, 4, 7, 8]
 
     anysort.config.autoSort = false
-    anysort(getArr()).should.eql([3, 5, 0, 2, -9, 6, 1, 4, 7, 8])
-    anysort(getArr(), []).should.eql([3, 5, 0, 2, -9, 6, 1, 4, 7, 8])
+    expect(anysort(getArr())).toEqual([3, 5, 0, 2, -9, 6, 1, 4, 7, 8])
+    expect(anysort(getArr(), [])).toEqual([3, 5, 0, 2, -9, 6, 1, 4, 7, 8])
 
     anysort.config.autoSort = true
-    anysort(getArr()).should.eql([-9, 0, 1, 2, 3, 4, 5, 6, 7, 8])
-    anysort(getArr(), []).should.eql([-9, 0, 1, 2, 3, 4, 5, 6, 7, 8])
+    expect(anysort(getArr())).toEqual([-9, 0, 1, 2, 3, 4, 5, 6, 7, 8])
+    expect(anysort(getArr(), [])).toEqual([-9, 0, 1, 2, 3, 4, 5, 6, 7, 8])
   })
 
   it('config.autoWrap', function () {
@@ -44,10 +38,10 @@ describe('Test Anysort Configuration', function () {
     const getArr = () => [3, 5, 0, 2, -9, 6, 1, 4, 7, 8]
 
     anysort.config.autoWrap = false
-    assert.equal(anysort(getArr())[patchedKey], undefined)
+    expect(anysort(getArr())[patchedKey]).toBe(undefined)
 
     anysort.config.autoWrap = true
-    assert.equal(anysort(getArr())[patchedKey], patchedResult)
+    expect(anysort(getArr())[patchedKey]).toBe(patchedResult)
   })
 
   it('config.orders', function () {
@@ -57,10 +51,10 @@ describe('Test Anysort Configuration', function () {
     const getArr = () => ['d', { a: 0 }, 3, 'b', d5, '', null, d1, 'zoo', null, { 1: 1 }, undefined, 'a', 'd', { c: 3 }, 1, 0, 'z']
 
     anysort.config.orders = { string: 1, number: 2, rest: 3, void: 4 }
-    anysort(getArr()).should.eql(['', 'a', 'b', 'd', 'd', 'z', 'zoo', 0, 1, 3, { a: 0 }, d1, d5, { 1: 1 }, { c: 3 }, null, null, undefined])
+    expect(anysort(getArr())).toEqual(['', 'a', 'b', 'd', 'd', 'z', 'zoo', 0, 1, 3, { a: 0 }, d1, d5, { 1: 1 }, { c: 3 }, null, null, undefined])
 
     anysort.config.orders = backupOrders
-    anysort(getArr()).should.eql([0, 1, 3, '', 'a', 'b', 'd', 'd', 'z', 'zoo', d1, d5, {a:0}, {1:1}, {c:3}, null, null, undefined])
+    expect(anysort(getArr())).toEqual([0, 1, 3, '', 'a', 'b', 'd', 'd', 'z', 'zoo', d1, d5, {a:0}, {1:1}, {c:3}, null, null, undefined])
   })
 
 })
@@ -87,24 +81,24 @@ describe('Test Anysort APIs', function () {
 
         it('arrays of numbers', function () {
           const arr = [3, 5, 0, 2, -9, 6, 1, 4, 7, 8]
-          arraySort(arr).should.eql([-9, 0, 1, 2, 3, 4, 5, 6, 7, 8])
-          arraySort(arr, []).should.eql([-9, 0, 1, 2, 3, 4, 5, 6, 7, 8])
+          expect(arraySort(arr)).toEqual([-9, 0, 1, 2, 3, 4, 5, 6, 7, 8])
+          expect(arraySort(arr, [])).toEqual([-9, 0, 1, 2, 3, 4, 5, 6, 7, 8])
         })
 
         it('arrays of chars', function () {
           const alphas = 'abcdefghijklmnopqrstuvwxyz'
           const arr = alphas.split('').sort(() => Math.random() - 0.5)
-          arraySort(arr).should.eql(alphas.split(''))
+          expect(arraySort(arr)).toEqual(alphas.split(''))
         })
 
         it('arrays of strings', function () {
           const arr = ['zoo', 'alpha', '', 'google', 'gap']
-          arraySort(arr).should.eql(['', 'alpha', 'gap', 'google', 'zoo'])
+          expect(arraySort(arr)).toEqual(['', 'alpha', 'gap', 'google', 'zoo'])
         })
 
         it('arrays of primitives', function () {
           const arr = [0, '0', 1, undefined, 'd', '1', '0', null, 0, '', undefined]
-          arraySort(arr).should.eql([0, 0, 1, '', '0', '0', '1', 'd', null, undefined, undefined])
+          expect(arraySort(arr)).toEqual([0, 0, 1, '', '0', '0', '1', 'd', null, undefined, undefined])
         })
 
         it('arrays of dates', function () {
@@ -113,13 +107,13 @@ describe('Test Anysort APIs', function () {
           const d100 = new Date(100)
           const d500 = new Date(500)
           const arr = [d100, d5, d1, d500]
-          arraySort(arr).should.eql([d1, d5, d100, d500])
+          expect(arraySort(arr)).toEqual([d1, d5, d100, d500])
         })
 
         it('arrays of symbols', function () {
           const toString = xs => xs.map(x => x.toString())
           const arr = [Symbol('d'), Symbol('c'), Symbol('a'), Symbol('b')]
-          toString(arraySort(arr)).should.eql(toString([Symbol('a'), Symbol('b'), Symbol('c'), Symbol('d')]))
+          expect(toString(arraySort(arr))).toEqual(toString([Symbol('a'), Symbol('b'), Symbol('c'), Symbol('d')]))
         })
 
         it('arrays of functions by name', function () {
@@ -130,7 +124,7 @@ describe('Test Anysort APIs', function () {
             function name_a() {},
             function name_b() {},
           ]
-          arraySort(arr).map(getFnName).should.eql([
+          expect(arraySort(arr).map(getFnName)).toEqual([
             () => {},
             function name_a() {},
             function name_b() {},
@@ -140,29 +134,29 @@ describe('Test Anysort APIs', function () {
 
         it('do nothing with objects if no plugins in use', function () {
           const arr = [{b:'b'}, {c:'c'}, {e:'e'}, {a:'a'}, {f:'f'}, {d:'d'}]
-          arraySort(arr).should.eql([{b:'b'}, {c:'c'}, {e:'e'}, {a:'a'}, {f:'f'}, {d:'d'}])
+          expect(arraySort(arr)).toEqual([{b:'b'}, {c:'c'}, {e:'e'}, {a:'a'}, {f:'f'}, {d:'d'}])
         })
 
         it('arrays of mixed-type-elements', function () {
           const arr = ['d', { a: 0 }, 3, 'b', '', 'zoo', { 1: 1 }, 'a', 'd', { c: 3 }, 1, 0, 'z']
-          arraySort(arr).should.eql([0, 1, 3, '', 'a', 'b', 'd', 'd', 'z', 'zoo', {a:0}, {1:1}, {c:3}])
+          expect(arraySort(arr)).toEqual([0, 1, 3, '', 'a', 'b', 'd', 'd', 'z', 'zoo', {a:0}, {1:1}, {c:3}])
         })
 
         it('arrays of objects sort by shallow property', function () {
           const arr = [{ key: 'y' }, { key: 'z' }, { key: 'x' }]
-          arraySort(arr, ['key']).should.eql([{ key: 'x' }, { key: 'y' }, { key: 'z' }])
+          expect(arraySort(arr, ['key'])).toEqual([{ key: 'x' }, { key: 'y' }, { key: 'z' }])
         })
 
         it('arrays of objects sort by nested property', function () {
           const arr = [{ key: { key: 'y' } }, { key: { key: 'z' } }, { key: { key: 'x' } }]
-          arraySort(arr, ['key.key']).should.eql([{ key: { key: 'x' } }, { key: { key: 'y' } }, { key: { key: 'z' } }])
+          expect(arraySort(arr, ['key.key'])).toEqual([{ key: { key: 'x' } }, { key: { key: 'y' } }, { key: { key: 'z' } }])
         })
 
         it('arrays of objects sort by property on its prototype', function () {
           const arr = ['aa', 'cccc', 'd', 'eee', 'b']
-          arraySort(arr, ['length']).should.eql(['d', 'b', 'aa', 'eee', 'cccc'])
+          expect(arraySort(arr, ['length'])).toEqual(['d', 'b', 'aa', 'eee', 'cccc'])
           const arr2 = ['aa', 'cccc', 'd', 'eee', 'b']
-          arraySort(arr2, ['length-reverse()']).should.eql(['cccc', 'eee', 'aa', 'd', 'b'])
+          expect(arraySort(arr2, ['length-reverse()'])).toEqual(['cccc', 'eee', 'aa', 'd', 'b'])
         })
 
         it('sort with custom functions', function () {
@@ -183,7 +177,7 @@ describe('Test Anysort APIs', function () {
             compare('c'),
             compare('d')
           ])
-          actual.should.eql([
+          expect(actual).toEqual([
             { a: 'a', b: 'd', c: 'f', d: 'h' },
             { a: 'b', b: 'c', c: 'f', d: 'h' },
             { a: 'b', b: 'd', c: 'e', d: 'h' },
@@ -207,7 +201,7 @@ describe('Test Anysort APIs', function () {
             { foo: 'aaa', locals: { date: '2014-02-02' } }
           ]
           const results = arraySort(posts, ['foo', 'locals.date'])
-          results.should.eql([
+          expect(results).toEqual([
             { foo: 'aaa', locals: { date: '2012-01-02' } },
             { foo: 'aaa', locals: { date: '2014-02-02' } },
             { foo: 'bbb', locals: { date: '2013-05-06' } },
@@ -225,23 +219,23 @@ describe('Test Anysort APIs', function () {
 
         it('empty args', function () {
           const arr = []
-          arraySort(arr).should.eql([])
-          arraySort(arr, []).should.eql([])
+          expect(arraySort(arr)).toEqual([])
+          expect(arraySort(arr, [])).toEqual([])
         })
 
         it('put null and undefined at the end of array', function () {
           const arr = [null, 'd', 3, 'b', '', 'zoo', undefined, 'a', 'd', 1, 0, 'z']
-          arraySort(arr).should.eql([0, 1, 3, '', 'a', 'b', 'd', 'd', 'z', 'zoo', null, undefined])
+          expect(arraySort(arr)).toEqual([0, 1, 3, '', 'a', 'b', 'd', 'd', 'z', 'zoo', null, undefined])
         })
 
         it('skip when get wrong properties', function () {
           const arr = [{ key: 'y' }, { key: 'z' }, { key: 'x' }]
-          arraySort(arr, ['wrong-key']).should.eql([{ key: 'y' }, { key: 'z' }, { key: 'x' }])
+          expect(arraySort(arr, ['wrong-key'])).toEqual([{ key: 'y' }, { key: 'z' }, { key: 'x' }])
         })
 
         it('skip when cant sort', function () {
           const arr = [{ 1: 1 }, { 3: 1 }, { 2: 1 }, { 4: 1 }]
-          arraySort(arr, ['a.b']).should.eql(arr)
+          expect(arraySort(arr, ['a.b'])).toEqual(arr)
         })
 
         it('sort by multiple properties in order with null, undefined and empty property', function () {
@@ -256,7 +250,7 @@ describe('Test Anysort APIs', function () {
             { foo: 'aaa', locals: { date: '2014-02-02' } }
           ]
           const actual = arraySort(posts, ['foo', 'locals.date'])
-          actual.should.eql([
+          expect(actual).toEqual([
             { foo: 'aaa', locals: { date: '2014-02-02' } },
             { foo: 'aaa', locals: { date: null } },
             { foo: 'bbb', locals: { date: '2013-05-06' } },
@@ -274,62 +268,62 @@ describe('Test Anysort APIs', function () {
 
         it('plugin: i (ignorecase)', function () {
           const arr = ['a', 'b', 'c', 'D']
-          arraySort(arr).should.eql(['D', 'a', 'b', 'c'])
-          arraySort(arr, ['i()']).should.eql(['a', 'b', 'c', 'D'])
+          expect(arraySort(arr)).toEqual(['D', 'a', 'b', 'c'])
+          expect(arraySort(arr, ['i()'])).toEqual(['a', 'b', 'c', 'D'])
         })
 
         it('plugin: reverse', function () {
           const arr = ['a', 'b', 'c', 'D']
-          arraySort(arr, ['reverse()']).should.eql(['c', 'b', 'a', 'D'])
+          expect(arraySort(arr, ['reverse()'])).toEqual(['c', 'b', 'a', 'D'])
         })
 
         it('plugin: is', function () {
           const arr = ['a', 'b', 'c', 'D']
-          arraySort(arr, ['is(c)']).should.eql(['c', 'a', 'b', 'D'])
+          expect(arraySort(arr, ['is(c)'])).toEqual(['c', 'a', 'b', 'D'])
           // * wrong usage because '0' cant compare with number 0
           // const arr2 = [3, 5, 0, 2, -9, 6, 1, 4, 7, 8]
-          // arraySort(arr2, ['is(0)']).should.eql([0, 3, 5, 2, -9, 6, 1, 4, 7, 8])
+          // expect(arraySort(arr2, ['is(0)'])).toEqual([0, 3, 5, 2, -9, 6, 1, 4, 7, 8])
         })
 
         it('plugin: nth', function () {
           const arr = ['aaac', 'aaaa', 'aaad', 'aaab']
-          arraySort(arr, ['nth(3)']).should.eql(['aaaa', 'aaab', 'aaac', 'aaad'])
+          expect(arraySort(arr, ['nth(3)'])).toEqual(['aaaa', 'aaab', 'aaac', 'aaad'])
           const arr2 = [['aaac'], ['aaaa'], ['aaad'], ['aaab']]
-          arraySort(arr2, ['nth(0)-nth(3)']).should.eql([['aaaa'], ['aaab'], ['aaac'], ['aaad']])
+          expect(arraySort(arr2, ['nth(0)-nth(3)'])).toEqual([['aaaa'], ['aaab'], ['aaac'], ['aaad']])
           // * wrong usage
           // const arr3 = [[3, 'aaac'], ['aaaa'], [1, 'aaad', 1], ['aaab']]
-          // arraySort(arr3, ['nth(0)-nth(3)']).should.eql([['aaaa'], ['aaab'], [3, 'aaac'], [1, 'aaad', 1]])
+          // expect(arraySort(arr3, ['nth(0)-nth(3)'])).toEqual([['aaaa'], ['aaab'], [3, 'aaac'], [1, 'aaad', 1]])
         })
 
         it('plugin: all', function () {
           const arr = [['a', 'b'], ['a'], ['a', 'c']]
-          arraySort(arr, ['all(a)']).should.eql([['a'], ['a', 'b'], ['a', 'c']])
+          expect(arraySort(arr, ['all(a)'])).toEqual([['a'], ['a', 'b'], ['a', 'c']])
           // * wrong usage
           // const arr2 = ['aaac', 'aaaa', 'aaad', 'aaab']
           const arr2 = ['c', 'a', 'd', 'b']
-          arraySort(arr2, ['all(a)']).should.eql(['a', 'c', 'd', 'b'])
+          expect(arraySort(arr2, ['all(a)'])).toEqual(['a', 'c', 'd', 'b'])
         })
 
         it('plugin: has', function () {
           const arrNums = [[1, 2], [2, 3], [2, 3], [1, 3]]
-          arraySort(arrNums, ['has(3)']).should.eql([[2, 3], [2, 3], [1, 3], [1, 2]])
+          expect(arraySort(arrNums, ['has(3)'])).toEqual([[2, 3], [2, 3], [1, 3], [1, 2]])
           const arrStrings = ['alpha', 'google', 'zoo', 'oowps']
-          arraySort(arrStrings, ['has(oo)']).should.eql(['google', 'zoo', 'oowps', 'alpha'])
+          expect(arraySort(arrStrings, ['has(oo)'])).toEqual(['google', 'zoo', 'oowps', 'alpha'])
         })
 
         it('plugin: not', function () {
           const arr = ['a', 'b', 'c', 'D']
-          arraySort(arr, ['not(c)']).should.eql(['a', 'b', 'D', 'c'])
-          arraySort(arr, ['not()']).should.eql(arr)
+          expect(arraySort(arr, ['not(c)'])).toEqual(['a', 'b', 'D', 'c'])
+          expect(arraySort(arr, ['not()'])).toEqual(arr)
         })
 
         it('plugin: len', function () {
           const getArrStrings = () => ['alpha', 'google', 'zoo', 'oowps']
-          arraySort(getArrStrings(), ['len()']).should.eql(['zoo', 'alpha', 'oowps', 'google'])
-          arraySort(getArrStrings(), ['len(3)']).should.eql(['zoo', 'alpha', 'google', 'oowps'])
+          expect(arraySort(getArrStrings(), ['len()'])).toEqual(['zoo', 'alpha', 'oowps', 'google'])
+          expect(arraySort(getArrStrings(), ['len(3)'])).toEqual(['zoo', 'alpha', 'google', 'oowps'])
           const getArrArrs = () => [[1,1], [1,1,1], [1], [1,1,1,1]]
-          arraySort(getArrArrs(), ['len()']).should.eql([[1], [1,1], [1,1,1], [1,1,1,1]])
-          arraySort(getArrArrs(), ['len(4)']).should.eql([[1,1,1,1], [1,1], [1,1,1], [1]])
+          expect(arraySort(getArrArrs(), ['len()'])).toEqual([[1], [1,1], [1,1,1], [1,1,1,1]])
+          expect(arraySort(getArrArrs(), ['len(4)'])).toEqual([[1,1,1,1], [1,1], [1,1,1], [1]])
         })
 
         it('plugin: get', function () {
@@ -344,7 +338,7 @@ describe('Test Anysort APIs', function () {
             { foo: 'aaa', locals: { date: '2014-02-02' } }
           ]
           const actual = arraySort(posts, ['foo', 'get(locals.date)'])
-          actual.should.eql([
+          expect(actual).toEqual([
             { foo: 'aaa', locals: { date: '2014-02-02' } },
             { foo: 'aaa', locals: { date: null } },
             { foo: 'bbb', locals: { date: '2013-05-06' } },
@@ -358,7 +352,7 @@ describe('Test Anysort APIs', function () {
 
         it('plugin: rand', function () {
           const arr = ['a', 'b', 'c', 'D']
-          arraySort(arr, ['rand()']).length.should.eql(arr.length)
+          expect(arraySort(arr, ['rand()']).length).toEqual(arr.length)
         })
 
       })
@@ -370,17 +364,17 @@ describe('Test Anysort APIs', function () {
           anysort.extends({
             lowercase: sort => sort.map(x => (x || '').toLowerCase())
           })
-          arraySort(arr).should.eql(['D', 'a', 'b', 'c'])
-          arraySort(arr, ['lowercase()']).should.eql(['a', 'b', 'c', 'D'])
+          expect(arraySort(arr)).toEqual(['D', 'a', 'b', 'c'])
+          expect(arraySort(arr, ['lowercase()'])).toEqual(['a', 'b', 'c', 'D'])
         })
 
         it('plugin: multy commands', function () {
           const getArr = () => ['b', 'a', 'E', 'c', 'D']
-          arraySort(getArr(), ['i()']).should.eql(['a', 'b', 'c', 'D', 'E'])
-          arraySort(getArr(), ['is(c)']).should.eql(['c', 'b', 'a', 'E', 'D'])
-          arraySort(getArr(), ['is(c)-reverse()']).should.eql(['b', 'a', 'E', 'D', 'c'])
-          arraySort(getArr(), ['is(c)-reverse()-reverse()']).should.eql(['c', 'b', 'a', 'E', 'D'])
-          arraySort(getArr(), ['is(c)', 'i()-reverse()']).should.eql(['c', 'E', 'D', 'b', 'a'])
+          expect(arraySort(getArr(), ['i()'])).toEqual(['a', 'b', 'c', 'D', 'E'])
+          expect(arraySort(getArr(), ['is(c)'])).toEqual(['c', 'b', 'a', 'E', 'D'])
+          expect(arraySort(getArr(), ['is(c)-reverse()'])).toEqual(['b', 'a', 'E', 'D', 'c'])
+          expect(arraySort(getArr(), ['is(c)-reverse()-reverse()'])).toEqual(['c', 'b', 'a', 'E', 'D'])
+          expect(arraySort(getArr(), ['is(c)', 'i()-reverse()'])).toEqual(['c', 'E', 'D', 'b', 'a'])
         })
 
         it('plugin: advance custom plugin usage', function () {
@@ -389,10 +383,10 @@ describe('Test Anysort APIs', function () {
             ltZ: sort => sort.map(x => (x < 'Z') ? -1 : 1),
             // ltZ_filter: sort => sort.map(x => (x < 'Z') ? -1 : x),
           })
-          arraySort(getArr(), ['is(c)', ((a, b) => (a < b) ? -1 : 1)]).should.eql(['c', 'D', 'E', 'a', 'b'])
-          arraySort(getArr(), ['is(c)', ((a, b) => (a < 'Z') ? -1 : 1), ((a, b) => (a < b) ? -1 : 1), 'i()-reverse()', ]).should.eql(['c', 'D', 'E', 'b', 'a'])
-          arraySort(getArr(), ['is(c)', 'ltZ()']).should.eql(['c', 'E', 'D', 'b', 'a'])
-          arraySort(getArr(), ['is(c)', 'ltZ()-reverse()']).should.eql(['c', 'b', 'a', 'E', 'D'])
+          expect(arraySort(getArr(), ['is(c)', ((a, b) => (a < b) ? -1 : 1)])).toEqual(['c', 'D', 'E', 'a', 'b'])
+          expect(arraySort(getArr(), ['is(c)', ((a, b) => (a < 'Z') ? -1 : 1), ((a, b) => (a < b) ? -1 : 1), 'i()-reverse()', ])).toEqual(['c', 'D', 'E', 'b', 'a'])
+          expect(arraySort(getArr(), ['is(c)', 'ltZ()'])).toEqual(['c', 'E', 'D', 'b', 'a'])
+          expect(arraySort(getArr(), ['is(c)', 'ltZ()-reverse()'])).toEqual(['c', 'b', 'a', 'E', 'D'])
         })
 
       })
@@ -412,57 +406,40 @@ describe('Test Anysort APIs', function () {
   const patchedResult = true
 
   it('anysort(arr)', function () {
-    anysort(getArr()).should.eql(['D', 'a', 'b', 'c'])
-    assert.equal(anysort(getArr())[patchedKey], patchedResult)
+    expect(anysort(getArr())).toEqual(['D', 'a', 'b', 'c'])
+    expect(anysort(getArr())[patchedKey]).toBe(patchedResult)
   })
 
   it('anysort(arr).plugin(arg)', function () {
-    anysort(getArr())
-      .i().should.eql(['a', 'b', 'c', 'D'])
-    anysort(getArr())
-      .is('b').should.eql(['b', 'D', 'a', 'c'])
-    anysort(['aaac', 'aaaa', 'aaad', 'aaab'])
-      .nth(3).should.eql(['aaaa', 'aaab', 'aaac', 'aaad'])
-    anysort([['a', 'b'], ['a'], ['a', 'c']])
-      .all('a').should.eql([['a'], ['a', 'b'], ['a', 'c']])
+    expect(anysort(getArr()).i()).toEqual(['a', 'b', 'c', 'D'])
+    expect(anysort(getArr()).is('b')).toEqual(['b', 'D', 'a', 'c'])
+    expect(anysort(['aaac', 'aaaa', 'aaad', 'aaab']).nth(3)).toEqual(['aaaa', 'aaab', 'aaac', 'aaad'])
+    expect(anysort([['a', 'b'], ['a'], ['a', 'c']]).all('a')).toEqual([['a'], ['a', 'b'], ['a', 'c']])
 
     anysort.config.autoSort = false
-    anysort(['alpha', 'google', 'zoo', 'oowps'])
-      .has('oo').should.eql(['google', 'zoo', 'oowps', 'alpha'])
-    anysort(['alpha', 'google', 'zoo', 'oowps'])
-      .should.eql(['alpha', 'google', 'zoo', 'oowps'])
+    expect(anysort(['alpha', 'google', 'zoo', 'oowps']).has('oo')).toEqual(['google', 'zoo', 'oowps', 'alpha'])
+    expect(anysort(['alpha', 'google', 'zoo', 'oowps'])).toEqual(['alpha', 'google', 'zoo', 'oowps'])
     anysort.config.autoSort = true
-    anysort(['alpha', 'google', 'zoo', 'oowps'])
-      .has('oo').should.eql(['google', 'oowps', 'zoo', 'alpha'])
-    anysort(['alpha', 'google', 'zoo', 'oowps'])
-      .should.eql(['alpha', 'google', 'oowps', 'zoo'])
+    expect(anysort(['alpha', 'google', 'zoo', 'oowps']).has('oo')).toEqual(['google', 'oowps', 'zoo', 'alpha'])
+    expect(anysort(['alpha', 'google', 'zoo', 'oowps'])).toEqual(['alpha', 'google', 'oowps', 'zoo'])
   })
 
   it('anysort(arr).plugin(arg).plugin(arg)', function () {
-    anysort(getArr())
-      .i().should.eql(['a', 'b', 'c', 'D'])
-    anysort(getArr())
-      .i().is('c').should.eql(['c', 'a', 'b', 'D'])
-    anysort(getArr())
-      .i().is('c').is('b').should.eql(['b', 'c', 'a', 'D'])
-    anysort(getArr())
-      .i().is('c').is('b').all('a').should.eql(['a', 'b', 'c', 'D'])
+    expect(anysort(getArr()).i()).toEqual(['a', 'b', 'c', 'D'])
+    expect(anysort(getArr()).i().is('c')).toEqual(['c', 'a', 'b', 'D'])
+    expect(anysort(getArr()).i().is('c').is('b')).toEqual(['b', 'c', 'a', 'D'])
+    expect(anysort(getArr()).i().is('c').is('b').all('a')).toEqual(['a', 'b', 'c', 'D'])
   })
 
   it('anysort(arr).plugin(arg).plugin(arg) with custom plugin', function () {
     anysort.extends({
       ltZ: sort => sort.map(x => (x < 'Z') ? -1 : 1)
     })
-    anysort(getArr())
-      .i().should.eql(['a', 'b', 'c', 'D'])
-    anysort(getArr())
-      .i().is('c').should.eql(['c', 'a', 'b', 'D'])
-    anysort(getArr())
-      .i().is('c').is('b').should.eql(['b', 'c', 'a', 'D'])
-    anysort(getArr())
-      .i().is('c').is('b').ltZ().should.eql(['D', 'b', 'c', 'a'])
-    anysort(getArr())
-      .i().is('c').ltZ().is('b').should.eql(['b', 'D', 'c', 'a'])
+    expect(anysort(getArr()).i()).toEqual(['a', 'b', 'c', 'D'])
+    expect(anysort(getArr()).i().is('c')).toEqual(['c', 'a', 'b', 'D'])
+    expect(anysort(getArr()).i().is('c').is('b')).toEqual(['b', 'c', 'a', 'D'])
+    expect(anysort(getArr()).i().is('c').is('b').ltZ()).toEqual(['D', 'b', 'c', 'a'])
+    expect(anysort(getArr()).i().is('c').ltZ().is('b')).toEqual(['b', 'D', 'c', 'a'])
   })
 
   it('anysort(arr).xxx: test nested objects', function () {
@@ -476,73 +453,56 @@ describe('Test Anysort APIs', function () {
       { foo: null, locals: {} },
       { foo: 'aac', locals: { date: '2014-02-02' } }
     ]
-    anysort(getPosts())
-      .get('locals.date')
-      .should.eql([
-        { foo: 'bbb', locals: { date: '2013-05-06' } },
-        { foo: 'ccc', locals: { date: '2014-01-02' } },
-        { foo: 'ddd', locals: { date: '2014-01-09' } },
-        { foo: 'aac', locals: { date: '2014-02-02' } },
-        { locals: { date: '2015-01-02' } },
-        { locals: { date: '2015-04-12' } },
-        { foo: 'aab', locals: { date: null } },
-        { foo: null, locals: {} }
-      ])
-    anysort(getPosts())
-      .get('locals.date')
-      .get('foo')
-      .should.eql([
-        { foo: 'aab', locals: { date: null } },
-        { foo: 'aac', locals: { date: '2014-02-02' } },
-        { foo: 'bbb', locals: { date: '2013-05-06' } },
-        { foo: 'ccc', locals: { date: '2014-01-02' } },
-        { foo: 'ddd', locals: { date: '2014-01-09' } },
-        { locals: { date: '2015-01-02' } },
-        { locals: { date: '2015-04-12' } },
-        { foo: null, locals: {} }
-      ])
-    anysort(getPosts())
-      .locals.date.result()
-      .foo.result()
-      .should.eql([
-        { foo: 'aab', locals: { date: null } },
-        { foo: 'aac', locals: { date: '2014-02-02' } },
-        { foo: 'bbb', locals: { date: '2013-05-06' } },
-        { foo: 'ccc', locals: { date: '2014-01-02' } },
-        { foo: 'ddd', locals: { date: '2014-01-09' } },
-        { locals: { date: '2015-01-02' } },
-        { locals: { date: '2015-04-12' } },
-        { foo: null, locals: {} }
-      ])
-    anysort(getPosts())
-      .locals.date.result()
-      .foo.result()
-      .foo.is('ccc')
-      .should.eql([
-        { foo: 'ccc', locals: { date: '2014-01-02' } },
-        { foo: 'aab', locals: { date: null } },
-        { foo: 'aac', locals: { date: '2014-02-02' } },
-        { foo: 'bbb', locals: { date: '2013-05-06' } },
-        { foo: 'ddd', locals: { date: '2014-01-09' } },
-        { locals: { date: '2015-01-02' } },
-        { locals: { date: '2015-04-12' } },
-        { foo: null, locals: {} }
-      ])
-    anysort(getPosts())
-      .locals.date.result()
-      .foo.result()
-      .foo.is('ccc')
-      .reverse_reverse()
-      .should.eql([
-        { foo: 'ccc', locals: { date: '2014-01-02' } },
-        { foo: 'aab', locals: { date: null } },
-        { foo: 'aac', locals: { date: '2014-02-02' } },
-        { foo: 'bbb', locals: { date: '2013-05-06' } },
-        { foo: 'ddd', locals: { date: '2014-01-09' } },
-        { locals: { date: '2015-01-02' } },
-        { locals: { date: '2015-04-12' } },
-        { foo: null, locals: {} }
-      ])
+    expect(anysort(getPosts()).get('locals.date')).toEqual([
+      { foo: 'bbb', locals: { date: '2013-05-06' } },
+      { foo: 'ccc', locals: { date: '2014-01-02' } },
+      { foo: 'ddd', locals: { date: '2014-01-09' } },
+      { foo: 'aac', locals: { date: '2014-02-02' } },
+      { locals: { date: '2015-01-02' } },
+      { locals: { date: '2015-04-12' } },
+      { foo: 'aab', locals: { date: null } },
+      { foo: null, locals: {} }
+    ])
+    expect(anysort(getPosts()).get('locals.date').get('foo')).toEqual([
+      { foo: 'aab', locals: { date: null } },
+      { foo: 'aac', locals: { date: '2014-02-02' } },
+      { foo: 'bbb', locals: { date: '2013-05-06' } },
+      { foo: 'ccc', locals: { date: '2014-01-02' } },
+      { foo: 'ddd', locals: { date: '2014-01-09' } },
+      { locals: { date: '2015-01-02' } },
+      { locals: { date: '2015-04-12' } },
+      { foo: null, locals: {} }
+    ])
+    expect(anysort(getPosts()).locals.date.result().foo.result()).toEqual([
+      { foo: 'aab', locals: { date: null } },
+      { foo: 'aac', locals: { date: '2014-02-02' } },
+      { foo: 'bbb', locals: { date: '2013-05-06' } },
+      { foo: 'ccc', locals: { date: '2014-01-02' } },
+      { foo: 'ddd', locals: { date: '2014-01-09' } },
+      { locals: { date: '2015-01-02' } },
+      { locals: { date: '2015-04-12' } },
+      { foo: null, locals: {} }
+    ])
+    expect(anysort(getPosts()).locals.date.result().foo.result().foo.is('ccc')).toEqual([
+      { foo: 'ccc', locals: { date: '2014-01-02' } },
+      { foo: 'aab', locals: { date: null } },
+      { foo: 'aac', locals: { date: '2014-02-02' } },
+      { foo: 'bbb', locals: { date: '2013-05-06' } },
+      { foo: 'ddd', locals: { date: '2014-01-09' } },
+      { locals: { date: '2015-01-02' } },
+      { locals: { date: '2015-04-12' } },
+      { foo: null, locals: {} }
+    ])
+    expect(anysort(getPosts()).locals.date.result().foo.result().foo.is('ccc').reverse_reverse()).toEqual([
+      { foo: 'ccc', locals: { date: '2014-01-02' } },
+      { foo: 'aab', locals: { date: null } },
+      { foo: 'aac', locals: { date: '2014-02-02' } },
+      { foo: 'bbb', locals: { date: '2013-05-06' } },
+      { foo: 'ddd', locals: { date: '2014-01-09' } },
+      { locals: { date: '2015-01-02' } },
+      { locals: { date: '2015-04-12' } },
+      { foo: null, locals: {} }
+    ])
   })
 
 })
@@ -554,72 +514,46 @@ describe('Test Anysort APIs', function () {
  describe('Expected Error', function () {
 
   it('error: illegal command', function () {
-    ;(function b1() {
-      anysort([1,2,3], '()is-(a)')
-    }).should.throw(/\[ANYSORT\]/)
+    expect(() => anysort([1,2,3], '()is-(a)')).toThrow(/\[ANYSORT\]/)
   })
 
   it('error: build-in plugin errors', function () {
 
-    ;(function b1() {
-      anysort([1,2,3]).i()
-    }).should.throw(/\[ANYSORT\]/)
+    expect(() => anysort([1,2,3]).i()).toThrow(/\[ANYSORT\]/)
 
-    ;(function b2() {
-      anysort([1,2,3]).is()
-    }).should.throw(/\[ANYSORT\]/)
+    expect(() => anysort([1,2,3]).is()).toThrow(/\[ANYSORT\]/)
 
-    ;(function b3() {
-      anysort([1,2,3]).nth()
-    }).should.throw(/\[ANYSORT\]/)
+    expect(() => anysort([1,2,3]).nth()).toThrow(/\[ANYSORT\]/)
 
-    ;(function b4() {
-      anysort([{},{}]).nth(1)
-    }).should.throw(/\[ANYSORT\]/)
+    expect(() => anysort([{},{}]).nth(1)).toThrow(/\[ANYSORT\]/)
 
-    ;(function b5() {
-      anysort([1,2,3]).all()
-    }).should.throw(/\[ANYSORT\]/)
+    expect(() => anysort([1,2,3]).all()).toThrow(/\[ANYSORT\]/)
 
-    ;(function b6() {
-      anysort([{},{}]).all('1')
-    }).should.throw(/\[ANYSORT\]/)
+    expect(() => anysort([{},{}]).all('1')).toThrow(/\[ANYSORT\]/)
 
-    ;(function b7() {
-      anysort([1,2,3]).has()
-    }).should.throw(/\[ANYSORT\]/)
+    expect(() => anysort([1,2,3]).has()).toThrow(/\[ANYSORT\]/)
 
-    ;(function b8() {
-      anysort([{},{}]).has('1')
-    }).should.throw(/\[ANYSORT\]/)
+    expect(() => anysort([{},{}]).has('1')).toThrow(/\[ANYSORT\]/)
 
-    ;(function b9() {
-      anysort([{},{}]).len()
-    }).should.throw(/\[ANYSORT\]/)
+    expect(() => anysort([{},{}]).len()).toThrow(/\[ANYSORT\]/)
 
-    ;(function b9() {
-      anysort([{},{}]).len(1)
-    }).should.throw(/\[ANYSORT\]/)
+    expect(() => anysort([{},{}]).len(1)).toThrow(/\[ANYSORT\]/)
 
-    ;(function b11() {
-      anysort([1,2,3]).get()
-    }).should.throw(/\[ANYSORT\]/)
+    expect(() => anysort([1,2,3]).get()).toThrow(/\[ANYSORT\]/)
 
   })
 
   it('error: custom plugin errors', function () {
-    ;(function b1() {
+    expect(() => {
       anysort.extends({
         aaa: sort => { throw new Error('asdf') }
       })
       anysort([1,2,3]).aaa()
-    }).should.throw(/asdf/)
+    }).toThrow(/asdf/)
   })
 
   it('error: wrapper patched arr again', function () {
-    ;(function b1() {
-      anysort.wrap(anysort([1,2,3]))
-    }).should.throw(/\[ANYSORT\]/)
+    expect(() => anysort.wrap(anysort([1,2,3]))).toThrow(/\[ANYSORT\]/)
   })
 
 })
@@ -633,7 +567,7 @@ describe('Test Anysort APIs', function () {
   it('uncomparable type', function () {
     const a1 = { [Symbol.toStringTag]: 'a1', a1: 'a1' }
     const a2 = { [Symbol.toStringTag]: 'a2', a2: 'a2' }
-    anysort([a1,a2]).should.eql([a1, a2])
+    expect(anysort([a1,a2])).toEqual([a1, a2])
   })
 
 })
