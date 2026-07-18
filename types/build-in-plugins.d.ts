@@ -1,4 +1,4 @@
-import type Sort from './sort';
+import type Sort from './Sort';
 import type { SortVal, SortPlugin, ComparableValue, PluginNames, PluginNamesWithArg, PluginNamesWithoutArg, PluginNamesWithArgMaybe } from './type';
 declare const plugins: {
     i: (sort: Sort) => Sort;
@@ -20,7 +20,8 @@ export type BuildInPluginNames = PluginNames<BuildInPlugins>;
 export type BuildInPluginNamesWithoutArg = PluginNamesWithoutArg<BuildInPlugins>;
 export type BuildInPluginNamesWithArg = PluginNamesWithArg<BuildInPlugins>;
 export type BuildInPluginNamesWithArgMaybe = PluginNamesWithArgMaybe<BuildInPlugins>;
+type ReadonlyBuildInPlugins = Readonly<Record<keyof BuildInPlugins, SortPlugin>>;
 export type MappingFn = (x: any) => ComparableValue;
 export type ResultFn = (x: SortVal) => SortVal;
-declare const _default: Readonly<Record<"i" | "is" | "nth" | "all" | "has" | "not" | "len" | "get" | "asc" | "desc" | "reverse" | "rand" | "result", SortPlugin>>;
+declare const _default: ReadonlyBuildInPlugins;
 export default _default;
