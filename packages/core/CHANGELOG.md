@@ -7,7 +7,7 @@
 - **breaking**：重构为 IR（数据描述符）中心的编译器三段式——字符串命令 / 链式操作 / IR 数据三入口汇聚到统一中间表示，再编译成 `SortFn`
 - 新增：`parseRule` / `parseSpec` / `chain` / `compileRule` / `compileSpec` / `combineFns` / `validateRule` / `validateSpec` / `extend` / `extendAll`
 - 新增：IR 契约 `SortOp`（`get` / `call`）/ `SortRule` / `SortSpec` / `SortArg`，arg 还原原生类型（`nth(2)` → number `2`）
-- 新增：链式形态 B（`chain(arr).path.plugin().run()`，不副作用，`.run()` / `.compile()` / `.spec` 三出口）
+- 新增：链式形态 B（`chain(arr).path.plugin().run()`，不副作用，`.run()` / `.compile()` / `.spec` 三出口）+ Full Typed（`Chainable<T,C>` 双参递归，沿元素 keyof 自动补全，非法路径编译期报错；自定义插件运行时注册，静态层无补全）
 - **breaking**：砍除旧 wrapper Proxy（`autoWrap` / `patched`）、`autoSort` / `orders` 默认类型排序、`type-utils` 类型体操、`_` 旧语法、字符串 join+split 往返
 - 行为：空规则（空 spec / 空 ops / loose 全 skip）保持源顺序；`compareSortArg` 保证全序性（NaN / 非标量视为相等，避免 TimSort 不确定排序）
 - 工程：构建产物统一 `dist/`（dual CJS/ESM/UMD，gzip ≈ 2.1KB），named exports；`anysort` 主入口加 `filter(Boolean)` 容错与 IR `validateRule` 校验

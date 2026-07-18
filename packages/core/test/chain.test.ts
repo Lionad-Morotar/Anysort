@@ -68,16 +68,17 @@ describe('chain — 链式前端（形态 B）', () => {
       expect(sorted.map(p => p.created.date)).toEqual(['2021-01-01', '2020-01-01', '2019-01-01'])
     })
     it('compile returns a reusable SortFn', () => {
-      const fn = chain(posts).age.compile()
-      expect(typeof fn).toBe('function')
       const other = [{ age: 9 }, { age: 1 }, { age: 5 }]
+      const fn = chain(other).age.compile()
+      expect(typeof fn).toBe('function')
       expect([...other].sort(fn).map(p => p.age)).toEqual([1, 5, 9])
     })
     it('source is exposed read-only', () => {
       expect(chain(posts).source).toBe(posts)
     })
     it('is not thenable (no .then trap for Promise interop)', () => {
-      expect(chain(posts).then).toBeUndefined()
+      // .then 不在 Chainable 类型上；运行时 Proxy 特判返回 undefined 防 thenable 误判
+      expect((chain(posts) as unknown as { then: unknown }).then).toBeUndefined()
     })
   })
 

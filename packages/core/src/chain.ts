@@ -13,16 +13,39 @@ import { getPlugin } from './plugins'
  * 每次链式调用返回新 Chainable（不可变累积，不 mutate 内部状态）。
  * run 复制 source 后排序，绝不 mutate 原数组——这是形态 B 的纯函数式契约。
  *
- * 链式 Full Typed 递归补全（沿对象 keyof 自动提示）留待后续增强；
- * 当前 [key: string]: any 作为过渡，运行时由 Proxy 提供正确行为。
+ * Full Typed：沿元素类型 keyof 递归映射，合法路径自动补全、非法路径编译期报错。
+ * 内置插件作为方法；自定义插件（extend）运行时注册，静态层无补全（已知局限）。
  */
 
-export interface Chainable<T> {
+interface ChainMeta<T> {
   readonly source: readonly T[]
   readonly spec: SortRule
   compile (opts?: CompileOptions): SortFn<T>
   run (opts?: CompileOptions): T[]
-  [key: string]: any
+}
+
+/** 内置插件方法签名。调用后路径重置，返回 Chainable<T>。 */
+interface ChainPluginCalls<T> {
+  i (): Chainable<T>
+  asc (): Chainable<T>
+  desc (): Chainable<T>
+  reverse (): Chainable<T>
+  rand (): Chainable<T>
+  is (arg: SortArg): Chainable<T>
+  nth (arg: number): Chainable<T>
+  all (arg: SortArg): Chainable<T>
+  has (arg: SortArg): Chainable<T>
+  not (arg?: SortArg): Chainable<T>
+  len (arg?: number): Chainable<T>
+}
+
+/**
+ * 链式 Full Typed 类型。
+ * - T：源数组元素类型（固定，run/compile 返回 T[]/SortFn<T>）
+ * - C：当前路径上下文（递归，默认 T）；属性访问返回 Chainable<T, C[K]>
+ */
+export type Chainable<T, C = T> = ChainMeta<T> & ChainPluginCalls<T> & {
+  [K in keyof C]: Chainable<T, C[K]>
 }
 
 export function chain<T> (source: T[]): Chainable<T> {
