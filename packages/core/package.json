@@ -4,19 +4,19 @@
   "description": "Flexible and Full Typed multi-properties sorter for nested objects",
   "license": "MIT",
   "type": "module",
-  "main": "./build/index.cjs.min.js",
-  "module": "./build/index.esm.min.js",
+  "main": "./dist/index.cjs.min.js",
+  "module": "./dist/index.esm.min.js",
   "types": "./types/index.d.ts",
   "exports": {
     ".": {
       "types": "./types/index.d.ts",
-      "import": "./build/index.esm.min.js",
-      "require": "./build/index.cjs.min.js"
+      "import": "./dist/index.esm.min.js",
+      "require": "./dist/index.cjs.min.js"
     },
     "./types": "./types/index.d.ts"
   },
   "files": [
-    "build/**/*",
+    "dist/**/*",
     "types/**/*",
     "README.md",
     "CHANGELOG.md",

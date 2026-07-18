@@ -8,10 +8,17 @@ import { defineConfig } from 'vite'
 // ——后者在 TS 7（tsgo）下经 @typescript/typescript6 fallback 只生成不完整的单文件。
 export default defineConfig({
   build: {
-    outDir: 'build',
+    outDir: 'dist',
     emptyOutDir: true,
     sourcemap: true,
     minify: 'terser',
+    rollupOptions: {
+      output: {
+        // 同时导出 named（anysort/chain/...）与 default；显式 named 让 rollup 不警告，
+        // 消费侧 import anysort / import { anysort } 两种写法都可用
+        exports: 'named',
+      },
+    },
     lib: {
       entry: fileURLToPath(new URL('./src/index.ts', import.meta.url)),
       name: 'module',

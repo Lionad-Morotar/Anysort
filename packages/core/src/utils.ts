@@ -1,35 +1,32 @@
-import type { SortableTypeEnum, SortableValue } from './type'
+/**
+ * 内部工具：目前仅 walk（按路径取对象值）被 compile 层使用。
+ * 路径不存在时 warn + 返回 undefined（由 compile 层决定排序位置，通常排后）。
+ */
 
-export const isDev = () => process.env.NODE_ENV === 'development'
-// istanbul ignore next
-export const warn = (msg: string) => isDev() && console.log(`[WARN] ${msg}`)
-export const strObj = (obj: object) => JSON.stringify(obj)
+const isDev = (): boolean => process.env.NODE_ENV === 'development'
 
-export const isVoid = (x: SortableValue): boolean => x == undefined
-export const isVoidType = (x: SortableTypeEnum): boolean => x === 'void'
-export const getType = (x: SortableValue): SortableTypeEnum | string =>
-  isVoid(x) ? 'void' : Object.prototype.toString.call(x).slice(8, -1).toLowerCase()
-export const isFn = (x: SortableValue): boolean => getType(x) === 'function'
-export const notNull = (x: any) => !!x
+const warn = (msg: string): void => {
+  if (isDev()) console.warn(`[anysort] ${msg}`)
+}
+
+const safeStringify = (value: unknown): string => {
+  try { return JSON.stringify(value) } catch { return String(value) }
+}
 
 /**
- * @example
- *    1. walk('a.b')({a:{b:3}}) returns 3
- *    2. walk(['a','b'])({a:{b:3}}) returns 3
+ * 按路径取对象值。
+ * @example walk(['a','b'])({a:{b:3}}) → 3 ; walk('a.b')({a:{b:3}}) → 3
  */
-export const walk = (pathsStore: string | string[]) => (x: any) => {
-  const paths = pathsStore instanceof Array
-    // istanbul ignore next
-    ? pathsStore.slice(0, pathsStore.length)
-    : pathsStore.split('.')
-  let val = x
-  let nextPath: string | null = null
-  while (val && paths.length) {
-    nextPath = paths.shift() as string
-    if (!Object.prototype.hasOwnProperty.call(val, nextPath)) {
-      warn(`cant find path "${JSON.stringify(pathsStore)}" in ${strObj(x)}, skip by default`)
+export const walk = (pathsStore: string | string[]) => (x: unknown): unknown => {
+  const paths = Array.isArray(pathsStore) ? pathsStore.slice(0) : pathsStore.split('.')
+  let val: unknown = x
+  while (val != null && paths.length > 0) {
+    const nextPath = paths.shift() as string
+    if (val != null && typeof val === 'object' && !Object.prototype.hasOwnProperty.call(val, nextPath)) {
+      const pathStr = Array.isArray(pathsStore) ? pathsStore.join('.') : pathsStore
+      warn(`cant find path "${pathStr}" in ${safeStringify(x)}, skip`)
     }
-    val = val[nextPath]
+    val = (val as Record<string, unknown>)[nextPath]
   }
   return val
 }

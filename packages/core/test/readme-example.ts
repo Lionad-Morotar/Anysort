@@ -1,6 +1,6 @@
  
 
-import anysort from '../src/main'
+import anysort from '../src/index'
 
 const post = getPosts()
 
