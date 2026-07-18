@@ -18,6 +18,10 @@ npm-debug.log
 yarn.lock
 yarn-error.log
 
+# build output (generated artifacts, never tracked)
+build
+types
+
 # misc
 _gh_pages
 _draft
