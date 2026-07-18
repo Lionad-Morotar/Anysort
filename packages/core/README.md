@@ -1,213 +1,161 @@
-# Anysort
+# @anysort/core
 
 <p align="center">
   <img src="./statics/LOGO.jpg" />
 </p>
 
 <p align="center">
-  <strong>Anysort：符合直觉、类型完备的多属性排序方法</strong>
+  <strong>框架无关的多属性排序核心 · IR（数据描述符）中心的编译器三段式</strong>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Coverage-98%25-83A603.svg?prefix=$coverage$">
-  <span>&nbsp;</span>
   <a href="https://github.com/Lionad-Morotar/anysort/blob/main/LICENSE">
     <img alt="MIT License" src="https://img.shields.io/github/license/Lionad-Morotar/anysort" />
   </a>
 </p>
 
-<p></p>
+`@anysort/core` 把排序规则抽象为统一的 **IR（Intermediate Representation，数据描述符）**：字符串命令、链式操作、IR 数据三个入口汇聚到同一中间表示，再编译成 `SortFn`。消除了旧版「链式序列化为字符串再反向解析」的往返复杂度，arg 还原原生类型，IR 可 JSON 序列化供外部直接构造。
 
-## Why Anysort
+## 特性
 
-A picture is worth a thousand words.
+- **三入口等价**：字符串命令 / 链式 Proxy / IR 数据，同意图产同结果
+- **IR 纯数据契约**：可 `JSON.stringify` 往复不丢语义，可从配置 / 外部来源程序化构造
+- **arg 原生类型**：`nth(2)` 的 arg 是 number `2`，不是字符串 `'2'`
+- **链式形态 B**：不副作用、`.run()` / `.compile()` / `.spec` 三出口
+- **自定义插件**：`extend` 注册命名插件，三入口通用
+- 零依赖，minified + gzip ≈ 2.1KB
 
-<p align="center">
-  <img src="./statics/simple-usage.png">
-</p>
-
-project moved from [Lionad-Morotar/anysort-old](https://github.com/Lionad-Morotar/any-sort-old)
-
-## Install
+## 安装
 
 ```sh
-npm install --save anysort-typed
+pnpm add @anysort/core
 ```
 
-## Why Anysort
+## 快速开始
 
-* Anysort can sort with multi-attributes
+```ts
+import anysort from '@anysort/core'
 
-```js
-// select articles which has 'it' tag, put ahead,
-// then move articles which status is 'editing' at the beginning
-anysort(articles)
-  .tag.has('it')
-  .status.is('editing')
-  .map(print)
+const posts = [
+  { name: 'Bob', age: 30 },
+  { name: 'Alice', age: 25 },
+  { name: 'carol', age: 25 },
+]
+
+// 字符串命令
+anysort(posts, 'name')              // 按 name 升序
+anysort(posts, 'age-reverse()')     // 按 age 降序
+anysort(posts, 'age', 'name')       // 多属性：age 升序，平局按 name
+
+// 比较函数（命令式逃生口，不进 IR）
+anysort(posts, (a, b) => a.age - b.age)
+
+// IR 数据描述符（可序列化、可从外部构造）
+anysort(posts, { ops: [{ type: 'get', path: ['name'] }, { type: 'call', plugin: 'reverse' }] })
 ```
 
-* Intuitive
+`anysort` 是 in-place 排序（同 `arr.sort`），需要保留原数组请先复制。
 
-```js
-// Array.prototype.sort: what hell the result is!
-[].sort.apply([0, '0', 1, 'd', '1', '0', 0, ''])
-// ['', 0, '0', '0', 0, 1, '1', 'd']
+## 三入口
 
-// Anysort：the result is intuitive
-anysort([0, '0', 1, undefined, 'd', '1', '0', null, 0, '', undefined])
-// [0, 0, 1, '', '0', '0', '1', 'd']
+所有入口最终汇聚到 IR，再由 `compileSpec` 编译成 `SortFn`。
+
+### 字符串命令
+
+```ts
+import { parseRule } from '@anysort/core'
+
+parseRule('created.date-reverse()')
+// { ops: [{ type: 'get', path: ['created', 'date'] }, { type: 'call', plugin: 'reverse' }] }
 ```
 
-* Flexible API
+arg 从字符串还原原生类型：`nth(2)` → `2`(number)、`is('foo')` → `'foo'`、`not(true)` → `true`、`is(null)` → `null`。括号内的 `-` 不分段（`is(foo-bar)` → arg `'foo-bar'`）。
 
-```js
-// proxy chain api
-anysort(articles).created.date.reverse()
+### 链式操作（形态 B）
 
-// or
-anysort(articles, 'created.date-reverse()')
+```ts
+import { chain } from '@anysort/core'
+
+chain(posts).created.date.reverse().run()     // → 排序后的新数组（不 mutate 源）
+chain(posts).created.date.reverse().spec      // → 取出 IR（纯数据，可序列化）
+chain(posts).age.compile()                    // → 预编译 SortFn（可复用）
 ```
 
-* Full typed, even in call-with-string-mode, **AMAZING**!
+链式过程不触发排序（不副作用），直到显式 `.run()`。每次链式调用返回新实例（不可变累积）。
 
-```js
-// @ts-expect-error
-anysort(articles).tag.hass('it')
-// @ts-expect-error
-anysort(articles, 'created.date-unknownPlugin()')
-// OK!
-anysort(articles).created.date.reverse()
-// OK!
-anysort(articles, 'created.date-reverse()')
-// @ts-expect-error
-anysort(articles).created.date.reverse(123)
-// @ts-expect-error
-anysort(articles, 'created.date-reverse(123)')
+### IR 数据描述符
+
+```ts
+import type { SortOp, SortRule, SortSpec, SortArg } from '@anysort/core'
+
+type SortOp =
+  | { type: 'get'; path: string[] }                    // 取对象路径
+  | { type: 'call'; plugin: string; arg?: SortArg }    // 调用命名插件
+
+type SortArg = string | number | boolean | null
+interface SortRule { ops: SortOp[] }
+type SortSpec = SortRule[]
 ```
 
-* Zero dependencies（minified + gzip ≈ 1.7KB）
+IR 是纯数据契约，适合从配置、外部来源程序化构造，跨进程传输。
 
-* Well tested, logic and type
+## 内置插件
 
-* <del>WIP: Full API document</del>, help wanted
+| 类别 | 插件 | 说明 |
+|------|------|------|
+| mapping（改比较值） | `i` `is(arg)` `nth(n)` `all(arg)` `has(arg)` `not(arg?)` `len(n?)` | 取路径后变换比较值 |
+| result（改比较结果） | `asc` `desc` `reverse` `rand` | 变换排序结果符号 |
 
-* <del>WIP: Benchmark</del>, help wanted
+`get`（取对象路径）是 IR 的一等公民（`type: 'get'`），不走插件表。
 
-## Usage
+## 自定义插件
 
-### Brief
+```ts
+import { extend } from '@anysort/core'
 
-```js
-const posts = getPosts()
-const print = (x) => console.log(JSON.stringify(x))
+extend('evenFirst', {
+  kind: 'mapping',
+  apply: () => (x: unknown) => (typeof x === 'number' && x % 2 === 0 ? 0 : 1),
+})
 
-// select articles being edited with IT tags,
-// sorted by date in reverse order and time in positive order
-anysort(posts, [
-  'status-is(editing)',
-  'tag-has(it)',
-  'created.date-reverse()',
-  'created.hour'
-]).map(print)
-
-// {"tag":["it"],"status":"editing","created":{"date":"2021-01-02T00:00:00.000Z","hour":23}}
-// {"tag":["it"],"status":"editing","created":{"date":"2021-01-01T00:00:00.000Z","hour":16}}
-// {"tag":["game","it"],"status":"editing","created":{"date":"2021-01-01T00:00:00.000Z","hour":23}}
-// {"tag":["mp3"],"status":"","created":{"date":"2019-08-01T00:00:00.000Z","hour":23}}
-
-// sick of using string manipulation?
-// try this!
-anysort(getPosts())
-  .created.hour.result()
-  .created.date.reverse()
-  .tag.has('it')
-  .status.is('editing')
-  .map(print)
-
-// {"tag":["it"],"status":"editing","created":{"date":"2021-01-02T00:00:00.000Z","hour":23}}
-// {"tag":["it"],"status":"editing","created":{"date":"2021-01-01T00:00:00.000Z","hour":16}}
-// {"tag":["game","it"],"status":"editing","created":{"date":"2021-01-01T00:00:00.000Z","hour":23}}
-// {"tag":["mp3"],"status":"","created":{"date":"2019-08-01T00:00:00.000Z","hour":23}}
-
-function getPosts () {
-  return [
-    {
-      tag: ['mp3'],
-      status: '',
-      created: {
-        date: new Date('2019-08-01'),
-        hour: 23
-      }
-    },
-    {
-      tag: ['game', 'it'],
-      status: 'editing',
-      created: {
-        date: new Date('2021-01-01'),
-        hour: 23
-      }
-    },
-    {
-      tag: ['it'],
-      status: 'editing',
-      created: {
-        date: new Date('2021-01-01'),
-        hour: 16
-      }
-    },
-    {
-      tag: ['it'],
-      status: 'editing',
-      created: {
-        date: new Date('2021-01-02'),
-        hour: 23
-      }
-    }
-  ]
-}
+anysort([1, 2, 3, 4], 'evenFirst()')  // [2, 4, 1, 3]
 ```
 
-### In Vue3
+## API
 
-```vue
-// TODO
-```
+| 导出 | 说明 |
+|------|------|
+| `anysort(arr, ...rules)` | 主入口，接受 `string` / `fn` / `IR`，in-place 排序 |
+| `parseRule(cmd, opts?)` / `parseSpec(...cmds)` | 字符串 → IR |
+| `chain(arr)` | 链式 builder（形态 B） |
+| `compileRule(rule, opts?)` / `compileSpec(spec, opts?)` | IR → `SortFn`（`{ loose }` option） |
+| `combineFns(fns)` | 多 `SortFn` 短路合并 |
+| `validateRule` / `validateSpec` | IR 结构校验 |
+| `extend` / `extendAll` | 注册自定义插件 |
 
-## Full API Doc
+## 容错
 
-TODO
+- **严格模式**（默认）：未知插件名抛错，非法 IR 抛可读的契约错误
+- **loose 模式** `compileSpec(spec, { loose: true })`：未知插件名 warn + skip 该 op，不抛错
+- 非法路径（`get` 路径不存在）warn + 该值排后；`null` / `undefined` 排后；`NaN` 双值视为相等、单值排后；非标量值（对象等）视为相等保持原序——保证比较函数全序性，避免 TimSort 产出不确定顺序
 
-## Change Log
+## 集成
 
-See [ChangeLog.md](./CHANGELOG.md)
+- [`@anysort/vue`](../vue)：`useAnysort()` 把排序包装为 Vue 3 响应式管道
+- [`@anysort/nuxt`](../nuxt)：Nuxt module，auto-import `useAnysort`
 
 ## Dev & Test
 
 ```sh
-# run test when files change in directory build
-npm run watch:test
-
-# modify source code then build
-npm run build
+pnpm install
+pnpm --filter @anysort/core test
+pnpm --filter @anysort/core build
 ```
 
-## How this work
+## 背景
 
-[《🌐 Anysort：灵活、优雅的多属性排序》](https://lionad.art/articles/anysort-2th)
-
-## Pull & Request
-
-See [TODO.MD](./TODO.md)，help wanted!
-
-## Related Projects
-
-* [sort-by](https://github.com/kvnneff/sort-by)
-* [array-sort](https://github.com/jonschlinkert/array-sort)
-* [sort-on](https://github.com/sindresorhus/sort-on)
-* [...](https://github.com/search?q=property+sort&type=Repositories)
+前身 npm 包 `anysort-typed`（1.x–3.x），已迁移至 `@anysort` scope 的 monorepo。本次 IR 重构为 breaking 变更，旧版字符串命令语法（`'created.date-reverse()'`）仍兼容。设计原理见 [《🌐 Anysort：灵活、优雅的多属性排序》](https://lionad.art/articles/anysort-2th)。
 
 ## License
 
-Copyright © 2021, [Lionad-Morotar](https://github.com/Lionad-Morotar).
-Released under the MIT License.
+MIT
