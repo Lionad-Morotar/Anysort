@@ -1,7 +1,7 @@
 {
   "name": "anysort-typed",
   "description": "Flexible and Full Typed multi-properties sorter for nested objects",
-  "version": "3.4.0-alpha.0",
+  "version": "3.4.0",
   "homepage": "https://github.com/Lionad-Morotar/anysort",
   "repository": {
     "type": "git",
@@ -20,65 +20,28 @@
     "./*": "./*"
   },
   "scripts": {
-    "prebuild": "rimraf build",
-    "build": "cross-env NODE_ENV=production rollup -c && mv -f build/*.d.ts ./types",
-    "test": "cross-env NODE_ENV=production nyc mocha ./test/index",
-    "eslint": "eslint . --ext .vue,.js,.cjs,.mjs,.ts,.json --fix --ignore-pattern .eslintignore",
+    "build": "vite build && tsc -p tsconfig.json",
+    "test": "vitest run",
+    "eslint": "oxlint .",
     "coverage:badge": "coverage-badge-creator",
-    "watch:test": "npm-watch test"
-  },
-  "watch": {
-    "test": {
-      "patterns": [
-        "build",
-        "test"
-      ],
-      "runOnChangeOnly": true,
-      "extensions": "js",
-      "quiet": true
-    }
-  },
-  "nyc": {
-    "extension": [
-      ".js"
-    ],
-    "exclude": [
-      "test/"
-    ],
-    "reporter": [
-      "text",
-      "json-summary"
-    ]
+    "watch:test": "vitest"
   },
   "files": [
     "build/**/*",
+    "types/**/*",
     "README.md",
     "statics/*"
   ],
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.8",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-typescript": "^11.1.6",
-    "@types/node": "^18.19.42",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0",
-    "coverage-badge-creator": "^1.0.19",
-    "cross-env": "^7.0.3",
-    "eslint": "^8.57.0",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.6.0",
-    "mocha": "^10.7.0",
-    "npm-watch": "^0.11.0",
-    "nyc": "^15.1.0",
-    "rimraf": "^6.0.1",
-    "rollup": "^3.29.4",
-    "rollup-plugin-minize": "^2.1.0",
-    "rollup-plugin-uglify": "^6.0.4",
-    "should": "^13.0.0",
-    "tslib": "^2.6.3",
-    "typescript": "^5.5.4"
+    "@types/node": "^26.1.1",
+    "@vitest/coverage-v8": "^4.1.10",
+    "coverage-badge-creator": "^2.2.0",
+    "oxlint": "^1.74.0",
+    "oxlint-tsgolint": "^0.25.0",
+    "terser": "^5.49.0",
+    "tslib": "^2.8.1",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
   },
   "keywords": [
     "any",
@@ -92,5 +55,10 @@
     "sort",
     "sorting",
     "sorter"
-  ]
+  ],
+  "engines": {
+    "node": ">=20.19",
+    "pnpm": ">=10"
+  },
+  "packageManager": "pnpm@10.15.0"
 }
