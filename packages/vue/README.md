@@ -17,7 +17,7 @@ import { ref } from 'vue'
 import { useAnysort } from '@anysort/vue'
 
 const source = ref([3, 1, 2])
-const sorted = useAnysort(source)
+const sorted = useAnysort(source, (a, b) => a - b)
 // sorted.value === [1, 2, 3]
 
 source.value.push(0)
@@ -31,7 +31,7 @@ useAnysort(items, 'created.date-reverse()')
 useAnysort(items, [(a, b) => a.n - b.n, 'name'])
 ```
 
-源（`Ref` / getter / 原始数组）或规则变化时，返回的 `ComputedRef` 自动重排。内部复制源数组，不会 mutate 你的响应式状态。
+源（`Ref` / getter / 原始数组）或规则变化时，返回的 `ComputedRef` 自动重排。空规则（null / 空字符串 / 空数组）保持源顺序。内部复制源数组，不会 mutate 你的响应式状态。
 
 ## License
 
