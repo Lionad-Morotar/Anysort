@@ -8,7 +8,8 @@
     "url": "git+https://github.com/Lionad-Morotar/anysort.git"
   },
   "license": "MIT",
-  "main": "build/index.esm.min.js",
+  "main": "build/index.cjs.min.js",
+  "module": "build/index.esm.min.js",
   "types": "types/index.d.ts",
   "exports": {
     ".": {
@@ -24,7 +25,8 @@
     "test": "vitest run",
     "eslint": "oxlint .",
     "coverage:badge": "coverage-badge-creator",
-    "watch:test": "vitest"
+    "watch:test": "vitest",
+    "prepublishOnly": "pnpm build"
   },
   "files": [
     "build/**/*",
