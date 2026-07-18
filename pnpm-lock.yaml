@@ -51,6 +51,22 @@ importers:
         specifier: ^3.5.0
         version: 3.5.40(typescript@7.0.2)
 
+  playground/vue:
+    dependencies:
+      '@anysort/vue':
+        specifier: workspace:*
+        version: link:../../packages/vue
+      vue:
+        specifier: ^3.5.0
+        version: 3.5.40(typescript@7.0.2)
+    devDependencies:
+      '@vitejs/plugin-vue':
+        specifier: ^5.2.0
+        version: 5.2.4(vite@8.1.5(@types/node@26.1.1)(terser@5.49.0))(vue@3.5.40(typescript@7.0.2))
+      vite:
+        specifier: ^8.0.0
+        version: 8.1.5(@types/node@26.1.1)(terser@5.49.0)
+
 packages:
 
   '@babel/helper-string-parser@7.29.7':
@@ -500,6 +516,13 @@ packages:
     engines: {node: '>=16.20.0'}
     cpu: [x64]
     os: [win32]
+
+  '@vitejs/plugin-vue@5.2.4':
+    resolution: {integrity: sha512-7Yx/SXSOcQq5HiiV3orevHUFn+pmMB4cgbEkDYgnkUWb0WfeQ/wa2yFv6D5ICiCQOVpjA7vYDXrC7AGO8yjDHA==}
+    engines: {node: ^18.0.0 || >=20.0.0}
+    peerDependencies:
+      vite: ^5.0.0 || ^6.0.0
+      vue: ^3.2.25
 
   '@vitest/coverage-v8@4.1.10':
     resolution: {integrity: sha512-IM49HmthevbgAO4anp1hwtoT9wYe59w0LR00gr+eagHE+ZJ5lK4sLPeO0ubgoJcwLk6dehU3R24N+FbEEKDc8g==}
@@ -1210,6 +1233,11 @@ snapshots:
 
   '@typescript/typescript-win32-x64@7.0.2':
     optional: true
+
+  '@vitejs/plugin-vue@5.2.4(vite@8.1.5(@types/node@26.1.1)(terser@5.49.0))(vue@3.5.40(typescript@7.0.2))':
+    dependencies:
+      vite: 8.1.5(@types/node@26.1.1)(terser@5.49.0)
+      vue: 3.5.40(typescript@7.0.2)
 
   '@vitest/coverage-v8@4.1.10(vitest@4.1.10)':
     dependencies:

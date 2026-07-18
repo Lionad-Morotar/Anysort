@@ -21,6 +21,7 @@ yarn-error.log
 # build output (generated artifacts, never tracked)
 build
 types
+dist
 
 # misc
 _gh_pages
