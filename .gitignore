@@ -6,7 +6,6 @@
 test/actual
 actual
 coverage
-.nyc_output
 
 # npm
 node_modules
@@ -19,7 +18,13 @@ npm-debug.log
 yarn.lock
 yarn-error.log
 
+# build output (generated artifacts, never tracked)
+build
+types
+dist
+
 # misc
+.nuxtrc
 _gh_pages
 _draft
 _drafts

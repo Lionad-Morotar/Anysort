@@ -1,96 +1,40 @@
 {
-  "name": "anysort-typed",
-  "description": "Flexible and Full Typed multi-properties sorter for nested objects",
-  "version": "3.4.0-alpha.0",
+  "name": "anysort-monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Anysort monorepo: flexible, full-typed multi-properties sorter + Vue/Nuxt integrations",
+  "license": "MIT",
   "homepage": "https://github.com/Lionad-Morotar/anysort",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Lionad-Morotar/anysort.git"
   },
-  "license": "MIT",
-  "main": "build/index.esm.min.js",
-  "types": "types/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./build/index.esm.min.js",
-      "require": "./build/index.cjs.min.js",
-      "types": "./types/index.d.ts"
-    },
-    "./types": "./types/index.d.ts",
-    "./*": "./*"
-  },
   "scripts": {
-    "prebuild": "rimraf build",
-    "build": "cross-env NODE_ENV=production rollup -c && mv -f build/*.d.ts ./types",
-    "test": "cross-env NODE_ENV=production nyc mocha ./test/index",
-    "eslint": "eslint . --ext .vue,.js,.cjs,.mjs,.ts,.json --fix --ignore-pattern .eslintignore",
-    "coverage:badge": "coverage-badge-creator",
-    "watch:test": "npm-watch test"
+    "prebuild": "pnpm test",
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "lint": "oxlint .",
+    "typecheck": "pnpm -r run typecheck",
+    "dev:vue": "pnpm --filter playground-vue dev",
+    "dev:nuxt": "pnpm --filter playground-nuxt dev",
+    "prerelease": "pnpm run build",
+    "release": "node scripts/release.mjs"
   },
-  "watch": {
-    "test": {
-      "patterns": [
-        "build",
-        "test"
-      ],
-      "runOnChangeOnly": true,
-      "extensions": "js",
-      "quiet": true
-    }
-  },
-  "nyc": {
-    "extension": [
-      ".js"
-    ],
-    "exclude": [
-      "test/"
-    ],
-    "reporter": [
-      "text",
-      "json-summary"
-    ]
-  },
-  "files": [
-    "build/**/*",
-    "README.md",
-    "statics/*"
-  ],
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.8",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-typescript": "^11.1.6",
-    "@types/node": "^18.19.42",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0",
-    "coverage-badge-creator": "^1.0.19",
-    "cross-env": "^7.0.3",
-    "eslint": "^8.57.0",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.6.0",
-    "mocha": "^10.7.0",
-    "npm-watch": "^0.11.0",
-    "nyc": "^15.1.0",
-    "rimraf": "^6.0.1",
-    "rollup": "^3.29.4",
-    "rollup-plugin-minize": "^2.1.0",
-    "rollup-plugin-uglify": "^6.0.4",
-    "should": "^13.0.0",
-    "tslib": "^2.6.3",
-    "typescript": "^5.5.4"
+    "@types/node": "^26.1.1",
+    "@vitest/coverage-v8": "^4.1.10",
+    "coverage-badge-creator": "^2.2.0",
+    "oxlint": "^1.74.0",
+    "oxlint-tsgolint": "^0.25.0",
+    "terser": "^5.49.0",
+    "tslib": "^2.8.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.0.0",
+    "vitest": "^4.1.10"
   },
-  "keywords": [
-    "any",
-    "array",
-    "multiple",
-    "nested",
-    "object",
-    "order",
-    "multi-properties",
-    "property",
-    "sort",
-    "sorting",
-    "sorter"
-  ]
+  "engines": {
+    "node": ">=20.19",
+    "pnpm": ">=10"
+  },
+  "packageManager": "pnpm@12.0.0-alpha.14"
 }

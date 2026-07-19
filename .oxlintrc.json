@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": [
+    "build",
+    "types",
+    "coverage",
+    "statics",
+    "docs",
+    "zRefs",
+    "**/*.min.js"
+  ],
+  "rules": {
+    "no-unused-vars": "off",
+    "no-explicit-any": "off"
+  }
+}

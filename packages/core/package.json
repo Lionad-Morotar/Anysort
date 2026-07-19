@@ -1,0 +1,64 @@
+{
+  "name": "@anysort/core",
+  "version": "1.0.0-alpha.0",
+  "description": "Flexible and Full Typed multi-properties sorter for nested objects",
+  "license": "MIT",
+  "author": "仿生狮子 <tangnad@qq.com> (https://github.com/Lionad-Morotar)",
+  "type": "module",
+  "main": "./dist/index.cjs.min.js",
+  "module": "./dist/index.esm.min.js",
+  "types": "./types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/index.esm.min.js",
+      "require": "./dist/index.cjs.min.js"
+    },
+    "./types": "./types/index.d.ts"
+  },
+  "files": [
+    "dist/**/*",
+    "types/**/*",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "statics/*"
+  ],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "oxlint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "watch:test": "vitest",
+    "coverage:badge": "coverage-badge-creator",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "any",
+    "array",
+    "multiple",
+    "nested",
+    "object",
+    "order",
+    "multi-properties",
+    "property",
+    "sort",
+    "sorting",
+    "sorter"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "homepage": "https://github.com/Lionad-Morotar/anysort",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lionad-Morotar/anysort.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/Lionad-Morotar/anysort/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
