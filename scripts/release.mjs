@@ -5,7 +5,8 @@
  * 设计要点：
  * - 必须用 pnpm publish：它会把 workspace:* 依赖替换为实体版本号（npm publish 会原样打包该协议）
  * - dist-tag 从版本号推导：1.0.0-alpha.0 → --tag alpha，避免 prerelease 顶掉 latest
- * - registry 显式锁 npmjs：本地 npm 配置可能指向镜像，发布必须打到官方源
+ * - registry 经 --config.registry CLI 参数锁 npmjs（pnpm 12 的 publish 已无 --registry flag，
+ *   且 npm_config_registry 环境变量不再覆盖用户 .npmrc 的镜像配置）
  * - 参数透传：pnpm release -- --dry-run 走完整链路（test → build → 各包 publish dry-run）
  */
 import { readFileSync } from 'node:fs'
@@ -42,12 +43,15 @@ for (const i of infos) {
 
 for (const info of infos) {
   const tag = distTagOf(info.version)
-  const publishArgs = ['publish', info.dir, '--registry', REGISTRY, '--access', 'public', '--no-git-checks']
+  const publishArgs = ['publish', '--access', 'public', '--no-git-checks', `--config.registry=${REGISTRY}`]
   if (tag) publishArgs.push('--tag', tag)
   if (dryRun) publishArgs.push('--dry-run')
-  console.log(`\n[release] >>> pnpm ${publishArgs.join(' ')}`)
+  console.log(`\n[release] >>> (cwd: packages/${info.dir.split('/').pop()}) pnpm ${publishArgs.join(' ')}`)
   try {
-    execFileSync('pnpm', publishArgs, { stdio: 'inherit', cwd: root })
+    execFileSync('pnpm', publishArgs, {
+      stdio: 'inherit',
+      cwd: info.dir,
+    })
   } catch {
     console.error(`\n[release] ${info.name} 发布失败，已中止。已发布的包不会回滚，修复后重跑 pnpm release 即可。`)
     process.exit(1)
