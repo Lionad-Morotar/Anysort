@@ -11,30 +11,30 @@
 - [ ] `pnpm -r test` 全绿
 - [ ] `pnpm lint`（oxlint）无错
 
-## 发布顺序（按依赖拓扑）
+## 发布（收敛为一条命令）
 
-1. **@anysort/core**
-   ```sh
-   cd packages/core && pnpm publish --access public
-   ```
-2. **@anysort/vue**（依赖 core；发布时 `workspace:*` 自动替换为 core 的已发布版本）
-   ```sh
-   cd packages/vue && pnpm publish --access public
-   ```
-3. **@anysort/nuxt**（依赖 vue + core）
-   ```sh
-   cd packages/nuxt && pnpm publish --access public
-   ```
+```sh
+pnpm release              # 正式发布
+pnpm release -- --dry-run # 预演：完整链路 test → build → 各包 publish dry-run
+```
+
+`pnpm release`（`scripts/release.mjs`）自动完成：
+
+- 门禁链：`prebuild → test`、`prerelease → build`（任何构建先过全量测试）
+- 拓扑序分包发布：core → vue → nuxt（被依赖者先发）
+- dist-tag 从版本号推导：`1.0.0-alpha.0` → `--tag alpha`，prerelease 不顶 latest
+- registry 锁 npmjs：`--config.registry=https://registry.npmjs.org`（pnpm 12 publish 已无 `--registry` flag，且 `npm_config_registry` 环境变量不再覆盖用户 .npmrc 的镜像配置）
+- `workspace:*` 由 pnpm publish 自动替换为实体版本号
 
 ## 发布后
 
 - [ ] npm 校验：`npm view @anysort/core@<version>`
 - [ ] （首次首发后）`npm deprecate anysort-typed "Renamed to @anysort/core, please switch"`
-- [ ] git tag（可选）
+- [ ] git tag：monorepo 统一版本，单 tag `v<version>`
 
 ## 注意
 
-- **scoped 包首次发布必须 `--access public`**（否则默认 private，需付费 org plan）
-- `workspace:*` 在 `pnpm publish` 时由 pnpm 自动替换为具体版本号
+- **scoped 包首次发布必须 `--access public`**（release.mjs 已内置）
 - 各包 `prepublishOnly` 钩子自动 build（core/vue/nuxt 各自）
 - nuxt 包发布的是 `nuxt-module-build build` 产物（dist/module.mjs + runtime/），非 stub
+- 任一包发布失败即中止；已发布的包不会回滚，修复后重跑 `pnpm release` 即可
