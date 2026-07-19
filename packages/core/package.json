@@ -1,8 +1,9 @@
 {
   "name": "@anysort/core",
-  "version": "0.1.0",
+  "version": "1.0.0-alpha.0",
   "description": "Flexible and Full Typed multi-properties sorter for nested objects",
   "license": "MIT",
+  "author": "仿生狮子 <tangnad@qq.com> (https://github.com/Lionad-Morotar)",
   "type": "module",
   "main": "./dist/index.cjs.min.js",
   "module": "./dist/index.esm.min.js",
@@ -53,6 +54,9 @@
     "type": "git",
     "url": "git+https://github.com/Lionad-Morotar/anysort.git",
     "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/Lionad-Morotar/anysort/issues"
   },
   "publishConfig": {
     "access": "public"
