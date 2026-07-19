@@ -10,12 +10,15 @@
     "url": "git+https://github.com/Lionad-Morotar/anysort.git"
   },
   "scripts": {
+    "prebuild": "pnpm test",
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
     "lint": "oxlint .",
     "typecheck": "pnpm -r run typecheck",
     "dev:vue": "pnpm --filter playground-vue dev",
-    "dev:nuxt": "pnpm --filter playground-nuxt dev"
+    "dev:nuxt": "pnpm --filter playground-nuxt dev",
+    "prerelease": "pnpm run build",
+    "release": "node scripts/release.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
